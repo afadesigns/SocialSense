@@ -2,59 +2,55 @@
 {% load static %}
 
 {% block content %}
-
 <div class="content">
-    <!-- Existing sections: Instagram Profile and Recent Media -->
+    <!-- Instagram Profile and Recent Media Sections -->
 
-    <!-- New Section for Instagram Insights -->
+    <!-- New Section for Instagram Insights Charts -->
     {% if insights_data %}
-    <div class="row mt-4">
-        <div class="col-md-12">
+    <div class="row">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Instagram Insights</h4>
+                    <h4 class="card-title">Instagram Followers Growth</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Display Account Insights -->
-                    {% if insights_data.account %}
-                    <div>
-                        <h5>Account Insights</h5>
-                        <p>Followers: {{ insights_data.account.follower_count }}</p>
-                        <p>Engagement Rate: {{ insights_data.account.engagement_rate }}</p>
-                        <!-- Add more account insights details here -->
+                    <div class="chart-area">
+                        <canvas id="followersGrowthChart"></canvas>
                     </div>
-                    {% endif %}
-                    <!-- Display Media Feed Insights -->
-                    {% if insights_data.feed %}
-                    <div>
-                        <h5>Media Feed Insights</h5>
-                        {% for media in insights_data.feed %}
-                        <div>
-                            <p>Media ID: {{ media.id }}</p>
-                            <p>Reach: {{ media.reach }}</p>
-                            <p>Engagement: {{ media.engagement }}</p>
-                            <!-- Add more media insights details here -->
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
+        <!-- Other charts can be added here following the same pattern -->
     </div>
     {% endif %}
-
-    <!-- Original dashboard.html content continues here -->
-    ...
+    {% include 'includes/footer.html' %}
 </div>
-
 {% endblock content %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    $(document).ready(function () {
-        demo.initDashboardPageCharts();
-        demo.initVectorMap();
-    });
+$(document).ready(function () {
+    var followersData = {
+        labels: [/* Date labels */],
+        datasets: [{
+            label: 'Followers',
+            data: [/* Follower count data */],
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    };
+
+    var followersConfig = {
+        type: 'line',
+        data: followersData,
+    };
+
+    new Chart(
+        document.getElementById('followersGrowthChart'),
+        followersConfig
+    );
+});
 </script>
 {% endblock extra_js %}
