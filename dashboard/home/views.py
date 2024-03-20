@@ -1,37 +1,32 @@
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
-# Import the InstagramService
 from services.instagram.instagram_service import InstagramService
 
 
 @login_required
 def index(request):
-    """
-    View function for the dashboard index page.
-    """
     user = request.user
 
-    # Placeholder for Instagram credentials - ensure you handle this securely
-    instagram_username = user.instagram_username
-    instagram_password = user.instagram_password
-
-    # Initialize the InstagramService with the user's credentials
-    instagram_service = InstagramService(instagram_username, instagram_password)
-
-    # Initialize context with an error message in case Instagram data cannot be fetched
+    # Assuming user's Instagram credentials are stored securely
+    instagram_service = InstagramService(
+        user.instagram_username, user.instagram_password
+    )
     context = {"instagram_error": "Could not fetch Instagram data."}
 
     if instagram_service.is_authenticated:
-        # Fetch profile data and recent media
+        # Existing profile data and recent media fetching
         profile_data = instagram_service.fetch_profile_data()
         recent_media = instagram_service.fetch_recent_media()
+        # Fetch additional insights data
+        insights_data = instagram_service.fetch_insights()
 
-        # Update the context with Instagram data
+        # Update context with all fetched data
         context = {
             "profile_data": profile_data,
             "recent_media": recent_media,
-            "instagram_error": "",  # Clear the error message if data is fetched successfully
+            "insights_data": insights_data,  # Add insights data to the context
+            "instagram_error": "",  # Clear the error message upon successful data fetch
         }
 
     return render(request, "dashboard/home/index.html", context)

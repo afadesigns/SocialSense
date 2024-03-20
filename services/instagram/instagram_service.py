@@ -3,9 +3,6 @@ from instagrapi import Client
 
 class InstagramService:
     def __init__(self, username, password):
-        """
-        Initialize the Instagram service with user credentials and authenticate.
-        """
         self.client = Client()
         self.is_authenticated = False
         try:
@@ -15,9 +12,6 @@ class InstagramService:
             print(f"Failed to authenticate Instagram user {username}: {str(e)}")
 
     def fetch_profile_data(self):
-        """
-        Fetches the profile data of the authenticated user.
-        """
         if not self.is_authenticated:
             return None
         user_info = self.client.account_info()
@@ -32,12 +26,6 @@ class InstagramService:
         }
 
     def fetch_recent_media(self, count=10):
-        """
-        Fetches recent media posts by the authenticated user.
-
-        Args:
-        - count (int): Number of recent media posts to fetch.
-        """
         if not self.is_authenticated:
             return []
         media_items = self.client.user_medias(self.client.user_id, count)
@@ -54,12 +42,28 @@ class InstagramService:
             for media in media_items
         ]
 
+    # Fetch insights for the authenticated user's account
+    def fetch_account_insights(self):
+        if self.is_authenticated:
+            return self.client.insights_account()
+        return {}
 
-# Example usage
-if __name__ == "__main__":
-    username = "your_instagram_username"
-    password = "your_instagram_password"
-    service = InstagramService(username, password)
-    if service.is_authenticated:
-        print("Profile Data:", service.fetch_profile_data())
-        print("Recent Media:", service.fetch_recent_media())
+    # Fetch insights for a specific media by media ID
+    def fetch_media_insights(self, media_id):
+        if self.is_authenticated:
+            return self.client.insights_media(media_id)
+        return {}
+
+    # Fetch feed insights with options for post type and time frame
+    def fetch_feed_insights(
+        self,
+        post_type="ALL",
+        time_frame="ONE_WEEK",
+        data_ordering="REACH_COUNT",
+        count=0,
+    ):
+        if self.is_authenticated:
+            return self.client.insights_media_feed_all(
+                post_type, time_frame, data_ordering, count
+            )
+        return []

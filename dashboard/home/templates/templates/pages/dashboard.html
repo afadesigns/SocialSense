@@ -4,41 +4,40 @@
 {% block content %}
 
 <div class="content">
-    <!-- Instagram Profile Section -->
-    {% if instagram_profile %}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Instagram Profile</h4>
-                </div>
-                <div class="card-body">
-                    <p>Username: {{ instagram_profile.username }}</p>
-                    <p>Followers: {{ instagram_profile.follower_count }}</p>
-                    <!-- Add more profile details here -->
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+    <!-- Existing sections: Instagram Profile and Recent Media -->
 
-    <!-- Recent Instagram Media Section -->
-    {% if recent_media %}
-    <div class="row">
+    <!-- New Section for Instagram Insights -->
+    {% if insights_data %}
+    <div class="row mt-4">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Recent Instagram Posts</h4>
+                    <h4 class="card-title">Instagram Insights</h4>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                    {% for media in recent_media %}
-                        <div class="col-md-4">
-                            <img src="{{ media.media_url }}" alt="Post image" class="img-fluid">
-                            <!-- Add more media details here -->
-                        </div>
-                    {% endfor %}
+                    <!-- Display Account Insights -->
+                    {% if insights_data.account %}
+                    <div>
+                        <h5>Account Insights</h5>
+                        <p>Followers: {{ insights_data.account.follower_count }}</p>
+                        <p>Engagement Rate: {{ insights_data.account.engagement_rate }}</p>
+                        <!-- Add more account insights details here -->
                     </div>
+                    {% endif %}
+                    <!-- Display Media Feed Insights -->
+                    {% if insights_data.feed %}
+                    <div>
+                        <h5>Media Feed Insights</h5>
+                        {% for media in insights_data.feed %}
+                        <div>
+                            <p>Media ID: {{ media.id }}</p>
+                            <p>Reach: {{ media.reach }}</p>
+                            <p>Engagement: {{ media.engagement }}</p>
+                            <!-- Add more media insights details here -->
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -54,11 +53,8 @@
 {% block extra_js %}
 <script>
     $(document).ready(function () {
-
         demo.initDashboardPageCharts();
-
         demo.initVectorMap();
-
     });
 </script>
 {% endblock extra_js %}
