@@ -1,5 +1,3 @@
-# C:\Users\Andreas\Projects\SocialSense\dashboard\core\settings.py
-
 # Import necessary modules
 import os
 import random
@@ -54,9 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "home",  # This is correct if 'home' is your Django app
-    # Remove "InstagramClient" if it's not an actual app
 ]
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -162,5 +158,3 @@ INSTAGRAM_API_SETTINGS = {
     "SOFTWARE": "{model}-user+{android_release}+OPR1.170623.032+V10.2.3.0.OAGMIXM+release-keys",
     # Add other settings here as needed
 }
-
-# Import Instagram API Client

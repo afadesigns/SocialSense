@@ -1,4 +1,4 @@
-# C:\Users\Andreas\Projects\SocialSense\dashboard\core\urls.py
+# C:\\Users\\Andreas\\Projects\\SocialSense\\dashboard\\core\\urls.py
 
 from django.conf import settings  # Import settings module
 from django.conf.urls.static import static  # Import static function
