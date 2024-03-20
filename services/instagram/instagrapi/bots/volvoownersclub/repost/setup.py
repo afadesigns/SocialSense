@@ -12,6 +12,6 @@ setup(
         "psycopg2-binary==2.9.1",
         "python-json-logger==2.0.1",
         "schedule==1.1.0",
-        "requests==2.26.0",
+        "requests==2.31.0",
     ],
 )
