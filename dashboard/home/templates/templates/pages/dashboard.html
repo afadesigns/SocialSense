@@ -20,6 +20,30 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Engagement Rate</h4>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="engagementRateChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Post Reach</h4>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="reachChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Other charts can be added here following the same pattern -->
     </div>
     {% endif %}
@@ -31,26 +55,58 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 $(document).ready(function () {
+    // Assuming insights_data is passed as a JSON string; parse it to use in JavaScript
+    var insightsData = JSON.parse('{{ insights_data|safe }}');
+
+    // Followers Growth Chart Initialization
     var followersData = {
-        labels: [/* Date labels */],
+        labels: insightsData.followers_growth_data.labels,
         datasets: [{
-            label: 'Followers',
-            data: [/* Follower count data */],
+            label: 'Followers Growth',
+            data: insightsData.followers_growth_data.data,
             fill: false,
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.1
         }]
     };
-
-    var followersConfig = {
+    new Chart(document.getElementById('followersGrowthChart'), {
         type: 'line',
         data: followersData,
-    };
+    });
 
-    new Chart(
-        document.getElementById('followersGrowthChart'),
-        followersConfig
-    );
+    // Engagement Rate Chart Initialization
+    var engagementData = {
+        labels: insightsData.engagement_rate_data.labels,
+        datasets: [{
+            label: 'Engagement Rate',
+            data: insightsData.engagement_rate_data.data,
+            fill: false,
+            borderColor: 'rgb(255, 159, 64)',
+            tension: 0.1
+        }]
+    };
+    new Chart(document.getElementById('engagementRateChart'), {
+        type: 'line',
+        data: engagementData,
+    });
+
+    // Post Reach Chart Initialization
+    var reachData = {
+        labels: insightsData.post_reach_data.labels,
+        datasets: [{
+            label: 'Post Reach',
+            data: insightsData.post_reach_data.data,
+            fill: false,
+            borderColor: 'rgb(54, 162, 235)',
+            tension: 0.1
+        }]
+    };
+    new Chart(document.getElementById('reachChart'), {
+        type: 'line',
+        data: reachData,
+    });
+
+    // Initialize more charts as needed with similar patterns
 });
 </script>
 {% endblock extra_js %}
