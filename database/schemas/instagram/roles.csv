@@ -1,0 +1,12 @@
+#,role_id,role_name,description
+1,1,admin,Account holder with full management permissions
+2,2,follower,User who follows another user to see their updates
+3,3,following,User who is followed by another user
+4,4,favorite,Preferred user or account marked unofficially as favorite
+5,5,friend,"Personal connection between users, with options for private sharing"
+6,6,sponsor,Business or individual paying to promote content on Instagram
+7,7,influencer,User with significant following and influence over their audience
+8,8,content creator,User focused on creating and sharing content with access to detailed analytics
+9,9,brand account,Profile managed by companies for brand promotion
+10,10,engagement group,Group of users engaging with each other’s content to boost metrics
+11,11,ambassador,User promoting a brand or product positively to increase awareness

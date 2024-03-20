@@ -1,0 +1,653 @@
+abtesting,testid,integer
+abtesting,testname,character varying
+abtesting,startdate,timestamp without time zone
+abtesting,enddate,timestamp without time zone
+abtesting,teststatus,character varying
+abtesting,createdat,timestamp without time zone
+abtesting,updatedat,timestamp without time zone
+abtestoutcome,outcomeid,integer
+abtestoutcome,testid,integer
+abtestoutcome,outcometype,character varying
+abtestoutcome,outcomevalue,text
+abtestoutcome,createdat,timestamp without time zone
+abtestoutcome,updatedat,timestamp without time zone
+abtestparticipant,participantid,integer
+abtestparticipant,testid,integer
+abtestparticipant,userid,integer
+abtestparticipant,groupid,integer
+abtestparticipant,createdat,timestamp without time zone
+abtestparticipant,updatedat,timestamp without time zone
+adcampaign,campaignid,integer
+adcampaign,sponsorid,integer
+adcampaign,campaignname,character varying
+adcampaign,startdate,timestamp without time zone
+adcampaign,enddate,timestamp without time zone
+adcampaign,budget,numeric
+adcampaign,targetaudience,text
+adcampaign,status,character varying
+adcampaign,createdat,timestamp without time zone
+adcampaign,updatedat,timestamp without time zone
+adcampaign,impressions,integer
+adcampaign,clickthroughrate,double precision
+adcampaign,conversionrate,double precision
+adperformance,adid,integer
+adperformance,userid,integer
+adperformance,clicks,integer
+adperformance,impressions,integer
+adperformance,conversionrate,double precision
+apiaccessmanagement,accessid,integer
+apiaccessmanagement,userid,integer
+apiaccessmanagement,apikey,character varying
+apiaccessmanagement,accesslevel,character varying
+apiaccessmanagement,createdat,timestamp without time zone
+apiaccessmanagement,updatedat,timestamp without time zone
+apiaccessmanagement,ratelimit,integer
+apiaccessmanagement,usagequota,integer
+apiaccessmanagement,usagemetrics,jsonb
+audiencesegment,segmentid,integer
+audiencesegment,segmentname,character varying
+audiencesegment,criteria,text
+audiencesegment,description,text
+audiencesegment,createdat,timestamp without time zone
+audiencesegment,updatedat,timestamp without time zone
+audiencesegment,segmentsize,integer
+audiencesegment,averageengagementrate,double precision
+automationnotification,notificationtype,character varying
+automationnotification,notificationcontent,text
+cdnusage,usageid,integer
+cdnusage,mediaid,integer
+cdnusage,cdnprovider,character varying
+cdnusage,deliverytimes,integer
+cdnusage,cachehitrate,double precision
+collection,collectionid,integer
+collection,userid,integer
+collection,name,character varying
+collection,createdat,timestamp without time zone
+collection,updatedat,timestamp without time zone
+comment,commentid,integer
+comment,mediaid,integer
+comment,userid,integer
+comment,text,text
+comment,postedtime,timestamp without time zone
+comment,isedited,boolean
+comment,likecount,integer
+comment,createdat,timestamp without time zone
+comment,updatedat,timestamp without time zone
+contentanalytics,analyticsid,integer
+contentanalytics,mediaid,integer
+contentanalytics,likecount,integer
+contentanalytics,commentcount,integer
+contentanalytics,sharecount,integer
+contentanalytics,viewcount,integer
+contentanalytics,engagementrate,double precision
+contentanalytics,createdat,timestamp without time zone
+contentanalytics,updatedat,timestamp without time zone
+contentcategorization,categorizationid,integer
+contentcategorization,mediaid,integer
+contentcategorization,category,character varying
+contentcategorization,confidencescore,double precision
+contentcategorization,createdat,timestamp without time zone
+contentcategorization,updatedat,timestamp without time zone
+contentdiscoverypreferences,preferenceid,integer
+contentdiscoverypreferences,userid,integer
+contentdiscoverypreferences,preferencetype,character varying
+contentdiscoverypreferences,preferencedetails,text
+contentmoderation,moderationid,integer
+contentmoderation,userid,integer
+contentmoderation,mediaid,integer
+contentmoderation,moderationstatus,character varying
+contentmoderation,moderatedby,integer
+contentmoderation,moderationdate,timestamp without time zone
+contentmoderation,reason,text
+contentmoderation,createdat,timestamp without time zone
+contentmoderation,updatedat,timestamp without time zone
+contentmoderation,moderationaction,character varying
+contentrecommendation,recommendationid,integer
+contentrecommendation,mediaid,integer
+contentrecommendation,recommendedmediaid,integer
+contentrecommendation,recommendationscore,double precision
+contentrecommendation,createdat,timestamp without time zone
+contentrecommendation,updatedat,timestamp without time zone
+creatorsupport,supportid,integer
+creatorsupport,userid,integer
+creatorsupport,supporttype,character varying
+creatorsupport,amount,numeric
+creatorsupport,supporterid,integer
+creatorsupport,createdat,timestamp without time zone
+creatorsupport,updatedat,timestamp without time zone
+creatorsupport,supportmechanismdetails,text
+directmessage,messageid,integer
+directmessage,threadid,integer
+directmessage,senderid,integer
+directmessage,text,text
+directmessage,senttime,timestamp without time zone
+directmessage,isseen,boolean
+directmessage,createdat,timestamp without time zone
+directmessage,updatedat,timestamp without time zone
+directthread,threadid,integer
+directthread,subject,text
+directthread,createdat,timestamp without time zone
+directthread,updatedat,timestamp without time zone
+engagementanalytics,analyticsid,integer
+engagementanalytics,userid,integer
+engagementanalytics,postid,integer
+engagementanalytics,posttype,character varying
+engagementanalytics,engagementrate,double precision
+engagementanalytics,commentcount,integer
+engagementanalytics,likecount,integer
+engagementanalytics,sharecount,integer
+engagementanalytics,viewcount,integer
+engagementanalytics,createdat,timestamp without time zone
+engagementanalytics,updatedat,timestamp without time zone
+engagementanalytics,contentperformancescore,double precision
+event,eventid,integer
+event,eventname,character varying
+event,eventtype,character varying
+event,startdate,timestamp without time zone
+event,enddate,timestamp without time zone
+event,locationid,integer
+event,organizerid,integer
+event,description,text
+event,ispublic,boolean
+event,createdat,timestamp without time zone
+event,updatedat,timestamp without time zone
+event,engagementmetrics,jsonb
+event,participantcount,integer
+event,interactioncount,integer
+event,conversionrate,double precision
+event,detailedengagementanalytics,jsonb
+eventattendee,attendeeid,integer
+eventattendee,eventid,integer
+eventattendee,userid,integer
+eventattendee,isattending,boolean
+eventattendee,createdat,timestamp without time zone
+eventattendee,updatedat,timestamp without time zone
+eventsession,sessionid,integer
+eventsession,eventid,integer
+eventsession,sessionname,character varying
+eventsession,starttime,timestamp without time zone
+eventsession,endtime,timestamp without time zone
+eventsession,description,text
+eventsession,ispublic,boolean
+eventsession,createdat,timestamp without time zone
+eventsession,updatedat,timestamp without time zone
+feedback,feedbackid,integer
+feedback,userid,integer
+feedback,feedbacktype,character varying
+feedback,description,text
+feedback,resolutionstatus,character varying
+feedback,createdat,timestamp without time zone
+feedback,updatedat,timestamp without time zone
+followersegments,segmentid,integer
+followersegments,userid,integer
+followersegments,segmentname,character varying
+followersegments,criteria,text
+followersegments,segmentsize,integer
+growthmilestones,milestoneid,integer
+growthmilestones,userid,integer
+growthmilestones,milestonetype,character varying
+growthmilestones,achieveddate,date
+hashtag,hashtagid,integer
+hashtag,name,character varying
+hashtag,mediacount,integer
+hashtag,trendingscore,double precision
+hashtag,relevancescore,double precision
+hashtag,status,character varying
+hashtag,profileid,integer
+hashtag,performancescore,double precision
+hashtag,userengagementrate,double precision
+hashtag,algorithmpreferencescore,double precision
+hashtag,lastuseddate,timestamp without time zone
+hashtag,createdat,timestamp without time zone
+hashtag,updatedat,timestamp without time zone
+hashtag,isactive,boolean
+hashtag,lasttrendingtime,timestamp without time zone
+hashtag,performancemetrics,jsonb
+hashtagrecommendations,recommendationid,integer
+hashtagrecommendations,userid,integer
+hashtagrecommendations,mediaid,integer
+hashtagrecommendations,recommendedhashtags,ARRAY
+hashtagrecommendations,relevancescore,double precision
+highlight,highlightid,integer
+highlight,userid,integer
+highlight,name,character varying
+highlight,covermediaid,integer
+highlight,createdat,timestamp without time zone
+highlight,updatedat,timestamp without time zone
+influencercampaign,campaignid,integer
+influencercampaign,sponsorid,integer
+influencercampaign,campaignname,character varying
+influencercampaign,description,text
+influencercampaign,startdate,timestamp without time zone
+influencercampaign,enddate,timestamp without time zone
+influencercampaign,budget,numeric
+influencercampaign,targetaudience,text
+influencercampaign,status,character varying
+influencercampaign,createdat,timestamp without time zone
+influencercampaign,updatedat,timestamp without time zone
+influencercampaign,targetachievementrate,double precision
+influencercampaign,influencescore,double precision
+influencercampaign,audiencegrowthrate,double precision
+influencercampaign,collaborationdetails,text
+insight,insightid,integer
+insight,mediaid,integer
+insight,viewtype,character varying
+insight,viewcount,integer
+insight,newfollowerscount,integer
+insight,conversionrate,double precision
+insight,subscriptionconversionrate,double precision
+insight,createdat,timestamp without time zone
+insight,updatedat,timestamp without time zone
+internationalization,translationid,integer
+internationalization,languagecode,character varying
+internationalization,translationkey,character varying
+internationalization,translationvalue,text
+internationalization,createdat,timestamp without time zone
+internationalization,updatedat,timestamp without time zone
+internationalization,context,character varying
+location,locationid,integer
+location,name,character varying
+location,address,text
+location,latitude,double precision
+location,longitude,double precision
+location,createdat,timestamp without time zone
+location,updatedat,timestamp without time zone
+location,popularityscore,double precision
+location,category,character varying
+media,mediaid,integer
+media,userid,integer
+media,locationid,integer
+media,mediatype,character varying
+media,caption,text
+media,postedtime,timestamp without time zone
+media,likecount,integer
+media,commentcount,integer
+media,viewcount,integer
+media,isarchived,boolean
+media,isvisible,boolean
+media,status,character varying
+media,ismonetized,boolean
+media,earnings,numeric
+media,sponsorid,integer
+media,viewtype,character varying
+media,posttype,character varying
+media,createdat,timestamp without time zone
+media,updatedat,timestamp without time zone
+media,metadata,jsonb
+media,contentcategory,character varying
+media,contenttags,ARRAY
+media,cpm,numeric
+media,cpc,numeric
+media,contentperformanceindex,double precision
+media,avgwatchtime,double precision
+media,dropoffrate,double precision
+media,category,character varying
+media,interactivetype,character varying
+mediainteraction,interactionid,integer
+mediainteraction,mediaid,integer
+mediainteraction,userid,integer
+mediainteraction,interactiontype,character varying
+mediainteraction,interactiondate,timestamp without time zone
+mediainteraction,createdat,timestamp without time zone
+mediainteraction,updatedat,timestamp without time zone
+mediainteraction,interactiontimestamp,timestamp without time zone
+mediaoembed,oembedid,integer
+mediaoembed,mediaid,integer
+mediaoembed,shorturl,character varying
+mediaoembed,providerurl,character varying
+mediaoembed,html,text
+mediaoembed,width,integer
+mediaoembed,height,integer
+mediaoembed,createdat,timestamp without time zone
+mediaoembed,updatedat,timestamp without time zone
+mlmodel,modelid,integer
+mlmodel,modelname,character varying
+mlmodel,description,text
+mlmodel,trainedon,timestamp without time zone
+mlmodel,accuracy,double precision
+mlmodel,status,character varying
+mlmodel,createdat,timestamp without time zone
+mlmodel,updatedat,timestamp without time zone
+mlmodel,modelversion,character varying
+mlmodel,trainingdatasummary,text
+mlmodel,performanceimprovement,double precision
+mlmodelinsights,insightid,integer
+mlmodelinsights,modelid,integer
+mlmodelinsights,insighttype,character varying
+mlmodelinsights,insightvalue,text
+mlmodelinsights,createdat,timestamp without time zone
+mlmodelinsights,updatedat,timestamp without time zone
+modelfeedback,feedbackid,integer
+modelfeedback,modelid,integer
+modelfeedback,userid,integer
+modelfeedback,accuracyrating,double precision
+modelfeedback,improvementsuggestions,text
+monetizationstrategies,strategyid,integer
+monetizationstrategies,userid,integer
+monetizationstrategies,strategytype,character varying
+monetizationstrategies,details,text
+multimediaprocessingqueue,queueid,integer
+multimediaprocessingqueue,mediaid,integer
+multimediaprocessingqueue,status,character varying
+multimediaprocessingqueue,processingstarted,timestamp without time zone
+multimediaprocessingqueue,processingcompleted,timestamp without time zone
+multimediaprocessingqueue,createdat,timestamp without time zone
+multimediaprocessingqueue,updatedat,timestamp without time zone
+notificationsetting,settingid,integer
+notificationsetting,userid,integer
+notificationsetting,notificationtype,character varying
+notificationsetting,isenabled,boolean
+notificationsetting,createdat,timestamp without time zone
+notificationsetting,updatedat,timestamp without time zone
+notificationsubscription,subscriptionid,integer
+notificationsubscription,userid,integer
+notificationsubscription,subscriptiontype,character varying
+notificationsubscription,createdat,timestamp without time zone
+notificationsubscription,updatedat,timestamp without time zone
+paymentgateway,gatewayid,integer
+paymentgateway,gatewayname,character varying
+paymentgateway,apikey,character varying
+paymentgateway,apisecret,character varying
+paymentgateway,isactive,boolean
+paymentgateway,createdat,timestamp without time zone
+paymentgateway,updatedat,timestamp without time zone
+paymentgatewayconfig,configid,integer
+paymentgatewayconfig,gatewayid,integer
+paymentgatewayconfig,configname,character varying
+paymentgatewayconfig,configvalue,text
+paymentgatewayconfig,createdat,timestamp without time zone
+paymentgatewayconfig,updatedat,timestamp without time zone
+paymentinvoice,invoiceid,integer
+paymentinvoice,userid,integer
+paymentinvoice,transactionid,integer
+paymentinvoice,description,text
+paymentinvoice,amount,numeric
+paymentinvoice,duedate,timestamp without time zone
+paymentinvoice,status,character varying
+paymentinvoice,createdat,timestamp without time zone
+paymentinvoice,updatedat,timestamp without time zone
+paymentmethod,methodid,integer
+paymentmethod,userid,integer
+paymentmethod,cardtype,character varying
+paymentmethod,cardnumber,character varying
+paymentmethod,expirationdate,date
+paymentmethod,createdat,timestamp without time zone
+paymentmethod,updatedat,timestamp without time zone
+paymentmethod,paymentmethoddetails,jsonb
+paymentrefund,refundid,integer
+paymentrefund,userid,integer
+paymentrefund,transactionid,integer
+paymentrefund,refundamount,numeric
+paymentrefund,refundreason,text
+paymentrefund,refunddate,timestamp without time zone
+paymentrefund,status,character varying
+paymentrefund,createdat,timestamp without time zone
+paymentrefund,updatedat,timestamp without time zone
+paymentsubscription,subscriptionid,integer
+paymentsubscription,userid,integer
+paymentsubscription,methodid,integer
+paymentsubscription,planid,integer
+paymentsubscription,startdate,timestamp without time zone
+paymentsubscription,enddate,timestamp without time zone
+paymentsubscription,status,character varying
+paymentsubscription,createdat,timestamp without time zone
+paymentsubscription,updatedat,timestamp without time zone
+paymenttransaction,transactionid,integer
+paymenttransaction,userid,integer
+paymenttransaction,methodid,integer
+paymenttransaction,transactiondate,timestamp without time zone
+paymenttransaction,amount,numeric
+paymenttransaction,description,text
+paymenttransaction,status,character varying
+paymenttransaction,createdat,timestamp without time zone
+paymenttransaction,updatedat,timestamp without time zone
+pollvote,voteid,integer
+pollvote,pollid,integer
+pollvote,userid,integer
+pollvote,votedoption,character varying
+pollvote,votedtime,timestamp without time zone
+pollvote,createdat,timestamp without time zone
+pollvote,updatedat,timestamp without time zone
+predictivecontentperformance,predictionid,integer
+predictivecontentperformance,userid,integer
+predictivecontentperformance,mediatype,character varying
+predictivecontentperformance,predictedengagementrate,double precision
+realtimeengagement,engagementid,integer
+realtimeengagement,mediaid,integer
+realtimeengagement,likes,integer
+realtimeengagement,comments,integer
+realtimeengagement,shares,integer
+realtimeengagement,timestamp,timestamp without time zone
+resource,resourceid,integer
+resource,mediaid,integer
+resource,resourceurl,character varying
+resource,resourcetype,character varying
+resource,sequencenumber,integer
+resource,createdat,timestamp without time zone
+resource,updatedat,timestamp without time zone
+sessionactivity,activityid,integer
+sessionactivity,sessionid,integer
+sessionactivity,activitytype,character varying
+sessionactivity,activitytime,timestamp without time zone
+sessionactivity,details,text
+sessionactivity,createdat,timestamp without time zone
+sessionactivity,updatedat,timestamp without time zone
+sessionpoll,pollid,integer
+sessionpoll,sessionid,integer
+sessionpoll,questiontext,text
+sessionpoll,options,jsonb
+sessionpoll,postedtime,timestamp without time zone
+sessionpoll,isclosed,boolean
+sessionpoll,closedtime,timestamp without time zone
+sessionpoll,createdat,timestamp without time zone
+sessionpoll,updatedat,timestamp without time zone
+sessionquestion,questionid,integer
+sessionquestion,sessionid,integer
+sessionquestion,userid,integer
+sessionquestion,questiontext,text
+sessionquestion,postedtime,timestamp without time zone
+sessionquestion,isanswered,boolean
+sessionquestion,answertext,text
+sessionquestion,answertime,timestamp without time zone
+sessionquestion,createdat,timestamp without time zone
+sessionquestion,updatedat,timestamp without time zone
+sponsoredcontent,sponsoredid,integer
+sponsoredcontent,mediaid,integer
+sponsoredcontent,campaignid,integer
+sponsoredcontent,createdat,timestamp without time zone
+sponsoredcontent,updatedat,timestamp without time zone
+sponsoredcontent,impressionscount,integer
+sponsoredcontent,clickscount,integer
+sponsoredcontent,conversionrate,double precision
+sponsorshipopportunities,opportunityid,integer
+sponsorshipopportunities,userid,integer
+sponsorshipopportunities,sponsorid,integer
+sponsorshipopportunities,matchscore,double precision
+story,storyid,integer
+story,userid,integer
+story,postedtime,timestamp without time zone
+story,expiresat,timestamp without time zone
+story,viewcount,integer
+story,replycount,integer
+story,sharecount,integer
+story,allowreplies,boolean
+story,allowsharing,boolean
+story,isarchived,boolean
+story,locationid,integer
+story,createdat,timestamp without time zone
+story,updatedat,timestamp without time zone
+subscription,subscriptionid,integer
+subscription,userid,integer
+subscription,planid,integer
+subscription,startdate,timestamp without time zone
+subscription,enddate,timestamp without time zone
+subscription,status,character varying
+subscription,createdat,timestamp without time zone
+subscription,updatedat,timestamp without time zone
+subscriptionplan,planid,integer
+subscriptionplan,planname,character varying
+subscriptionplan,price,numeric
+subscriptionplan,features,text
+subscriptionplan,createdat,timestamp without time zone
+subscriptionplan,updatedat,timestamp without time zone
+subscriptionplan,subscriptionbenefits,jsonb
+subscriptionplan,dynamicfeatures,jsonb
+taggedcontent,tagid,integer
+taggedcontent,mediaid,integer
+taggedcontent,taggerid,integer
+taggedcontent,taggeduserid,integer
+taggedcontent,taggedtime,timestamp without time zone
+taggedcontent,createdat,timestamp without time zone
+taggedcontent,updatedat,timestamp without time zone
+track,trackid,integer
+track,name,character varying
+track,artist,character varying
+track,licenseinfo,text
+track,createdat,timestamp without time zone
+track,updatedat,timestamp without time zone
+transaction,transactionid,integer
+transaction,userid,integer
+transaction,planid,integer
+transaction,transactiondate,timestamp without time zone
+transaction,amount,numeric
+transaction,status,character varying
+transaction,createdat,timestamp without time zone
+transaction,updatedat,timestamp without time zone
+trendforecasts,forecastid,integer
+trendforecasts,trendname,character varying
+trendforecasts,forecastdaterange,daterange
+trendforecasts,confidencelevel,double precision
+uicomponentdesign,componentid,integer
+uicomponentdesign,componenttype,character varying
+uicomponentdesign,componentdescription,text
+user,userid,bigint
+user,username,character varying
+user,fullname,character varying
+user,isprivate,boolean
+user,isverified,boolean
+user,profilepicurl,character varying
+user,email,character varying
+user,phonenumber,character varying
+user,bio,text
+user,website,character varying
+user,followingcount,integer
+user,followercount,integer
+user,postscount,integer
+user,totallikesreceived,integer
+user,totalcommentsreceived,integer
+user,engagementrate,double precision
+user,lastactivetime,timestamp without time zone
+user,cansenddirectmessages,boolean
+user,cantag,boolean
+user,cancomment,boolean
+user,canviewstory,boolean
+user,createdat,timestamp without time zone
+user,updatedat,timestamp without time zone
+user,interests,ARRAY
+user,activitypatterns,jsonb
+user,detailedinterests,jsonb
+user,mostengagedtimeofday,time without time zone
+user,mostengageddayofweek,character varying
+user,userinterests,jsonb
+user,churnriskscore,double precision
+user,engagement_ratio,double precision
+user,recent_activity,timestamp without time zone
+user,follower_growth,double precision
+useractivitylog,activityid,integer
+useractivitylog,userid,integer
+useractivitylog,activitytype,character varying
+useractivitylog,activitydate,timestamp without time zone
+useractivitylog,details,text
+useractivitylog,createdat,timestamp without time zone
+useractivitylog,updatedat,timestamp without time zone
+useranalytics,analyticsid,integer
+useranalytics,userid,integer
+useranalytics,totallikesreceived,integer
+useranalytics,totalcommentsreceived,integer
+useranalytics,totalengagements,integer
+useranalytics,engagementrate,double precision
+useranalytics,followercount,integer
+useranalytics,followingcount,integer
+useranalytics,postcount,integer
+useranalytics,createdat,timestamp without time zone
+useranalytics,updatedat,timestamp without time zone
+userdashboards,dashboardid,integer
+userdashboards,userid,integer
+userdashboards,widgetid,integer
+userdashboards,layoutpreferences,jsonb
+userengagementinsights,userid,integer
+userengagementinsights,bestposttype,character varying
+userengagementinsights,peakengagementtime,time without time zone
+userengagementinsights,followergrowthrate,double precision
+usernotification,notificationid,integer
+usernotification,userid,integer
+usernotification,notificationtype,character varying
+usernotification,notificationtext,text
+usernotification,isread,boolean
+usernotification,createdat,timestamp without time zone
+usernotification,updatedat,timestamp without time zone
+usernotification,notificationpriority,integer
+userpreferences,preferenceid,integer
+userpreferences,userid,integer
+userpreferences,preferencetype,character varying
+userpreferences,preferencevalue,text
+userpreferences,createdat,timestamp without time zone
+userpreferences,updatedat,timestamp without time zone
+userpreferences,contentformatpreference,character varying
+userprivacysettings,settingid,integer
+userprivacysettings,userid,integer
+userprivacysettings,privateprofile,boolean
+userprivacysettings,privateposts,boolean
+userprivacysettings,privatelikes,boolean
+userprivacysettings,privatecomments,boolean
+userprivacysettings,privatefollowers,boolean
+userprivacysettings,privatefollowing,boolean
+userprivacysettings,createdat,timestamp without time zone
+userprivacysettings,updatedat,timestamp without time zone
+userreport,reportid,integer
+userreport,reporterid,integer
+userreport,reporteduserid,integer
+userreport,reportreason,text
+userreport,reportedtime,timestamp without time zone
+userreport,status,character varying
+userreport,resolvedby,integer
+userreport,resolvedtime,timestamp without time zone
+userreport,resolutionnotes,text
+userreport,createdat,timestamp without time zone
+userreport,updatedat,timestamp without time zone
+usersession,sessionid,integer
+usersession,userid,integer
+usersession,deviceid,character varying
+usersession,ipaddress,character varying
+usersession,logintime,timestamp without time zone
+usersession,logouttime,timestamp without time zone
+usersession,isloggedin,boolean
+usersession,createdat,timestamp without time zone
+usersession,updatedat,timestamp without time zone
+usersession,sessionduration,interval
+usersession,frequencyofvisits,integer
+usershort,usershortid,integer
+usershort,userid,integer
+usershort,createdat,timestamp without time zone
+usershort,updatedat,timestamp without time zone
+usertag,usertagid,integer
+usertag,mediaid,integer
+usertag,usershortid,integer
+usertag,xcoordinate,integer
+usertag,ycoordinate,integer
+usertag,createdat,timestamp without time zone
+usertag,updatedat,timestamp without time zone
+userverifiedstatushistory,historyid,integer
+userverifiedstatushistory,userid,integer
+userverifiedstatushistory,verifiedstatus,boolean
+userverifiedstatushistory,changedate,timestamp without time zone
+userverifiedstatushistory,createdat,timestamp without time zone
+userverifiedstatushistory,updatedat,timestamp without time zone
+virtualevent,virtualeventid,integer
+virtualevent,eventid,integer
+virtualevent,platform,character varying
+virtualevent,accesslink,character varying
+virtualevent,accesscode,character varying
+virtualevent,createdat,timestamp without time zone
+virtualevent,updatedat,timestamp without time zone
+virtualevent,interactivefeatures,jsonb

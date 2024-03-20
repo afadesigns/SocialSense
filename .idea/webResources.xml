@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebResourcesPaths">
+    <contentEntries>
+      <entry url="file://$PROJECT_DIR$">
+        <entryData>
+          <resourceRoots>
+            <path value="file://$PROJECT_DIR$/api" />
+            <path value="file://$PROJECT_DIR$/dashboard" />
+            <path value="file://$PROJECT_DIR$/database" />
+            <path value="file://$PROJECT_DIR$/deployment" />
+            <path value="file://$PROJECT_DIR$/docs" />
+            <path value="file://$PROJECT_DIR$/infrastructure" />
+            <path value="file://$PROJECT_DIR$/security" />
+            <path value="file://$PROJECT_DIR$/services" />
+            <path value="file://$PROJECT_DIR$/src" />
+            <path value="file://$PROJECT_DIR$/ml" />
+            <path value="file://$PROJECT_DIR$/services/instagram" />
+            <path value="file://$PROJECT_DIR$/services/facebook" />
+            <path value="file://$PROJECT_DIR$/services/discord" />
+            <path value="file://$PROJECT_DIR$/services/linkedin" />
+            <path value="file://$PROJECT_DIR$/services/reddit" />
+            <path value="file://$PROJECT_DIR$/services/rumble" />
+            <path value="file://$PROJECT_DIR$/services/snapchat" />
+            <path value="file://$PROJECT_DIR$/services/telegram" />
+            <path value="file://$PROJECT_DIR$/services/threads" />
+            <path value="file://$PROJECT_DIR$/services/tiktok" />
+            <path value="file://$PROJECT_DIR$/services/tinder" />
+            <path value="file://$PROJECT_DIR$/services/twitter" />
+            <path value="file://$PROJECT_DIR$/services/vk" />
+            <path value="file://$PROJECT_DIR$/services/whatsapp" />
+            <path value="file://$PROJECT_DIR$/services/youtube" />
+          </resourceRoots>
+        </entryData>
+      </entry>
+    </contentEntries>
+  </component>
+</project>
