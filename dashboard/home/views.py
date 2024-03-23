@@ -1,3 +1,5 @@
+# dashboard/home/views.py
+
 import json
 import os
 import sys
@@ -5,23 +7,26 @@ import sys
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-# Get the parent directory of the directory containing views.py
+# Calculate the directory path that's two levels up from this file
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-
 # Add the parent directory to the Python path
 sys.path.append(parent_dir)
 
 # Import the InstagramService class
 from services.instagram.instagram_service import InstagramService
+from .models import UserProfile  # Adjust based on your actual file structure
 
 
 @login_required
 def index(request):
     user = request.user
 
+    # Ensure the user has an associated profile
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
     # Initialize InstagramService with the user's Instagram credentials
     instagram_service = InstagramService(
-        user.instagram_username, user.instagram_password
+        profile.instagram_username, profile.instagram_password
     )
     context = {"instagram_error": "Could not fetch Instagram data."}
 

@@ -1,22 +1,24 @@
+# dashboard/home/admin.py
+
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
-from .models import AnalyticsData, LogEntries, PublicReportingData, ReportingData
-
-
-class LogEntriesAdmin(admin.ModelAdmin):
-    list_display = ("id", "timestamp", "log_level")
-    list_filter = ("log_level",)
-    search_fields = ("message",)
-    date_hierarchy = "timestamp"
+from .models import UserProfile
 
 
-class ReportingDataAdmin(admin.ModelAdmin):
-    list_display = ("report_id", "created_at")
-    search_fields = ("report_id", "created_at")
+# Define an inline admin descriptor for UserProfile model
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = "UserProfile"
 
 
-# Register model admin classes here
-admin.site.register(AnalyticsData)
-admin.site.register(LogEntries, LogEntriesAdmin)
-admin.site.register(PublicReportingData)
-admin.site.register(ReportingData, ReportingDataAdmin)
+# Define a new User admin
+class UserAdmin(BaseUserAdmin):
+    inlines = (UserProfileInline,)
+
+
+# Re-register UserAdmin
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
