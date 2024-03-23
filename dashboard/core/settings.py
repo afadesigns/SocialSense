@@ -15,24 +15,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
-if not SECRET_KEY:
-    SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for _ in range(32))
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "".join(random.choices(string.ascii_letters + string.digits, k=32))
+)
 
 # Render Deployment Code
-DEBUG = "RENDER" not in os.environ
+DEBUG = not os.getenv("RENDER")
 
 # HOSTs List
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
-# Add here your deployment HOSTS
-CSRF_TRUSTED_ORIGINS = [
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
     "http://localhost:8000",
     "http://localhost:5085",
     "http://127.0.0.1:8000",
     "http://127.0.0.1:5085",
 ]
 
+# Add here your deployment HOSTS
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -72,7 +72,7 @@ HOME_TEMPLATES = os.path.join(BASE_DIR, "home", "templates")
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "home", "templates")],
+        "DIRS": [HOME_TEMPLATES],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -93,11 +93,11 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "Sierra16",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME", "postgres"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "Sierra16"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -136,7 +136,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -144,6 +144,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "/"
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Configure Instagram API Client settings here

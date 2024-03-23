@@ -1,13 +1,18 @@
 import json
+import os
+import sys
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-# Update import path according to the new location of InstagramService in services.py
+# Get the parent directory of the directory containing views.py
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+# Add the parent directory to the Python path
+sys.path.append(parent_dir)
+
+# Import the InstagramService class
 from services.instagram.instagram_service import InstagramService
-
-
-# Adjusted import statement
 
 
 @login_required
