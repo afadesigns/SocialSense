@@ -8,13 +8,13 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
 
-# Now Python should be able to resolve imports from the SocialSense root directory
-
+# Correcting the import path for InstagramService based on the updated PYTHONPATH
+from services.instagram.instagram_service import InstagramService
 
 import json
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.urls import path
 
 
 @login_required
@@ -33,7 +33,9 @@ def index(request):
         recent_media = instagram_service.fetch_recent_media()
 
         # Fetch insights data
-        insights_data = instagram_service.fetch_insights()  # Comprehensive insights
+        insights_data = (
+            instagram_service.fetch_insights()
+        )  # Assuming comprehensive insights fetching is implemented
 
         # Data Processing for Visualization
         if "engagement_data" in insights_data:
@@ -74,3 +76,10 @@ def fetch_bio_link(request, bio_link_id):
     # Placeholder implementation
     # Replace this with actual functionality
     pass
+
+
+# URL patterns definition
+urlpatterns = [
+    path("", index, name="home-index"),
+    # Add other URL patterns here as needed
+]
