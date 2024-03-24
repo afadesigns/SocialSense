@@ -17,11 +17,7 @@ class UserProfile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
-    # Ensure a profile is created if it doesn't exist
-    if created:
-        UserProfile.objects.create(user=instance)
-    # Retrieve the profile instance for existing users and save it
-    instance.profile.save()
+    UserProfile.objects.get_or_create(user=instance)
 
 
 class AnalyticsData(models.Model):
