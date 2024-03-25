@@ -1,4 +1,5 @@
-# Import necessary modules
+# C:\Users\Andreas\Projects\Development\SocialSense\dashboard\core\settings.py
+
 import os
 import random
 import string
@@ -8,21 +9,14 @@ from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
     "SECRET_KEY", "".join(random.choices(string.ascii_letters + string.digits, k=32))
 )
 
-# Render Deployment Code
 DEBUG = not os.getenv("RENDER")
 
-# HOSTs List
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
@@ -32,16 +26,12 @@ ALLOWED_HOSTS = [
     "http://127.0.0.1:5085",
 ]
 
-# Add here your deployment HOSTS
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Add Instagram API domain to trusted hosts
 API_DOMAIN = "i.instagram.com"
 ALLOWED_HOSTS.append(API_DOMAIN)
-
-# Application definition
 
 INSTALLED_APPS = [
     "admin_black_pro.apps.AdminBlackProConfig",
@@ -51,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "home",  # This is correct if 'home' is your Django app
+    "home",
 ]
 
 MIDDLEWARE = [
@@ -87,9 +77,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -100,9 +87,6 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -119,9 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -130,16 +111,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -147,7 +122,10 @@ LOGIN_REDIRECT_URL = "/"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-# Configure Instagram API Client settings here
+# Load Instagram credentials from environment variables
+INSTAGRAM_USERNAME = os.getenv("INSTAGRAM_USERNAME")
+INSTAGRAM_PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
+
 INSTAGRAM_API_SETTINGS = {
     "API_DOMAIN": API_DOMAIN,
     "USER_AGENT_BASE": (

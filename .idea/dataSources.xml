@@ -21,6 +21,7 @@
     <data-source source="LOCAL" name="Redis" single-connection="true" uuid="afdf10fe-0ad5-44e8-9448-8e18fc423131">
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
       <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
       <jdbc-url>jdbc:redis://localhost:6379/0</jdbc-url>
       <jdbc-additional-properties>
