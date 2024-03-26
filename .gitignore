@@ -1,9 +1,27 @@
+# Ignore compiled Python files
 *.pyc
+
+# Ignore macOS Finder metadata files
 *.DS_Store
+
+# Ignore Python egg files
 *.egg*
+
+# Ignore SQLite database files
 *.sqlite*
+
+# Ignore environment variable files
 .env
+!.env  # Allow root environment file
+
+# Ignore Yarn lock files
 yarn.lock
+
+# Include specific directories
 !/database/
 !/.dvc/
+!/.idea/
+
+# Include environment variable files in specific directories
 dashboard/.env
+services/instagram/.env

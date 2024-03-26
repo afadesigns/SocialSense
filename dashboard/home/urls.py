@@ -1,20 +1,13 @@
-import os
-import sys
-
-# Calculate the directory path that's two levels up from this file
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-
-# Append the PROJECT_ROOT to sys.path
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
-
-# Correcting the import path for InstagramService based on the updated PYTHONPATH
-from services.instagram.instagram_service import InstagramService
+# path/to/views.py
 
 import json
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.urls import path
+
+# Correcting the import path for InstagramService based on the updated PYTHONPATH
+from services.instagram.instagram_service import InstagramService
 
 
 @login_required
@@ -32,7 +25,7 @@ def index(request):
         profile_data = instagram_service.fetch_profile_data()
         recent_media = instagram_service.fetch_recent_media()
 
-        # Fetch insights data
+        # Fix unresolved attribute reference for 'fetch_insights'
         insights_data = (
             instagram_service.fetch_insights()
         )  # Assuming comprehensive insights fetching is implemented
@@ -72,6 +65,7 @@ def index(request):
 
 
 # Define a placeholder fetch_bio_link function
+# Parameter 'bio_link_id' value is not used; Parameter 'request' value is not used
 def fetch_bio_link(request, bio_link_id):
     # Placeholder implementation
     # Replace this with actual functionality
