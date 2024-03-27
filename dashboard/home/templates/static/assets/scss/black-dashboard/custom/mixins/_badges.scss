@@ -1,15 +1,28 @@
+// Define a function to calculate the contrasting color
+@function contrast-color($color) {
+  $yiq: (($color.red * 299) + ($color.green * 587) + ($color.blue * 114)) / 1000;
+  @return if($yiq >= 128, #000, #fff);
+}
+
+// Use the function to set the color and background-color
 @mixin badge-variant($bg) {
-  color: color-yiq($bg);
+  $bg-color: contrast-color($bg);
+  color: $bg-color;
   background-color: $bg;
 
   &[href] {
     @include hover-focus {
-      color: color-yiq($bg);
+      color: $bg-color;
       text-decoration: none;
       background-color: darken($bg, 3%);
     }
   }
+
+  // Limit the scope of the next rule to the current element only
   .tagsinput-remove-link {
-    color: $white;
+    &:is(&),
+    &:where(&) {
+      color: #fff;
+    }
   }
 }
