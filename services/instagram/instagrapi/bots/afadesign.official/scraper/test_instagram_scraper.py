@@ -5,6 +5,7 @@ import logging
 import aiohttp
 import aioredis
 import pytest
+from unittest.mock import patch
 
 from instagrapi import Client
 
@@ -19,59 +20,76 @@ async def redis():
 
 
 class UserCacheManager:
-    pass
+    async def cache_user_data(self, user_id, user_data):
+        pass
+
+    async def get_cached_user_data(self, user_id):
+        pass
 
 
 @pytest.fixture
 async def user_cache_manager(redis):
-    logging.getLogger("UserCacheManager")
     yield UserCacheManager()
 
 
 class FollowerCacheManager:
-    pass
+    async def cache_followers(self, user_id, followers):
+        pass
+
+    async def get_cached_followers(self, user_id):
+        pass
 
 
 @pytest.fixture
 async def follower_cache_manager(redis):
-    logging.getLogger("FollowerCacheManager")
     yield FollowerCacheManager()
 
 
 class ConfigManager:
-    pass
+    def __init__(self):
+        self.config = {"base_url": "https://www.instagram.com"}
 
 
 class InstagramAPI:
-    pass
+    def __init__(self):
+        self.cl = Client()
+        self.cl.session = aiohttp.ClientSession()
+
+    async def login_user(self, cl):
+        pass
+
+    async def refresh_session_if_needed(self, cl):
+        pass
 
 
 @pytest.fixture
 async def instagram_api(user_cache_manager, follower_cache_manager):
-    logging.getLogger("InstagramAPI")
-    cl = Client()
-    cl.session = aiohttp.ClientSession()
-    ConfigManager()
     yield InstagramAPI()
 
 
 class CacheInvalidationManager:
-    pass
+    async def start_cache_invalidation_listener(self, redis):
+        pass
 
 
 @pytest.fixture
 async def cache_invalidation_manager(redis):
-    logging.getLogger("CacheInvalidationManager")
     yield CacheInvalidationManager()
 
 
 class HTTPClient:
-    pass
+    async def fetch_data(self, url):
+        pass
+
+    @patch("aiohttp.ClientSession.request")
+    def handle_response(self, mock_request, *args, **kwargs):
+        mock_request.return_value.__aenter__.return_value.json.return_value = {
+            "key": "value"
+        }
 
 
 @pytest.fixture
 async def http_client():
-    logging.getLogger("HTTPClient")
     yield HTTPClient()
 
 
@@ -80,16 +98,14 @@ async def http_client():
 
 @pytest.mark.asyncio
 async def test_login_user(instagram_api):
-    cl = Client()
-    await instagram_api.login_user(cl)
+    await instagram_api.login_user(instagram_api.cl)
     # Add assertions to check if login was successful
 
 
 @pytest.mark.asyncio
 async def test_refresh_session_if_needed(instagram_api):
-    cl = Client()
-    await instagram_api.login_user(cl)
-    await instagram_api.refresh_session_if_needed(cl)
+    await instagram_api.login_user(instagram_api.cl)
+    await instagram_api.refresh_session_if_needed(instagram_api.cl)
     # Add assertions to check if session was refreshed if needed
 
 
@@ -125,11 +141,11 @@ async def test_start_cache_invalidation_listener(
     cache_invalidation_manager, redis, caplog
 ):
     caplog.set_level(logging.INFO)
-    await asyncio.create_task(
-        cache_invalidation_manager.start_cache_invalidation_listener()
-    )
+    await cache_invalidation_manager.start_cache_invalidation_listener(redis)
     await asyncio.sleep(0.1)  # Wait for listener to start
-    await redis.publish("cache_invalidation_channel", "test_cache:invalidation_key")
+    await redis.publish(
+        "cache_invalidation_channel", "test_cache:invalidation_key"
+    )
     await asyncio.sleep(0.1)  # Wait for message to be processed
     assert "Received cache invalidation message" in caplog.text
     assert "Invalidating cache entry" in caplog.text
@@ -139,9 +155,8 @@ async def test_start_cache_invalidation_listener(
 
 
 @pytest.mark.asyncio
-async def test_fetch_data(http_client, mocker):
+async def test_fetch_data(http_client):
     url = "http://test.com/api/data"
-    mocker.patch.object(http_client, "handle_response", return_value={"key": "value"})
     response = await http_client.fetch_data(url)
     assert response == {"key": "value"}
 
