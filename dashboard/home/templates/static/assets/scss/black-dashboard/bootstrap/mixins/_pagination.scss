@@ -1,23 +1,47 @@
 // Pagination
 
-@mixin pagination-size($padding-y, $padding-x, $font-size, $line-height, $border-radius) {
+@mixin pagination-size($properties) {
+  $padding-y: map-get($properties, padding-y);
+  $padding-x: map-get($properties, padding-x);
+  $font-size: map-get($properties, font-size);
+  $line-height: map-get($properties, line-height);
+  $border-radius: map-get($properties, border-radius);
+
   .page-link {
     padding: $padding-y $padding-x;
-    @include font-size($font-size);
+    font-size: $font-size;
     line-height: $line-height;
+    display: inline-block;
+    min-width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+    border: 1px solid #dee2e6;
+    border-radius: $border-radius;
+    margin: 0 2px;
+    text-decoration: none;
+    color: #007bff;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:hover {
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+    }
   }
 
   .page-item {
     &:first-child {
       .page-link {
-        @include border-left-radius($border-radius);
+        @include border-top-left-radius($border-radius);
+        @include border-bottom-left-radius($border-radius);
       }
     }
 
     &:last-child {
       .page-link {
-        @include border-right-radius($border-radius);
+        @include border-top-right-radius($border-radius);
+        @include border-bottom-right-radius($border-radius);
       }
     }
   }
-}
