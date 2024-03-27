@@ -1,17 +1,15 @@
-from datetime import timedelta, tzinfo
+pip install pytz
 
 
-class CET(tzinfo):
-    def utcoffset(self, dt):
-        return timedelta(hours=1)
+from datetime import datetime, timezone
+import pytz
 
-    def dst(self, dt):
-        return timedelta(hours=2)
+cet = pytz.timezone('CET')
+utc = pytz.timezone('UTC')
 
+# Example usage:
+dt_utc = datetime.now(timezone.utc)
+dt_cet = dt_utc.astimezone(cet)
 
-class UTC(tzinfo):
-    def utcoffset(self, dt):
-        return timedelta(0)
-
-    def dst(self, dt):
-        return timedelta(0)
+print("UTC:", dt_utc)
+print("CET:", dt_cet)
