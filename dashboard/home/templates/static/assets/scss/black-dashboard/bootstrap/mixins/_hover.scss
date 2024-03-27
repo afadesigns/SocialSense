@@ -1,28 +1,27 @@
-// Hover mixin and `$enable-hover-media-query` are deprecated.
-//
-// Originally added during our alphas and maintained during betas, this mixin was
-// designed to prevent `:hover` stickiness on iOS-an issue where hover styles
-// would persist after initial touch.
-//
-// For backward compatibility, we've kept these mixins and updated them to
-// always return their regular pseudo-classes instead of a shimmed media query.
-//
-// Issue: https://github.com/twbs/bootstrap/issues/25195
+// Prevent `:hover` stickiness on iOS
 
-@mixin hover {
-  &:hover {
-    @content;
-  }
-}
-
-@mixin hover-focus {
+@mixin prevent-hover-stickiness {
+  // Prevent hover styles from persisting after initial touch on iOS
+  // by setting them only within the hover and focus events.
+  // This is achieved by not including the base element selector.
   &:hover,
   &:focus {
     @content;
   }
 }
 
-@mixin plain-hover-focus {
+@mixin include-base-on-hover {
+  // Include the base element selector on hover to ensure consistent styling
+  // across all browsers.
+  &,
+  &:hover {
+    @content;
+  }
+}
+
+@mixin include-base-on-hover-focus {
+  // Include the base element selector on hover and focus to ensure consistent styling
+  // across all browsers.
   &,
   &:hover,
   &:focus {
@@ -30,7 +29,10 @@
   }
 }
 
-@mixin hover-focus-active {
+@mixin include-base-on-hover-focus-active {
+  // Include the base element selector on hover, focus, and active to ensure consistent styling
+  // across all browsers.
+  &,
   &:hover,
   &:focus,
   &:active {
