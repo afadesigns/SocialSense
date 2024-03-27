@@ -4,9 +4,9 @@
     <option name="enabledOnReformat" value="true" />
     <option name="enabledOnSave" value="true" />
     <option name="pathToExecutable" value="C:\Program Files\Python312\Scripts\black.exe" />
-    <option name="sdkName" value="SocialSense" />
+    <option name="sdkName" value="Python 3.9 (SocialSense)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="SocialSense" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (SocialSense)" project-jdk-type="Python SDK" />
   <component name="PyCharmDSProjectLayout">
     <option name="id" value="JupyterRightHiddenStructureLayout" />
   </component>

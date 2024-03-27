@@ -55,14 +55,20 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Assuming BASE_DIR is already defined in your settings.py as:
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Updated ROOT_URLCONF to point to 'core.urls'
 ROOT_URLCONF = "core.urls"
 
-HOME_TEMPLATES = os.path.join(BASE_DIR, "home", "templates")
+# Correctly defining HOME_TEMPLATES to point to your templates directory
+HOME_TEMPLATES = os.path.join(BASE_DIR, "dashboard", "home", "templates")
 
+# Updated TEMPLATES configuration to use HOME_TEMPLATES
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [HOME_TEMPLATES],
+        "DIRS": [HOME_TEMPLATES],  # Points to the correct templates directory
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -74,8 +80,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
