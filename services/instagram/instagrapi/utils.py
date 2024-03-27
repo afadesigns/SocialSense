@@ -5,42 +5,44 @@ import random
 import string
 import time
 import urllib
+from typing import Any, Dict, List, Optional, Union
 
 
 class InstagramIdCodec:
     ENCODING_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 
     @staticmethod
-    def encode(num, alphabet=ENCODING_CHARS):
-        """Covert a numeric value to a shortcode."""
-        num = int(num)
+    def encode(num: int, alphabet: str = ENCODING_CHARS) -> str:
+        """Convert a numeric value to a shortcode."""
         if num == 0:
             return alphabet[0]
-        arr = []
-        base = len(alphabet)
+        arr: List[str] = []
+        base: int = len(alphabet)
         while num:
-            rem = num % base
+            rem: int = num % base
             num //= base
             arr.append(alphabet[rem])
         arr.reverse()
         return "".join(arr)
 
     @staticmethod
-    def decode(shortcode, alphabet=ENCODING_CHARS):
-        """Covert a shortcode to a numeric value."""
-        base = len(alphabet)
-        strlen = len(shortcode)
-        num = 0
-        idx = 0
+    def decode(shortcode: str, alphabet: str = ENCODING_CHARS) -> int:
+        """Convert a shortcode to a numeric value."""
+        base: int = len(alphabet)
+        strlen: int = len(shortcode)
+        num: int = 0
+        idx: int = 0
         for char in shortcode:
-            power = strlen - (idx + 1)
+            power: int = strlen - (idx + 1)
             num += alphabet.index(char) * (base**power)
             idx += 1
         return num
 
 
 class InstagrapiJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
+    """JSON encoder for Instagrapi with custom serialization for some types."""
+
+    def default(self, obj: Any) -> Union[str, int, List[Any], Dict[str, Any]]:
         if isinstance(obj, enum.Enum):
             return obj.value
         elif isinstance(obj, datetime.time):
@@ -52,7 +54,7 @@ class InstagrapiJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def generate_signature(data):
+def generate_signature(data: str) -> str:
     """Generate signature of POST data for Private API
 
     Returns
@@ -60,11 +62,11 @@ def generate_signature(data):
     str
         e.g. "signed_body=SIGNATURE.test"
     """
-    return "signed_body=SIGNATURE.{data}".format(data=urllib.parse.quote_plus(data))
+    return "signed_body=SIGNATURE.{}".format(urllib.parse.quote_plus(data))
 
 
-def json_value(data, *args, default=None):
-    cur = data
+def json_value(data: Dict[str, Any], *args: str, default: Optional[Any] = None) -> Any:
+    cur: Any = data
     for a in args:
         try:
             if isinstance(a, int):
@@ -75,35 +77,3 @@ def json_value(data, *args, default=None):
             return default
     return cur
 
-
-def gen_token(size=10, symbols=False):
-    """Gen CSRF or something else token"""
-    chars = string.ascii_letters + string.digits
-    if symbols:
-        chars += string.punctuation
-    return "".join(random.choice(chars) for _ in range(size))
-
-
-def gen_password(size=10):
-    """Gen password"""
-    return gen_token(size)
-
-
-def dumps(data):
-    """Json dumps format as required Instagram"""
-    return InstagrapiJSONEncoder(separators=(",", ":")).encode(data)
-
-
-def generate_jazoest(symbols: str) -> str:
-    amount = sum(ord(s) for s in symbols)
-    return f"2{amount}"
-
-
-def date_time_original(localtime):
-    # return time.strftime("%Y:%m:%d+%H:%M:%S", localtime)
-    return time.strftime("%Y%m%dT%H%M%S.000Z", localtime)
-
-
-def random_delay(delay_range: list):
-    """Trigger sleep of a random floating number in range min_sleep to max_sleep"""
-    return time.sleep(random.uniform(delay_range[0], delay_range[1]))
