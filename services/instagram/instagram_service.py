@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+from typing import List, Dict
 
 import backoff
 from django.conf import settings
@@ -34,7 +35,7 @@ def save_session_to_file(client):
         json.dump(client.settings, file)
 
 
-def load_session_from_file():
+def load_session_from_file() -> Client:
     """
     Load the client's session from a file and return a client instance.
     """
@@ -45,10 +46,7 @@ def load_session_from_file():
             client.load_settings(session_settings)
     except FileNotFoundError:
         # If the session file doesn't exist, proceed with a fresh login
-        client.login(
-            username=settings.INSTAGRAM_USERNAME, password=settings.INSTAGRAM_PASSWORD
-        )
-        save_session_to_file(client)  # Save the new session for future use
+        pass
     return client
 
 
@@ -110,7 +108,7 @@ def handle_please_wait_few_minutes(client):
 @backoff.on_exception(
     backoff.expo, (ClientError,), max_time=60  # Corrected to use ClientError
 )
-def get_instagrapi_client():
+def get_instagrapi_client() -> Client:
     cl = Client()
     try:
         cl.login(
@@ -147,68 +145,14 @@ def get_instagrapi_client():
     return cl
 
 
-def use_instagrapi_client():
+def use_instagrapi_client() -> Client:
     instagrapi_client = get_instagrapi_client()
     if instagrapi_client:
         try:
             user_info = instagrapi_client.user_info_by_username(
                 username="example_username"
             )
-            return user_info
+            return instagrapi_client
         except (Client.BadRequest, Client.Forbidden, Client.TemporaryBan) as e:
             logger.error(f"Instagram API error: {e}")
-        except ClientError as e:  # Use ClientError for general client errors
-            logger.error(f"Instagram client error: {e}")
-    return None
-
-
-class InstagramService:
-    def __init__(self, username, password):
-        self.client = Client()
-        self.is_authenticated = False
-        try:
-            self.client.login(username, password)
-            self.is_authenticated = True
-        except Exception as e:
-            logger.error(f"Failed to authenticate Instagram user {username}: {str(e)}")
-
-    def fetch_profile_data(self):
-        if not self.is_authenticated:
-            return None
-        user_info = self.client.account_info()
-        return {
-            "username": user_info.username,
-            "full_name": user_info.full_name,
-            "profile_pic_url": user_info.profile_pic_url,
-            "follower_count": (
-                user_info.follower_count
-                if hasattr(user_info, "follower_count")
-                else None
-            ),
-            "following_count": (
-                user_info.following_count
-                if hasattr(user_info, "following_count")
-                else None
-            ),
-            "biography": user_info.biography,
-            "media_count": (
-                user_info.media_count if hasattr(user_info, "media_count") else None
-            ),
-        }
-
-    def fetch_recent_media(self, count="10"):
-        if not self.is_authenticated:
-            return []
-        media_items = self.client.user_medias(self.client.user_id, count)
-        return [
-            {
-                "id": media.pk,
-                "media_type": media.media_type,
-                "thumbnail_url": media.thumbnail_url,
-                "media_url": media.url if hasattr(media, "url") else None,
-                "caption": media.caption_text,
-                "like_count": media.like_count,
-                "comment_count": media.comment_count,
-            }
-            for media in media_items
-        ]
+        except ClientError as e:
