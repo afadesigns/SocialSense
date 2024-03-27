@@ -13,7 +13,3 @@ env
 *.sqlite*
 
 .env
-yarn.lock
-!/.env
-!/.idea/
-!/.idea/

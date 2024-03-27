@@ -1,5 +1,3 @@
-# C:\Users\Andreas\Projects\SocialSense\dashboard\core\wsgi.py
-
 """
 WSGI config for core project.
 
@@ -13,8 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-# Set the DJANGO_SETTINGS_MODULE environment variable to specify the settings module for the WSGI application.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
-# Create a WSGI application instance using Django's get_wsgi_application function.
 application = get_wsgi_application()
