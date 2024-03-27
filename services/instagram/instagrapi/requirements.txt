@@ -1,5 +1,26 @@
-requests==2.31.0
-PySocks==1.7.1
-pydantic==2.5.3
-moviepy==1.0.3
-pycryptodomex==3.20.0
+# This file contains the latest versions of the required packages as of 2023-03-29
+
+requests
+PySocks
+pydantic
+moviepy
+pycryptodomex
+
+
+
+# Create a new file called `requirements.txt`
+touch requirements.txt
+
+# Add package names to the file
+echo -e "requests\nPySocks\npydantic\nmoviepy\npycryptodomex" >> requirements.txt
+
+# Install the packages (to get their latest versions) and save the output to a variable
+LATEST_VERSIONS=$(pip freeze | grep -Ef <(grep -Ev '^\-e|^\w+' requirements.txt))
+
+# Replace the package names in the `requirements.txt` file with their latest versions
+echo -e "$LATEST_VERSIONS" > requirements.txt
+
+
+
+pip install -r requirements.txt
+
