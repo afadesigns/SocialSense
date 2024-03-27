@@ -1,5 +1,15 @@
-requests==2.31.0
-PySocks==1.7.1
-pydantic==2.5.3
-moviepy==1.0.3
-pycryptodomex==3.20.0
+# This file is a requirements.txt file for managing Python packages
+# It is recommended to use this file with 'pip install -r requirements.txt'
+
+requests
+PySocks
+pydantic
+moviepy
+pycryptodomex
+
+
+
+pip install --upgrade packages
+
+
+pip install --upgrade requests PySocks pydantic moviepy pycryptodomex
