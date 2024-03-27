@@ -1,121 +1,76 @@
-// Base class
-//
-// Kickstart any navigation component with a set of style resets. Works with
-// `<nav>`s or `<ul>`s.
-
+// Base styles for all navigation components
 .nav {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
   margin-bottom: 0;
   list-style: none;
+
+  // Base styles for navigation links
+  .nav-link {
+    display: block;
+    padding: $nav-link-padding-y $nav-link-padding-x;
+
+    // Styles for disabled navigation links
+    &.disabled {
+      color: $nav-link-disabled-color;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    // Hover and focus styles for navigation links
+    @include hover-focus {
+      text-decoration: none;
+    }
+  }
 }
 
-.nav-link {
-  display: block;
-  padding: $nav-link-padding-y $nav-link-padding-x;
-
-  @include hover-focus {
-    text-decoration: none;
-  }
-
-  // Disabled state lightens text
-  &.disabled {
-    color: $nav-link-disabled-color;
-    pointer-events: none;
-    cursor: default;
-  }
-}
-
-//
-// Tabs
-//
-
+// Styles for navigation tabs
 .nav-tabs {
   border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
 
+  // Styles for navigation tab items
   .nav-item {
     margin-bottom: -$nav-tabs-border-width;
-  }
 
-  .nav-link {
-    border: $nav-tabs-border-width solid transparent;
-    @include border-top-radius($nav-tabs-border-radius);
+    // Styles for navigation links within tabs
+    .nav-link {
+      border: $nav-tabs-border-width solid transparent;
+      @include border-top-radius($nav-tabs-border-radius);
 
-    @include hover-focus {
-      border-color: $nav-tabs-link-hover-border-color;
+      // Hover and focus styles for navigation links within tabs
+      @include hover-focus {
+        border-color: $nav-tabs-link-hover-border-color;
+      }
+
+      // Styles for disabled navigation links within tabs
+      &.disabled {
+        color: $nav-link-disabled-color;
+        background-color: transparent;
+        border-color: transparent;
+      }
+
+      // Styles for active navigation links within tabs
+      &.active,
+      .show > .nav-link {
+        color: $nav-tabs-link-active-color;
+        background-color: $nav-tabs-link-active-bg;
+        border-color: $nav-tabs-link-active-border-color;
+      }
     }
 
-    &.disabled {
-      color: $nav-link-disabled-color;
-      background-color: transparent;
-      border-color: transparent;
+    // Styles for dropdown menus within tabs
+    .dropdown-menu {
+      // Make dropdown border overlap tab border
+      margin-top: -$nav-tabs-border-width;
+      // Remove the top rounded corners here since there is a hard edge above the menu
+      @include border-top-radius(0);
     }
-  }
-
-  .nav-link.active,
-  .nav-item.show .nav-link {
-    color: $nav-tabs-link-active-color;
-    background-color: $nav-tabs-link-active-bg;
-    border-color: $nav-tabs-link-active-border-color;
-  }
-
-  .dropdown-menu {
-    // Make dropdown border overlap tab border
-    margin-top: -$nav-tabs-border-width;
-    // Remove the top rounded corners here since there is a hard edge above the menu
-    @include border-top-radius(0);
   }
 }
 
-
-//
-// Pills
-//
-
+// Styles for navigation pills
 .nav-pills {
+  // Styles for navigation links within pills
   .nav-link {
-    @include border-radius($nav-pills-border-radius);
-  }
-
-  .nav-link.active,
-  .show > .nav-link {
-    color: $nav-pills-link-active-color;
-    background-color: $nav-pills-link-active-bg;
-  }
-}
-
-
-//
-// Justified variants
-//
-
-.nav-fill {
-  .nav-item {
-    flex: 1 1 auto;
-    text-align: center;
-  }
-}
-
-.nav-justified {
-  .nav-item {
-    flex-basis: 0;
-    flex-grow: 1;
-    text-align: center;
-  }
-}
-
-
-// Tabbable tabs
-//
-// Hide tabbable panes to start, show them when `.active`
-
-.tab-content {
-  > .tab-pane {
-    display: none;
-  }
-
-  > .active {
-    display: block;
-  }
-}
+    @include border-radius($nav-
