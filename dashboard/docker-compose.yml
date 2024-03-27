@@ -1,4 +1,13 @@
-version: '3.8'
+version: '3.9'
+
+networks:
+  db_network:
+    name: db_network
+    driver: bridge
+  web_network:
+    name: web_network
+    driver: bridge
+
 services:
   appseed-app:
     container_name: appseed_app
@@ -7,21 +16,10 @@ services:
     networks:
       - db_network
       - web_network
+
   nginx:
     container_name: nginx
     restart: always
     image: "nginx:latest"
     ports:
-      - "5085:5085"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-    networks:
-      - web_network
-    depends_on: 
-      - appseed-app
-networks:
-  db_network:
-    driver: bridge
-  web_network:
-    driver: bridge
- 
+      - "5085:5
