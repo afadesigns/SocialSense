@@ -1,36 +1,47 @@
 import base64
 from urllib.parse import urlparse
+from typing import Optional, Union
 
 from instagrapi.types import Share
 
-
 class ShareMixin:
-    def share_info(self, code: str) -> Share:
+    def share_info(self, code: Union[str, bytes]) -> Share:
         """
         Get Share object by code
 
         Parameters
         ----------
-        code: str
+        code: str or bytes
             Share code
 
         Returns
         -------
         Share
             Share object
+
+        Raises
+        ------
+        ValueError
+            If the `code` parameter is not a valid share code
         """
         if isinstance(code, str):
-            code = code.encode()
-        # ignore example from instagram: b'highli\xb1\xdb\x1dght:17988089629383770'
+            try:
+                code = code.encode()
+            except UnicodeEncodeError:
+                raise ValueError("Invalid share code")
+
         data = (
             base64.b64decode(code)
             .decode(errors="ignore")
             .replace("\x1d", "")
             .split(":")
         )
+        if len(data) != 2:
+            raise ValueError("Invalid share code")
+
         return Share(type=data[0], pk=data[1])
 
-    def share_info_by_url(self, url: str) -> Share:
+    def share_info_by_url(self, url: str) -> Optional[Share]:
         """
         Get Share object by URL
 
@@ -41,10 +52,14 @@ class ShareMixin:
 
         Returns
         -------
-        Share
-            Share object
+        Share or None
+            Share object or None if the URL is not a valid share URL
         """
-        return self.share_info(self.share_code_from_url(url))
+        try:
+            code = self.share_code_from_url(url)
+            return self.share_info(code)
+        except (ValueError, IndexError):
+            return None
 
     def share_code_from_url(self, url: str) -> str:
         """
@@ -59,7 +74,8 @@ class ShareMixin:
         -------
         str
             Share code
-        """
-        path = urlparse(url).path
-        parts = [p for p in path.split("/") if p]
-        return parts.pop()
+
+        Raises
+        ------
+        ValueError
+            If the `url
