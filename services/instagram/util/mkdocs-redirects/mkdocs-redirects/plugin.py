@@ -1,5 +1,6 @@
 import logging
 import os
+import os.path
 import textwrap
 from urllib.parse import urlparse
 
@@ -7,11 +8,13 @@ from mkdocs import utils
 from mkdocs.config import config_options
 from mkdocs.plugins import BasePlugin
 
-log = logging.getLogger("mkdocs.plugin.redirects")
+log = logging.getLogger(__name__)
 log.addFilter(utils.warning_filter)
 
+__plugin_name__ = "Redirect Plugin"
 
-def write_html(site_dir, old_path, new_path):
+
+def write_html(site_dir: str, old_path: str, new_path: str):
     """Write an HTML file in the site_dir with a meta redirect to the new page"""
     # Determine all relevant paths
     old_path_abs = os.path.join(site_dir, old_path)
@@ -48,7 +51,7 @@ def write_html(site_dir, old_path, new_path):
         )
 
 
-def get_relative_html_path(old_page, new_page, use_directory_urls):
+def get_relative_html_path(old_page: str, new_page: str, use_directory_urls: bool) -> str:
     """Return the relative path from the old html path to the new html path"""
     old_path = get_html_path(old_page, use_directory_urls)
     new_path = get_html_path(new_page, use_directory_urls)
@@ -65,7 +68,7 @@ def get_relative_html_path(old_page, new_page, use_directory_urls):
     return relative_path
 
 
-def get_html_path(path, use_directory_urls):
+def get_html_path(path: str, use_directory_urls: bool) -> str:
     """Return the HTML file path for a given markdown file"""
     parent, filename = os.path.split(path)
     name_orig, ext = os.path.splitext(filename)
@@ -98,58 +101,23 @@ class RedirectPlugin(BasePlugin):
         ),  # note the trailing comma
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.redirects = {}
+
     # Build a list of redirects on file generation
     def on_files(self, files, config, **kwargs):
-        self.redirects = self.config.get("redirect_maps", {})
+        self.redirects = config.get("redirect_maps", {})
 
         # SHIM! Produce a warning if the old root-level 'redirects' config is present
-        if config.get("redirects"):
+        if "redirects" in config:
             log.warn(
                 "The root-level 'redirects:' setting is not valid and has been changed in version 1.0! "
-                "The plugin-level 'redirect-map' must be used instead. See https://git.io/fjdBN"
+                "The plugin-level 'redirect_map' must be used instead. See https://git.io/fjdBN"
             )
 
         # Validate user-provided redirect "old files"
         for page_old in self.redirects.keys():
             if not utils.is_markdown_file(page_old):
                 log.warn(
-                    "redirects plugin: '%s' is not a valid markdown file!", page_old
-                )
-
-        # Build a dict of known document pages to validate against later
-        self.doc_pages = {}
-        for (
-            page
-        ) in files.documentation_pages():  # object type: mkdocs.structure.files.File
-            self.doc_pages[page.src_path.replace("\\", "/")] = page
-
-    # Create HTML files for redirects after site dir has been built
-    def on_post_build(self, config, **kwargs):
-
-        # Determine if 'use_directory_urls' is set
-        use_directory_urls = config.get("use_directory_urls")
-
-        # Walk through the redirect map and write their HTML files
-        for page_old, page_new in self.redirects.items():
-
-            # External redirect targets are easy, just use it as the target path
-            if page_new.lower().startswith(("http://", "https://")):
-                dest_path = page_new
-
-            elif page_new in self.doc_pages:
-                dest_path = get_relative_html_path(
-                    page_old, page_new, use_directory_urls
-                )
-
-            # If the redirect target isn't external or a valid internal page, throw an error
-            # Note: we use 'warn' here specifically; mkdocs treats warnings specially when in strict mode
-            else:
-                log.warn("Redirect target '%s' does not exist!", page_new)
-                continue
-
-            # DO IT!
-            write_html(
-                config["site_dir"],
-                get_html_path(page_old, use_directory_urls),
-                dest_path,
-            )
+                    "redirects plugin:
