@@ -1,37 +1,30 @@
 // stylelint-disable declaration-no-important
 
-// Width and height
+// Variables
+$important-flag: !important;
 
-@each $prop, $abbrev in (width: w, height: h) {
+// Width and height
+.size($prop, $abbrev, $sizes) {
   @each $size, $length in $sizes {
     .#{$abbrev}-#{$size} {
-      #{$prop}: $length !important;
+      #{$prop}: $length #{$important-flag};
     }
   }
 }
 
-.mw-100 {
-  max-width: 100% !important;
-}
-
-.mh-100 {
-  max-height: 100% !important;
-}
+.size(max-width, mw, (100: 100%));
+.size(max-height, mh, (100: 100%));
 
 // Viewport additional helpers
-
-.min-vw-100 {
-  min-width: 100vw !important;
+.viewport-size($prop, $abbrev) {
+  @each $size, $length in (100: 100) {
+    .#{$abbrev}-#{$size} {
+      #{$prop}: $length * 1vw #{$important-flag};
+    }
+  }
 }
 
-.min-vh-100 {
-  min-height: 100vh !important;
-}
-
-.vw-100 {
-  width: 100vw !important;
-}
-
-.vh-100 {
-  height: 100vh !important;
-}
+.viewport-size(min-width, min-vw);
+.viewport-size(min-height, min-vh);
+.viewport-size(width, vw);
+.viewport-size(height, vh);
