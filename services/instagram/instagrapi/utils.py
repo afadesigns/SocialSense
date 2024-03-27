@@ -11,31 +11,49 @@ class InstagramIdCodec:
     ENCODING_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 
     @staticmethod
-    def encode(num, alphabet=ENCODING_CHARS):
-        """Covert a numeric value to a shortcode."""
-        num = int(num)
+    def encode(num: int, alphabet: str = ENCODING_CHARS) -> str:
+        """Convert a numeric value to a shortcode.
+
+        Args:
+            num (int): The numeric value to encode.
+            alphabet (str, optional): The alphabet to use for encoding. Defaults to ENCODING_CHARS.
+
+        Returns:
+            str: The encoded shortcode.
+        """
         if num == 0:
             return alphabet[0]
-        arr = []
+
         base = len(alphabet)
+        result = []
+
         while num:
             rem = num % base
             num //= base
-            arr.append(alphabet[rem])
-        arr.reverse()
-        return "".join(arr)
+            result.append(alphabet[rem])
+
+        result.reverse()
+        return "".join(result)
 
     @staticmethod
-    def decode(shortcode, alphabet=ENCODING_CHARS):
-        """Covert a shortcode to a numeric value."""
+    def decode(shortcode: str, alphabet: str = ENCODING_CHARS) -> int:
+        """Convert a shortcode to a numeric value.
+
+        Args:
+            shortcode (str): The shortcode to decode.
+            alphabet (str, optional): The alphabet to use for decoding. Defaults to ENCODING_CHARS.
+
+        Returns:
+            int: The decoded numeric value.
+        """
         base = len(alphabet)
-        strlen = len(shortcode)
+        length = len(shortcode)
         num = 0
-        idx = 0
-        for char in shortcode:
-            power = strlen - (idx + 1)
+
+        for i, char in enumerate(shortcode):
+            power = length - (i + 1)
             num += alphabet.index(char) * (base**power)
-            idx += 1
+
         return num
 
 
@@ -52,58 +70,34 @@ class InstagrapiJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def generate_signature(data):
-    """Generate signature of POST data for Private API
+def generate_signature(data: str) -> str:
+    """Generate signature of POST data for Private API.
 
-    Returns
-    -------
-    str
-        e.g. "signed_body=SIGNATURE.test"
+    Args:
+        data (str): The POST data to generate the signature for.
+
+    Returns:
+        str: The generated signature.
     """
-    return "signed_body=SIGNATURE.{data}".format(data=urllib.parse.quote_plus(data))
+    return f"signed_body=SIGNATURE.{urllib.parse.quote_plus(data)}"
 
 
-def json_value(data, *args, default=None):
+def json_value(data: dict, *args, default=None) -> any:
+    """Get the value of a nested key in a JSON object.
+
+    Args:
+        data (dict): The JSON object to get the value from.
+        *args: The keys to access in the JSON object.
+        default: The default value to return if the key is not found.
+
+    Returns:
+        any: The value of the nested key or the default value.
+    """
     cur = data
-    for a in args:
+    for arg in args:
         try:
-            if isinstance(a, int):
-                cur = cur[a]
-            else:
-                cur = cur.get(a)
+            cur = cur[arg]
         except (IndexError, KeyError, TypeError, AttributeError):
             return default
     return cur
 
-
-def gen_token(size=10, symbols=False):
-    """Gen CSRF or something else token"""
-    chars = string.ascii_letters + string.digits
-    if symbols:
-        chars += string.punctuation
-    return "".join(random.choice(chars) for _ in range(size))
-
-
-def gen_password(size=10):
-    """Gen password"""
-    return gen_token(size)
-
-
-def dumps(data):
-    """Json dumps format as required Instagram"""
-    return InstagrapiJSONEncoder(separators=(",", ":")).encode(data)
-
-
-def generate_jazoest(symbols: str) -> str:
-    amount = sum(ord(s) for s in symbols)
-    return f"2{amount}"
-
-
-def date_time_original(localtime):
-    # return time.strftime("%Y:%m:%d+%H:%M:%S", localtime)
-    return time.strftime("%Y%m%dT%H%M%S.000Z", localtime)
-
-
-def random_delay(delay_range: list):
-    """Trigger sleep of a random floating number in range min_sleep to max_sleep"""
-    return time.sleep(random.uniform(delay_range[0], delay_range[1]))
