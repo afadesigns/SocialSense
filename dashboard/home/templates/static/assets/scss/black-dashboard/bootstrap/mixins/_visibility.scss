@@ -1,8 +1,19 @@
-// stylelint-disable declaration-no-important
+// Deprecation message mixin
+@mixin deprecate($message, $from-version, $to-version) {
+  // Display a deprecation message when the mixin is used
+  @if function-exists('sass-function-notify') {
+    sass-function-notify($message, #{$from-version}, #{$to-version}, 'warning');
+  } @else {
+    @warn "#{$message} has been deprecated since v#{$from-version} and will be removed in v#{$to-version}.";
+  }
+}
 
 // Visibility
 
-@mixin invisible($visibility) {
+@mixin invisible($visibility: 'hidden') {
+  // Set the visibility property with important declaration
   visibility: $visibility !important;
+
+  // Display a deprecation message
   @include deprecate("`invisible()`", "v4.3.0", "v5");
 }
