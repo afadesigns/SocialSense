@@ -1,89 +1,63 @@
+$alert-padding-x: 2rem;
+$close-size: 25px;
+$close-padding: 3px;
+$close-color: rgba(#fff, .6);
+$close-hover-color: rgba(#fff, .9);
+$icon-size: 22px;
+$icon-margin-top: -11px;
+
 .alert {
   border: 0;
-  color: $white;
-
-  .alert-link {
-    color: $white;
-  }
+  color: #fff;
+  padding-left: 45px;
+  position: relative;
 
   &.alert-success {
-    background-color: darken($success, 10%);
+    background-color: darken(#4dbd74, 10%);
   }
 
   i.fa,
   i.tim-icons {
     font-size: $font-paragraph;
+    position: absolute;
+    left: 19px;
+    top: 50%;
+    margin-top: $icon-margin-top;
   }
 
   .close {
-    color: $white;
+    color: $close-color;
     opacity: .9;
     text-shadow: none;
     line-height: 0;
     outline: 0;
-  }
-
-  span[data-notify="icon"] {
-    font-size: 22px;
-    display: block;
-    left: 19px;
     position: absolute;
-    top: 50%;
-    margin-top: -11px;
-  }
-
-  button.close {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    margin-top: -13px;
-    width: 25px;
-    height: 25px;
-    padding: 3px;
-  }
-
-  .close ~ span {
-    display: block;
-    max-width: 89%;
-  }
-
-  &.alert-with-icon {
-    padding-left: 65px;
-  }
-}
-
-.alert-dismissible {
-  .close {
-    top: 50%;
     right: $alert-padding-x;
-    padding: 0;
+    top: 50%;
+    width: $close-size;
+    height: $close-size;
+    padding: $close-padding;
     transform: translateY(-50%);
-    color: rgba($white, .6);
-    opacity: 1;
 
     &:hover,
     &:focus {
-      color: rgba($white, .9);
-      opacity: 1 !important;
-    }
-
-    @include media-breakpoint-down(xs) {
-      top: 1rem;
-      right: .5rem;
+      color: $close-hover-color;
     }
 
     & > span:not(.sr-only) {
       font-size: 1.5rem;
       background-color: transparent;
-      color: rgba($white, .6);
+      color: $close-color;
     }
 
     &:hover,
     &:focus {
       & > span:not(.sr-only) {
         background-color: transparent;
-        color: rgba($white, .9);
+        color: $close-hover-color;
       }
     }
   }
-}
+
+  &.alert-with-icon {
+    padding-left: 6
