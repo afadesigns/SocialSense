@@ -1,29 +1,35 @@
 import os
 from time import sleep
-from typing import Dict, List
+from typing import Dict, List, Final
 
 from instagrapi import Client
 from instagrapi.types import UserShort
 
-IG_USERNAME = ""
-IG_PASSWORD = ""
-IG_CREDENTIAL_PATH = "./ig_settings.json"
-SLEEP_TIME = "600"  # in seconds
+IG_USERNAME: Final = ""
+IG_PASSWORD: Final = ""
+IG_CREDENTIAL_PATH: Final = "./ig_settings.json"
+SLEEP_TIME: Final = 600  # in seconds
 
 
 class Bot:
-    _cl = None
-
     def __init__(self):
         self._cl = Client()
+        self._load_settings()
+        self._login()
+
+    @property
+    def cl(self) -> Client:
+        return self._cl
+
+    def _load_settings(self):
         if os.path.exists(IG_CREDENTIAL_PATH):
             self._cl.load_settings(IG_CREDENTIAL_PATH)
-            self._cl.login(IG_USERNAME, IG_PASSWORD)
-        else:
-            self._cl.login(IG_USERNAME, IG_PASSWORD)
-            self._cl.dump_settings(IG_CREDENTIAL_PATH)
 
-    def follow_by_username(self, username) -> bool:
+    def _login(self):
+        self._cl.login(IG_USERNAME, IG_PASSWORD)
+        self._cl.dump_settings(IG_CREDENTIAL_PATH)
+
+    def follow_by_username(self, username: str) -> bool:
         """
         Follow a user
 
@@ -40,7 +46,7 @@ class Bot:
         userid = self._cl.user_id_from_username(username)
         return self._cl.user_follow(userid)
 
-    def unfollow_by_username(self, username) -> bool:
+    def unfollow_by_username(self, username: str) -> bool:
         """
         Unfollow a user
 
@@ -87,7 +93,7 @@ class Bot:
         List[str]
             List of usernames
         """
-        followers = self._cl.user_followers(self._cl.user_id, amount=amount)
+        followers = self.get_followers(amount)
         return [user.username for user in followers.values()]
 
     def get_following(self, amount: int = 0) -> Dict[int, UserShort]:
@@ -120,10 +126,11 @@ class Bot:
         List[str]
             List of usernames
         """
-        following = self._cl.user_following(self._cl.user_id, amount=amount)
+        following = self.get_following(amount)
         return [user.username for user in following.values()]
 
-    def update(self):
+    @staticmethod
+    def update():
         """
         Do something
         """
@@ -136,8 +143,5 @@ if __name__ == "__main__":
     bot.follow_by_username("futbot__")
 
     while True:
-        """
-        Infnit loop
-        """
         bot.update()
         sleep(SLEEP_TIME)
