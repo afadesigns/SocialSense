@@ -1,9 +1,9 @@
+import os
+
 from setuptools import find_packages, setup
 
-long_description = """
-Fast and effective Instagram Private API wrapper (public+private requests and challenge resolver).
-
-Use the most recent version of the API from Instagram.
+long_description = f"""
+{description}
 
 Features:
 
@@ -24,10 +24,11 @@ requirements = [
     "pydantic==2.5.3",
     "pycryptodomex==3.20.0",
 ]
-# requirements = [
-#     line.strip()
-#     for line in open('requirements.txt').readlines()
-# ]
+
+requirements_file = os.path.abspath(os.path.join('requirements.txt'))
+if os.path.exists(requirements_file):
+    with open(requirements_file) as f:
+        requirements += [line.strip() for line in f.readlines()]
 
 setup(
     name="instagrapi",
@@ -69,14 +70,19 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    python_requires=">=3.9",
+    python_requires=">=3.7",
     include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Topic :: Software Development :: Libraries :: Python Modules",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-)
+    project_urls={
+        "Documentation": "https://instagrapi.readthedocs.io/",
+        "Source Code": "https://github.com/subzeroid/instagrapi",
+        "Bug Tracker": "https://github.com/subzeroid
