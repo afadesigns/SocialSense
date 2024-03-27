@@ -1,26 +1,41 @@
-// stylelint-disable declaration-no-important
+/* Vertical alignment utilities */
 
 .align-baseline {
-  vertical-align: baseline !important;
+  vertical-align: baseline;
 }
 
-// Browser default
 .align-top {
-  vertical-align: top !important;
+  vertical-align: top;
 }
 
 .align-middle {
-  vertical-align: middle !important;
+  vertical-align: middle;
 }
 
 .align-bottom {
-  vertical-align: bottom !important;
+  vertical-align: bottom;
 }
 
 .align-text-bottom {
-  vertical-align: text-bottom !important;
+  vertical-align: text-bottom;
 }
 
 .align-text-top {
+  vertical-align: text-top;
+}
+
+/* Add !important when necessary */
+
+.align-baseline-important,
+.align-top-important,
+.align-middle-important,
+.align-bottom-important,
+.align-text-bottom-important,
+.align-text-top-important {
+  vertical-align: baseline !important;
+  vertical-align: top !important;
+  vertical-align: middle !important;
+  vertical-align: bottom !important;
+  vertical-align: text-bottom !important;
   vertical-align: text-top !important;
 }
