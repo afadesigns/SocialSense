@@ -1,29 +1,32 @@
-[default]
+[common]
 DATABASE_URL = "postgresql://andreas:Sierra16@localhost:5432/instagram"
-SESSION_REFRESH_INTERVAL = 1800  # 30 minutes
 INSTAGRAM_USERNAME = "afadesign.official"
 INSTAGRAM_PASSWORD = "moKeiBSM&dL5CT8j"
-#REDIS_URL = "jdbc:redis://localhost:6379/0"  # Updated Redis connection URL
+#REDIS_URL = "jdbc:redis://localhost:6379/0"
 CACHE_PREFIX = "followers:"
+
+[default]
 LOG_LEVEL = "INFO"  # Default log level
 
 [development]
-DATABASE_URL = "postgresql://andreas:Sierra16@localhost:5432/instagram"
-INSTAGRAM_USERNAME = "afadesign.official"
-INSTAGRAM_PASSWORD = "moKeiBSM&dL5CT8j"
-#REDIS_URL = "jdbc:redis://localhost:6379/0"
 LOG_LEVEL = "DEBUG"  # Development log level
 
 [testing]
-DATABASE_URL = "postgresql://andreas:Sierra16@localhost:5432/instagram"
-INSTAGRAM_USERNAME = "afadesign.official"
-INSTAGRAM_PASSWORD = "moKeiBSM&dL5CT8j"
-#REDIS_URL = "jdbc:redis://localhost:6379/0"
 LOG_LEVEL = "INFO"  # Testing log level
 
 [production]
-DATABASE_URL = "postgresql://andreas:Sierra16@localhost:5432/instagram"
-INSTAGRAM_USERNAME = "afadesign.official"
-INSTAGRAM_PASSWORD = "moKeiBSM&dL5CT8j"
-#REDIS_URL = "jdbc:redis://localhost:6379/0"
 LOG_LEVEL = "ERROR"  # Production log level
+
+[postgres]
+# Common PostgreSQL configuration
+USER = andreas
+PASSWORD = Sierra16
+HOST = localhost
+PORT = 5432
+DATABASE = instagram
+
+[instagram]
+# Common Instagram configuration
+USERNAME = ${INSTAGRAM_USERNAME}
+PASSWORD = ${INSTAGRAM_PASSWORD}
+
