@@ -1,14 +1,15 @@
 .card-contributions {
-  @extend %card-stats;
+  // Include card-stats mixin
+  @include card-stats;
 
   .card-description {
-    max-width: 350px;
+    max-width: 100%;
     margin: 0 auto;
     margin-bottom: 20px;
   }
 
   .card-title {
-    padding-top: 35px;
+    padding-top: 2rem;
   }
 
   .card-stats {
@@ -16,6 +17,7 @@
     align-items: center;
     flex-direction: row;
     padding: 11px;
+    box-sizing: border-box;
   }
 
   .card-footer {
@@ -33,23 +35,13 @@
     margin: 0;
   }
 
-  span {
+  .description-text {
     padding-left: 15px;
     text-align: left;
     max-width: 125px;
     color: $opacity-6;
   }
-
 }
 
-
-@include media-breakpoint-down(xs) {
-
-  .card-contributions .card-stats {
-    flex-direction: column;
-
-    .bootstrap-switch {
-      margin-bottom: 15px;
-    }
-  }
-}
+// Media query for xs breakpoint
+@include media
