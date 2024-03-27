@@ -1,15 +1,9 @@
+# This is a .gitignore file
+
+# Byte-compiled Python files
 *.pyc
-*.DS_Store
-*.egg*
-/dist/
-/.idea
-/docs/_build/
-/node_modules/
-build/
-env
-/staticfiles/
+*.pyo
 
-#src
-*.sqlite*
+# Ignores macOS files
+.DS_Store
 
-.env
