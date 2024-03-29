@@ -1,5 +1,5 @@
-import zipfile
 import json
+import zipfile
 
 def create_manifest(name, version, manifest_version, permissions, background_scripts, minimum_chrome_version):
     return {
@@ -7,10 +7,8 @@ def create_manifest(name, version, manifest_version, permissions, background_scr
         "manifest_version": manifest_version,
         "name": name,
         "permissions": permissions,
-        "background": {
-            "scripts": background_scripts
-        },
-        "minimum_chrome_version": minimum_chrome_version
+        "background": {"scripts": background_scripts},
+        "minimum_chrome_version": minimum_chrome_version,
     }
 
 def create_background_script(proxy_config, bypass_list):
@@ -18,22 +16,19 @@ def create_background_script(proxy_config, bypass_list):
         "mode": "fixed_servers",
         "rules": {
             "singleProxy": proxy_config,
-            "bypassList": bypass_list
-        }
+            "bypassList": bypass_list,
+        },
     }
 
     def auth_callback(details):
         return {
             "authCredentials": {
                 "username": proxy_config["username"],
-                "password": proxy_config["password"]
+                "password": proxy_config["password"],
             }
         }
 
-    return {
-        "config": config,
-        "auth_callback": auth_callback
-    }
+    return {"config": config, "auth_callback": auth_callback}
 
 def get_proxy_extension(PROXY_HOST, PROXY_PORT, PROXY_USER, PROXY_PASS):
     print(PROXY_HOST, PROXY_PORT, PROXY_USER, PROXY_PASS)
@@ -50,10 +45,10 @@ def get_proxy_extension(PROXY_HOST, PROXY_PORT, PROXY_USER, PROXY_PASS):
             "storage",
             "<all_urls>",
             "webRequest",
-            "webRequestBlocking"
+            "webRequestBlocking",
         ],
         background_scripts=["background.js"],
-        minimum_chrome_version="22.0.0"
+        minimum_chrome_version="22.0.0",
     )
 
     background = create_background_script(
@@ -62,11 +57,11 @@ def get_proxy_extension(PROXY_HOST, PROXY_PORT, PROXY_USER, PROXY_PASS):
             "host": PROXY_HOST,
             "port": PROXY_PORT,
             "username": PROXY_USER,
-            "password": PROXY_PASS
+            "password": PROXY_PASS,
         },
-        bypass_list=["localhost"]
+        bypass_list=["localhost"],
     )
 
     with zipfile.ZipFile(pluginfile, "w") as zp:
         zp.writestr("manifest.json", json.dumps(manifest))
-        zp.writestr("background.js", f"{background['config']
+        zp.writestr("background.js", f"{json.dumps(background)}\n")
