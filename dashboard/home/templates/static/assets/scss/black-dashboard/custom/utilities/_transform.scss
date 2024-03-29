@@ -1,27 +1,12 @@
-$perspective-right: (
-  perspective: 1040px,
-  rotate-y: -11deg,
-  rotate-x: 2deg,
-  rotate: 2deg
-);
-
-$perspective-left: (
-  perspective: 2000px,
-  rotate-y: 11deg,
-  rotate-x: 2deg,
-  rotate: -2deg
-);
+$perspective-right: perspective(1040px) rotateY(-11deg) rotateX(2deg) rotate(2deg);
+$perspective-left: perspective(2000px) rotateY(11deg) rotateX(2deg) rotate(-2deg);
 
 @include media-breakpoint-up(xl) {
   .transform-perspective-right {
-    @each $property, $value in $perspective-right {
-      transform: scale(1) #{property}: $value;
-    }
+    transform: $perspective-right;
   }
 
   .transform-perspective-left {
-    @each $property, $value in $perspective-left {
-      transform: scale(1) #{property}: $value;
-    }
+    transform: $perspective-left;
   }
 }
