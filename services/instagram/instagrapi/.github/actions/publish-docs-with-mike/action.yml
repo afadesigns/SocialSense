@@ -1,37 +1,49 @@
-name: "Publish Docs with Mike"
-description: |
-  Publish versioned documentation with Mike.
-  Requires a python environment to already be setup with mike and any other documentation dependencies installed.
+name: 'Publish Docs with Mike'
+description: 'Publish versioned documentation with Mike. Requires a python environment to already be set up with mike and any other documentation dependencies installed.'
 inputs:
   version_name:
-    description: |
-      Name a version to publish.
-      Required when new_version is false.
+    description: 'Name a version to publish. Required when new_version is false.'
     required: false
-    default: ""
+    default: ''
   new_version:
-    description: |
-      If true, publish a new docs version. If an existing version uses the alias/tile "latest",
-      update the records so that the new version becomes the latest version.
-      If version_name is given, that value will be used. Otherwise the release tag will be used.
+    description: 'If true, publish a new docs version. If an existing version uses the alias/title "latest", update the records so that the new version becomes the latest version. If version_name is given, that value will be used. Otherwise the release tag will be used.'
     required: false
-    default: "false"
+    default: 'false'
   commit_user_name:
-    description: "User name to use for commits. When omitted, the event values will be inspected to derive the name."
-    default: ""
+    description: 'User name to use for commits. When omitted, the event values will be inspected to derive the name.'
     required: false
+    default: ''
   commit_user_email:
-    description: "User email to use for commits. When omitted, the event values will be inspected to derive the email."
-    default: ""
+    description: 'User email to use for commits. When omitted, the event values will be inspected to derive the email.'
     required: false
+    default: ''
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - run: "$GITHUB_ACTION_PATH/action.sh"
-      shell: "bash"
+    - name: 'Checkout code'
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # fetch the entire history
+
+    - name: 'Setup Python'
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # set the desired python version
+
+    - name: 'Install dependencies'
+      run: |
+        python -m pip install --upgrade pip
+        pip install mike
+      shell: 'bash'
+
+    - name: 'Run Mike publish'
+      run: |
+        USER_NAME=${{ inputs.commit_user_name }} \
+        USER_EMAIL=${{ inputs.commit_user_email }} \
+        VERSION_NAME=${{ inputs.version_name }} \
+        NEW_VERSION=${{ inputs.new_version }} \
+        RELEASE_TAG=${{ github.event.release.tag_name }} \
+        python -m mike publish
+      shell: 'bash'
       env:
-        USER_NAME: ${{ inputs.name }}
-        USER_EMAIL: ${{ inputs.email }}
-        VERSION_NAME: ${{ inputs.version_name }}
-        NEW_VERSION: ${{ inputs.new_version }}
-        RELEASE_TAG: ${{ github.event.release.tag_name }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # use the GITHUB_TOKEN to allow pushing to the repo
