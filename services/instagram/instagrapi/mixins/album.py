@@ -1,6 +1,6 @@
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Union
 from urllib.parse import urlparse
 
 from instagrapi.exceptions import (
@@ -12,13 +12,14 @@ from instagrapi.extractors import extract_media_v1
 from instagrapi.types import Location, Media, Usertag
 from instagrapi.utils import date_time_original, dumps
 
-
 class DownloadAlbumMixin:
     """
     Helper class to download album
     """
 
-    def album_download(self, media_pk: int, folder: Path = "") -> List[Path]:
+    def album_download(
+        self, media_pk: int, folder: Path = Path(".")
+    ) -> List[Path]:
         """
         Download your album
 
@@ -27,7 +28,7 @@ class DownloadAlbumMixin:
         media_pk: int
             PK for the album you want to download
         folder: Path, optional
-            Directory in which you want to download the album, default is "" and will download the files to working directory.
+            Directory in which you want to download the album, default is "."
 
         Returns
         -------
@@ -53,7 +54,9 @@ class DownloadAlbumMixin:
                 )
         return paths
 
-    def album_download_by_urls(self, urls: List[str], folder: Path = "") -> List[Path]:
+    def album_download_by_urls(
+        self, urls: List[str], folder: Path = Path(".")
+    ) -> List[Path]:
         """
         Download your album using specified URLs
 
@@ -62,7 +65,7 @@ class DownloadAlbumMixin:
         urls: List[str]
             List of URLs to download media from
         folder: Path, optional
-            Directory in which you want to download the album, default is "" and will download the files to working directory.
+            Directory in which you want to download the album, default is "."
 
         Returns
         -------
@@ -73,14 +76,19 @@ class DownloadAlbumMixin:
         for url in urls:
             file_name = urlparse(url).path.rsplit("/", 1)[1]
             if file_name.lower().endswith((".jpg", ".jpeg")):
-                paths.append(self.photo_download_by_url(url, file_name, folder))
+                try:
+                    paths.append(self.photo_download_by_url(url, file_name, folder))
+                except AlbumUnknownFormat:
+                    raise
             elif file_name.lower().endswith(".mp4"):
                 paths.append(self.video_download_by_url(url, file_name, folder))
             else:
                 raise AlbumUnknownFormat()
         return paths
 
-    def album_download_origin(self, media_pk: int) -> List[bytes]:
+    def album_download_origin(
+        self, media_pk: int
+    ) -> List[Union[bytes, Media]]:
         """
         Download your album
 
@@ -88,10 +96,11 @@ class DownloadAlbumMixin:
         ----------
         media_pk: int
             PK for the album you want to download
+
         Returns
         -------
-        List[Path]
-            List of path for all the files downloaded
+        List[Union[bytes, Media]]
+            List of bytes or Media objects for all the files downloaded
         """
         media = self.media_info(media_pk)
         assert media.media_type == 8, "Must been album"
@@ -106,7 +115,6 @@ class DownloadAlbumMixin:
                     'Media type "{resource.media_type}" unknown for album (resource={resource.pk})'
                 )
         return files
-
 
 class UploadAlbumMixin:
     def album_upload(
@@ -149,135 +157,4 @@ class UploadAlbumMixin:
         -------
         Media
             An object of Media class
-        """
-        children = []
-        for path in paths:
-            path = Path(path)
-            if path.suffix.lower() in (".jpg", ".jpeg", ".webp"):
-                upload_id, width, height = self.photo_rupload(path, to_album=True)
-                children.append(
-                    {
-                        "upload_id": upload_id,
-                        "edits": dumps(
-                            {
-                                "crop_original_size": [width, height],
-                                "crop_center": [0.0, -0.0],
-                                "crop_zoom": 1.0,
-                            }
-                        ),
-                        "extra": dumps(
-                            {"source_width": width, "source_height": height}
-                        ),
-                        "scene_capture_type": "",
-                        "scene_type": None,
-                    }
-                )
-            elif path.suffix.lower() == ".mp4":
-                upload_id, width, height, duration, thumbnail = self.video_rupload(
-                    path, to_album=True
-                )
-                children.append(
-                    {
-                        "upload_id": upload_id,
-                        "clips": dumps([{"length": duration, "source_type": "4"}]),
-                        "extra": dumps(
-                            {"source_width": width, "source_height": height}
-                        ),
-                        "length": duration,
-                        "poster_frame_index": "0",
-                        "filter_type": "0",
-                        "video_result": "",
-                        "date_time_original": date_time_original(time.localtime()),
-                        "audio_muted": "false",
-                    }
-                )
-                self.photo_rupload(thumbnail, upload_id)
-            else:
-                raise AlbumUnknownFormat()
 
-        for attempt in range(50):
-            self.logger.debug(f"Attempt #{attempt} to configure Album: {paths}")
-            time.sleep(configure_timeout)
-            try:
-                configured = (configure_handler or self.album_configure)(
-                    children, caption, usertags, location, extra_data=extra_data
-                )
-            except Exception as e:
-                if "Transcode not finished yet" in str(e):
-                    """
-                    Response 202 status:
-                    {"message": "Transcode not finished yet.", "status": "fail"}
-                    """
-                    time.sleep(configure_timeout)
-                    continue
-                raise e
-            else:
-                if configured:
-                    media = configured.get("media")
-                    self.expose()
-                    return extract_media_v1(media)
-        raise (configure_exception or AlbumConfigureError)(
-            response=self.last_response, **self.last_json
-        )
-
-    def album_configure(
-        self,
-        childs: List,
-        caption: str,
-        usertags: List[Usertag] = [],
-        location: Location = None,
-        extra_data: Dict[str, str] = {},
-    ) -> Dict:
-        """
-        Post Configure Album
-
-        Parameters
-        ----------
-        childs: List
-            List of media/resources of an album
-        caption: str
-            Media caption
-        usertags: List[Usertag], optional
-            List of users to be tagged on this upload, default is empty list.
-        location: Location, optional
-            Location tag for this upload, default is None
-        extra_data: Dict[str, str], optional
-            Dict of extra data, if you need to add your params, like {"share_to_facebook": 1}.
-
-        Returns
-        -------
-        Dict
-            A dictionary of response from the call
-        """
-        upload_id = str(int(time.time() * 1000))
-        if usertags:
-            usertags = [
-                {"user_id": tag.user.pk, "position": [tag.x, tag.y]} for tag in usertags
-            ]
-            childs[0]["usertags"] = dumps({"in": usertags})
-        data = {
-            "timezone_offset": str(self.timezone_offset),
-            "source_type": "4",
-            "creation_logger_session_id": self.client_session_id,
-            "location": self.location_build(location),
-            "caption": caption,
-            "client_sidecar_id": upload_id,
-            "upload_id": upload_id,
-            # "location": self.build_location(name, lat, lng, address),
-            "suggested_venue_position": -1,
-            "device": self.device,
-            "is_suggested_venue": False,
-            "children_metadata": [
-                {
-                    "source_type": "4",
-                    "timezone_offset": str(self.timezone_offset),
-                    "device": dumps(self.device),
-                    **child,
-                }
-                for child in childs
-            ],
-            **extra_data,
-        }
-        return self.private_request(
-            "media/configure_sidecar/", self.with_default_data(data)
-        )
