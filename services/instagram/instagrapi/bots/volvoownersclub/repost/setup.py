@@ -22,10 +22,21 @@ INSTALL_REQUIRES = [
     'requests==2.31.0',
 ]
 
+# Project metadata
+PROJECT_NAME = 'repost-bot'
+PROJECT_AUTHOR = 'Andreas'
+PROJECT_LICENSE = 'MIT License'
+PROJECT_DESCRIPTION = 'A repost bot for Volvo Owners Club using instagrapi library.'
+PROJECT_URL = 'https://github.com/username/repost-bot'
+
 # Setup script
 setup(
-    name="repost-bot",
+    name=PROJECT_NAME,
     version=VERSION,
     packages=PACKAGES,
     install_requires=INSTALL_REQUIRES,
+    author=PROJECT_AUTHOR,
+    license=PROJECT_LICENSE,
+    description=PROJECT_DESCRIPTION,
+    url=PROJECT_URL,
 )
