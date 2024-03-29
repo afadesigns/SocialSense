@@ -3,11 +3,6 @@ import logging
 import time
 import typing as ty
 
-try:
-    from simplejson.errors import JSONDecodeError
-except ImportError:
-    from json.decoder import JSONDecodeError
-
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -27,7 +22,6 @@ from instagrapi.exceptions import (
     ClientUnauthorizedError,
 )
 from instagrapi.utils import random_delay
-
 
 class PublicRequestMixin:
     public_requests_count: int = 0
@@ -74,9 +68,9 @@ class PublicRequestMixin:
     def public_request(
         self,
         url: str,
-        data: Optional[ty.Any] = None,
-        params: Optional[ty.Any] = None,
-        headers: Optional[ty.Any] = None,
+        data: ty.Optional[ty.Any] = None,
+        params: ty.Optional[ty.Any] = None,
+        headers: ty.Optional[ty.Any] = None,
         return_json: bool = False,
         retries_count: int = 3,
         retries_timeout: int = 2,
@@ -116,8 +110,12 @@ class PublicRequestMixin:
                 ClientBadRequestError,
             ) as e:
                 raise e  # Stop retries
-            except JSONDecodeError as e:
+            except json.JSONDecodeError as e:
                 raise ClientJSONDecodeError(
-                    e, respones=self.last_public_response
+                    e, response=self.last_public_response
                 )
-            except ClientError as
+            except ClientError as e:
+                if iteration < retries_count - 1:
+                    time.sleep(retries_timeout)
+                else:
+                    raise e
