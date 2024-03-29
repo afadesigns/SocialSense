@@ -1,10 +1,6 @@
-# Default ignored files
+# This is a list of ignored files and directories in a version control system or a file system.
+
 /shelf/
 /workspace.xml
-# Editor-based HTTP Client requests
 /httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-# GitHub Copilot persisted chat sessions
-/copilot/chatSessions
+
