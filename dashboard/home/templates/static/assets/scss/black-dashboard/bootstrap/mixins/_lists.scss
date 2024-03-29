@@ -2,6 +2,30 @@
 
 // Unstyled keeps list items block level, just removes default browser padding and list-style
 @mixin list-unstyled {
-  padding-left: 0;
+  margin: 0;
+  padding: 0;
   list-style: none;
+}
+
+// Compact keeps list items inline, with no bullet points or padding
+@mixin list-compact {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  li {
+    display: inline-block;
+    margin: 0 5px;
+  }
+}
+
+// Bordered adds a border to the left of each list item
+@mixin list-bordered {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  li {
+    border-left: 1px solid #ccc;
+    padding-left: 10px;
+    margin: 0;
+  }
 }
