@@ -1,52 +1,59 @@
-# These are dependencies specified for a Python project
-setuptools
-pillow
-requests
-instagrapi
-asyncio
-asyncpg
-aiohttp
-python-dotenv
-aioconsole
-tenacity
-pytest
-aioredis
-cachetools
-pydantic
-moviepy
-urllib3
-jupyter
-attrs
-cryptography
-tornado
-Jinja2
-filelock
-redis
-Django
-asgiref
-sqlparse
-psycopg2
-colorama
-numpy
-click
-ipython
-gunicorn
-packaging
-greenlet
-whitenoise
-pathlib
-panel
-distro
-wheel
-pyOpenSSL
-docutils
-sphinx
-tblib
-validators
-brotli
+# Specifying dependencies for a Python project using Poetry
 
-# Additional dependencies
-typing
-Flask
-selenium
+[tool.poetry.dependencies]
+python = "^3.8"
+setuptools = "*"
+pillow = "*"
+requests = "*"
+instagrapi = "*"
+asyncio = "*" # Already included in Python standard library
+asyncpg = "*"
+aiohttp = "*"
+python-dotenv = "*"
+aioconsole = "*"
+tenacity = "*"
+pytest = "*"
+aioredis = "*"
+cachetools = "*"
+pydantic = "*"
+moviepy = "*"
+urllib3 = "*"
+jupyter = "*"
+attrs = "*"
+cryptography = "*"
+tornado = "*"
+Jinja2 = "*"
+filelock = "*"
+Django = "*"
+asgiref = "*"
+sqlparse = "*"
+psycopg2 = "*"
+colorama = "*"
+numpy = "*"
+click = "*"
+ipython = "*"
+gunicorn = "*"
+packaging = "*"
+greenlet = "*"
+whitenoise = "*"
+pathlib = "*"
+panel = "*"
+distro = "*"
+wheel = "*"
+pyOpenSSL = "*"
+docutils = "*"
+sphinx = "*"
+tblib = "*"
+validators = "*"
+brotli = "*"
+
+[tool.poetry.dev-dependencies]
+# Additional dependencies for development
+typing = "*"
+Flask = "*"
+selenium = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
