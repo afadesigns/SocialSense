@@ -1,6 +1,5 @@
 import os
 import time
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -45,7 +44,9 @@ class ProfileHelper:
             WebDriverWait(self.browser, self.delay).until(
                 EC.visibility_of_element_located((By.XPATH, xpath))
             )
-            self.browser.find_element_by_xpath(xpath).click()
+            element = self.browser.find_element_by_xpath(xpath)
+            assert element, "Element not found"
+            element.click()
         except Exception as e:
             print(f"Error while clicking on Edit Info: {e}")
 
@@ -59,7 +60,9 @@ class ProfileHelper:
             WebDriverWait(self.browser, self.delay).until(
                 EC.visibility_of_element_located((By.XPATH, xpath))
             )
-            self.browser.find_element_by_xpath(xpath).click()
+            element = self.browser.find_element_by_xpath(xpath)
+            assert element, "Element not found"
+            element.click()
             time.sleep(1)
         except Exception as e:
             print(f"Error while clicking on Save: {e}")
@@ -69,6 +72,7 @@ class ProfileHelper:
         Adds a photo to the profile.
 
         :param filepath: Absolute filepath of the photo to be added
+        :return: None
         """
         filepath = os.path.abspath(filepath)
 
@@ -91,7 +95,9 @@ class ProfileHelper:
             WebDriverWait(self.browser, self.delay).until(
                 EC.visibility_of_element_located((By.XPATH, xpath_input))
             )
-            self.browser.find_element_by_xpath(xpath_input).send_keys(filepath)
+            input_element = self.browser.find_element_by_xpath(xpath_input)
+            assert input_element, "Input element not found"
+            input_element.send_keys(filepath)
         except Exception as e:
             print(f"Error while entering filepath: {e}")
 
@@ -100,7 +106,9 @@ class ProfileHelper:
             WebDriverWait(self.browser, self.delay).until(
                 EC.visibility_of_element_located((By.XPATH, xpath_choose))
             )
-            self.browser.find_element_by_xpath(xpath_choose).click()
+            choose_button = self.browser.find_element_by_xpath(xpath_choose)
+            assert choose_button, "Choose button not found"
+            choose_button.click()
         except Exception as e:
             print(f"Error while clicking on Choose: {e}")
 
@@ -111,10 +119,15 @@ class ProfileHelper:
         Sets the bio of the profile.
 
         :param bio: Bio to be set
+        :return: None
         """
         xpath = f"{content}/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div[2]/div/textarea"
 
         try:
             WebDriverWait(self.browser, self.delay).until(
                 EC.visibility_of_element_located((By.XPATH, xpath))
-
+            )
+            bio_element = self.browser.find_element_by_xpath(xpath)
+            assert bio_element, "Bio element not found"
+            bio_element.send_keys(bio)
+           
