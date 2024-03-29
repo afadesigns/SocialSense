@@ -1,27 +1,40 @@
 import hashlib
 import json
-import os
 import random
 import string
 import time
-import urllib.request
-
+import requests
+from pathlib import Path
 from PIL import Image
-
+from imageio import imread, imwrite
+from shutil import copyfile
+from contextlib import suppress
 
 class StorageHelper:
-
     @staticmethod
-    def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    def id_generator(size: int = 6, chars: str = string.ascii_uppercase + string.digits) -> str:
+        """Generate a random ID with the given size and characters.
+
+        Returns:
+            str: The generated ID.
+        """
         return "".join(random.choice(chars) for _ in range(size))
 
-    # Returns hash value of the image saved by the url given
     @staticmethod
-    def store_image_as(url, directory, amount_of_attempts=1):
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+    def store_image_as(url: str, directory: str, amount_of_attempts: int = 1) -> str:
+        """Store an image from the given URL in the specified directory and return its hash value.
 
-        # make 'undetectable' header to avoid being seen as scraper
+        Args:
+            url (str): The URL of the image.
+            directory (str): The directory where the image should be stored.
+            amount_of_attempts (int, optional): The number of attempts to download the image. Defaults to 1.
+
+        Returns:
+            str: The hash value of the stored image.
+        """
+        directory = Path(directory)
+        directory.mkdir(parents=True, exist_ok=True)
+
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -31,91 +44,69 @@ class StorageHelper:
             "Connection": "keep-alive",
         }
 
-        try:
-            request_ = urllib.request.Request(
-                url, None, headers
-            )  # The assembled request
-            response = urllib.request.urlopen(request_)  # store the response
-
-        except Exception as e:
-            if amount_of_attempts < 20:
-                sleepy_time = amount_of_attempts * 30
-                print(
-                    "Attempt number {}: sleeping for {} seconds ...".format(
-                        amount_of_attempts, sleepy_time
+        for attempt in range(amount_of_attempts):
+            try:
+                response = requests.get(url, headers=headers, timeout=10)
+                response.raise_for_status()
+                break
+            except requests.exceptions.RequestException as e:
+                if attempt < 20 - 1:
+                    sleep_time = (attempt + 1) * 30
+                    print(f"Attempt number {attempt + 1}: sleeping for {sleep_time} seconds...")
+                    time.sleep(sleep_time)
+                else:
+                    error = (
+                        f"Amount of attempts exceeded in storage_helper\n"
+                        f"attempting to get url: {url}\n"
+                        f"resulted in error: {e}"
                     )
-                )
-                time.sleep(sleepy_time)
-                return StorageHelper.store_image_as(
-                    url, directory, amount_of_attempts + 1
-                )
-            else:
-                # Settle with the fact this one won't be stored
-                error = (
-                    "Amount of attempts exceeded in storage_helper\n"
-                    "attempting to get url: {}\n"
-                    "resulted in error: {}".format(url, e)
-                )
-                print(error)
-                return None
+                    print(error)
+                    return None
 
         temp_name = "temporary"
+        image_path = directory / f"{temp_name}.jpg"
 
-        if ".jpg" in url:
-            f = open("{}/{}/{}.jpg".format(os.getcwd(), directory, temp_name), "wb")
-            f.write(response.read())
-            f.close()
-
+        if ".jpg" in url or ".jpeg" in url:
+            with open(image_path, "wb") as f:
+                f.write(response.content)
         elif ".webp" in url:
-            # save as a temporary file
-            f = open("{}.webp".format(temp_name), "wb")
-            f.write(response.read())
-            f.close()
+            with open(f"{temp_name}.webp", "wb") as f:
+                f.write(response.content)
 
-            # open the file and convert the file to jpeg
-            im = Image.open("{}.webp".format(temp_name)).convert("RGB")
-            # save the jpeg file in the directory it belongs
-            im.save("{}/{}/{}.jpg".format(os.getcwd(), directory, temp_name), "jpeg")
+            im = Image.open(f"{temp_name}.webp").convert("RGB")
+            imwrite(str(image_path), im)
 
-            # remove the temporary file
-            os.remove("{}.webp".format(temp_name))
-
+            with suppress(FileNotFoundError):
+                os.remove(f"{temp_name}.webp")
         else:
             print("URL of image cannot be saved!")
-            print("URL DOES NOT CONTAIN .JPG OR .WEBP EXTENSION")
-            print(url)
+            print(f"URL DOES NOT CONTAIN .JPG OR .WEBP EXTENSION: {url}")
+            return None
 
-            error = (
-                "URL DOES NOT CONTAIN .JPG OR .WEBP EXTENSION: {}\n"
-                "Please add extension needed in storage_helper".format(url)
-            )
-            print(error)
+        image = imread(str(image_path))
+        hashvalue = hashlib.md5(image.tobytes()).hexdigest()
 
-        # rename saved image to their hashvalue, so it's easy to compare (hashes of) images later on
-        im = Image.open("{}/{}/{}.jpg".format(os.getcwd(), directory, temp_name))
-        hashvalue = hashlib.md5(im.tobytes()).hexdigest()
+        stored_image_path = directory / f"{hashvalue}.jpg"
+        copyfile(image_path, stored_image_path)
 
-        # check if image already exists
-        if not os.path.isfile("{}/{}/{}.jpg".format(os.getcwd(), directory, hashvalue)):
-            os.rename(
-                "{}/{}/{}.jpg".format(os.getcwd(), directory, temp_name),
-                "{}/{}/{}.jpg".format(os.getcwd(), directory, hashvalue),
-            )
-
-        print("Image saved as {}/{}/{}.jpg".format(os.getcwd(), directory, hashvalue))
+        print(f"Image saved as {stored_image_path}")
 
         return hashvalue
 
     @staticmethod
-    def store_match(match, directory, filename):
+    def store_match(match, directory: str, filename: str):
+        """Store a match object in a JSON file in the specified directory.
 
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        filepath = directory + "/{}.json".format(filename)
+        Args:
+            match: The match object to be stored.
+            directory (str): The directory where the JSON file should be stored.
+            filename (str): The name of the JSON file.
+        """
+        directory = Path(directory)
+        filepath = directory / f"{filename}.json"
 
         try:
-            with open(filepath, "r", encoding="utf-8") as fp:
+            with filepath.open("r", encoding="utf-8") as fp:
                 data = json.load(fp)
         except IOError:
             print("Could not read file, starting from scratch")
@@ -123,5 +114,8 @@ class StorageHelper:
 
         data[match.get_id()] = match.get_dictionary()
 
-        with open(filepath, "w+", encoding="utf-8") as file:
+        with filepath.open("w+", encoding="utf-8") as file:
             json.dump(data, file)
+
+
+pip install requests
