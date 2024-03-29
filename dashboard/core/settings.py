@@ -1,11 +1,7 @@
 # C:\Users\Andreas\Projects\SocialSense\dashboard\core\settings.py
 
 import os
-import random
-import string
-import sys  # Added for integrating Instagrapi
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
@@ -16,9 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
-if not SECRET_KEY:
-    SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for _ in range(32))
+SECRET_KEY = os.environ.get("SECRET_KEY") or "".join(
+    random.choice(string.ascii_lowercase) for _ in range(32)
+)
 
 # Render Deployment Code
 DEBUG = "RENDER" not in os.environ
@@ -43,18 +39,10 @@ if RENDER_EXTERNAL_HOSTNAME:
 API_DOMAIN = "i.instagram.com"
 ALLOWED_HOSTS.append(API_DOMAIN)
 
-# Add the path to the Instagrapi library to the PYTHONPATH
-INSTAGRAM_SERVICE_DIR = os.path.join(BASE_DIR, "services", "instagram")
-sys.path.append(INSTAGRAM_SERVICE_DIR)
+AUTHENTICATION_BACKENDS = []
 
-# Application definition
 INSTAGRAM_CLIENT_ID = os.environ.get("INSTAGRAM_CLIENT_ID")
 
-AUTHENTICATION_BACKENDS = [
-    # Add your custom authentication backend here if needed
-]
-
-# Application definition
 INSTALLED_APPS = [
     "admin_black_pro.apps.AdminBlackProConfig",
     "django.contrib.admin",
@@ -63,8 +51,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "home",  # This is correct if 'home' is your Django app
-    "instagram_client",  # Add this line if 'instagram_client' is your app
+    # This is correct if 'home' is your Django app
+    "home",
+    # Add this line if 'instagram_client' is your app
+    "instagram_client",
 ]
 
 MIDDLEWARE = [
@@ -100,22 +90,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "Sierra16",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME", "postgres"),
+        "USER": os.environ.get("DB_USER", "postgres"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "Sierra16"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -133,8 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -145,3 +127,5 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
