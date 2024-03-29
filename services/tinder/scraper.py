@@ -4,49 +4,60 @@ Created by Frederikme (TeetiFM)
 
 import random
 import time
+from typing import List, Dict
 
-from tinderbotz.session import Session
+import tinderbotz.session
+
+def print_geomatch_data(geomatch: tinderbotz.session.Geomatch) -> None:
+    """Prints geomatch data with better formatting."""
+    data = geomatch.get_dictionary()
+    print(f"Name: {data['name']}")
+    print(f"Image URLs: {', '.join(data['image_urls'])}")
+    print(f"Bio: {data['bio']}")
+
+def login(session: tinderbotz.session.Session, email: str, password: str, use_facebook: bool = False) -> None:
+    """Logs in using email and password or Facebook login."""
+    if use_facebook:
+        session.login_using_facebook(email, password)
+    else:
+        session.login_using_google(email, password)
+    # Add delay to mimic human behavior
+    time.sleep(random.uniform(2, 5))
 
 if __name__ == "__main__":
+    # Creates instance of session
+    session = tinderbotz.session.Session()
 
-    # creates instance of session
-    session = Session()
-
-    # set a custom location
+    # Set a custom location
     session.set_custom_location(latitude=50.879829, longitude=4.700540)
 
-    # replace this with your own email and password!
+    # Replace this with your own email and password!
     email = "example@gmail.com"
     password = "password123"
 
-    # login using your google account with a verified email! Alternatively, you can use Facebook login
-    session.login_using_facebook(email, password)
+    # Login using your Google account with a verified email! Alternatively, you can use Facebook login
+    login(session, email, password)
 
-    # start scraping as much geomatches as possible
     while True:
-        # When scraping we want ALL images and not just the first few.
-        # If you want to scrape a lot quicker, I recommend putting quickload on True
-        # But note that you'd only get 1-3 image urls instead of them all.
-        geomatch = session.get_geomatch(quickload=False)
+        try:
+            # When scraping we want ALL images and not just the first few.
+            # If you want to scrape a lot quicker, I recommend putting quickload on True
+            # But note that you'd only get 1-3 image urls instead of them all.
+            geomatch = session.get_geomatch(quickload=False)
 
-        # check if crucial data is not empty (This will rarely be the case tho, but we want a 'clean' dataset
-        if geomatch.get_name() is not None and geomatch.get_image_urls() != []:
+            # Check if crucial data is not empty (This will rarely be the case tho, but we want a 'clean' dataset
+            if geomatch.get_name() and geomatch.get_image_urls():
 
-            # let's store the data of the geomatch locally (this includes all images!)
-            session.store_local(geomatch)
+                # Let's store the data of the geomatch locally (this includes all images!)
+                session.store_local(geomatch)
 
-            # display the saved data on your console
-            print(geomatch.get_dictionary())
+                # Display the saved data on your console
+                print_geomatch_data(geomatch)
 
-            # account is scraped, now dislike and go next (since dislikes are infinite)
-            # NOTE: if no amount is passed, it will dislike once -> same as => dislike(amount=1)
-            # NOTE: if you have TinderPlus, -Gold or -Platinum you could also use session.like()
-            session.dislike()
+                # Account is scraped, now dislike and go next (since dislikes are infinite)
+                # NOTE: if no amount is passed, it will dislike once -> same as => dislike(amount=1)
+                # NOTE: if you have TinderPlus, -Gold or -Platinum you could also use session.like()
+                session.dislike()
 
-        else:
-            # refresh webpage, and go for another geomatch
-            session.browser.refresh()
+            else:
 
-        # make a random sleep between dislikes between 0 and 4 seconds to mimic looks human-like, not spammy behaviour
-        sleepy_time = random.random() * 4
-        time.sleep(sleepy_time)
