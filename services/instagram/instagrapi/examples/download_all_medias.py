@@ -1,18 +1,40 @@
 import os
+import time
+from typing import Dict, List, Union
 
 from instagrapi import Client
 
-ACCOUNT_USERNAME = os.environ.get("IG_USERNAME")
-ACCOUNT_PASSWORD = os.environ.get("IG_PASSWORD")
 
-
-def main(username: str, amount: int = 5) -> dict:
+def get_env_var(name: str, default: str = None) -> str:
     """
-    Download all medias from instagram profile
+    Get environment variable or return a default value
+    """
+    var = os.getenv(name)
+    if var is None:
+        if default is not None:
+            return default
+        else:
+            raise Exception(f"Environment variable {name} is not set")
+    return var
+
+
+def main(username: str, amount: int = 5) -> Dict[str, List[str]]:
+    """
+    Download all medias from Instagram profile
     """
     amount = int(amount)
+    if amount < 0:
+        raise ValueError("Amount must be non-negative")
+
     cl = Client()
-    cl.login(ACCOUNT_USERNAME, ACCOUNT_PASSWORD)
+    ACCOUNT_USERNAME = get_env_var("IG_USERNAME")
+    ACCOUNT_PASSWORD = get_env_var("IG_PASSWORD")
+
+    try:
+        cl.login(ACCOUNT_USERNAME, ACCOUNT_PASSWORD, timeout=10)
+    except Exception as e:
+        raise Exception("Failed to login to Instagram account") from e
+
     user_id = cl.user_id_from_username(username)
     medias = cl.user_medias(user_id)
     result = {}
@@ -21,34 +43,15 @@ def main(username: str, amount: int = 5) -> dict:
         if i >= amount:
             break
         paths = []
-        if m.media_type == 1:
+        media_type = m.media_type
+        if media_type == 1:
             # Photo
             paths.append(cl.photo_download(m.pk))
-        elif m.media_type == 2 and m.product_type == "feed":
-            # Video
-            paths.append(cl.video_download(m.pk))
-        elif m.media_type == 2 and m.product_type == "igtv":
-            # IGTV
-            paths.append(cl.video_download(m.pk))
-        elif m.media_type == 2 and m.product_type == "clips":
-            # Reels
-            paths.append(cl.video_download(m.pk))
-        elif m.media_type == 8:
-            # Album
-            for path in cl.album_download(m.pk):
-                paths.append(path)
-        result[m.pk] = paths
-        print(f"http://instagram.com/p/{m.code}/", paths)
-        i += 1
-    return result
-
-
-if __name__ == "__main__":
-    username = input("Enter username: ")
-    while True:
-        amount = input("How many posts to process (default: 5)? ").strip()
-        if amount == "":
-            amount = "5"
-        if amount.isdigit():
-            break
-    main(username, amount)
+        elif media_type == 2:
+            product_type = m.product_type
+            if product_type == "feed":
+                # Video
+                paths.append(cl.video_download(m.pk))
+            elif product_type == "igtv":
+                # IGTV
+                paths.append(cl.video_download(m.
