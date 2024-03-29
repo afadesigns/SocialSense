@@ -1,17 +1,21 @@
 """
 Created by Frederikme (TeetiFM)
+TinderBotz: A simple Tinder bot for automating actions on the Tinder platform.
 """
 
-from tinderbotz.helpers.constants_helper import *
+import time
+
+from tinderbotz.helpers.constants_helper import Sexuality, Socials
 from tinderbotz.session import Session
 
-if __name__ == "__main__":
+def main():
     # creates instance of session
     session = Session()
+
     # Or if you want to use a proxy
     # AUTHORISED BY IP -> "HOST:PORT"
     # AUTHORISED BY USERNAME, PASSWORD -> "username:password@HOST:PORT"
-    session = Session(proxy="23.23.23.23:3128")
+    # session = Session(proxy="23.23.23.23:3128")
 
     # set location (Don't need to be logged in for this)
     session.set_custom_location(latitude=50.879829, longitude=4.700540)
@@ -24,7 +28,7 @@ if __name__ == "__main__":
     session.login_using_google(email, password)
 
     # Alternatively you can login using facebook with a connected profile!
-    session.login_using_facebook(email, password)
+    # session.login_using_facebook(email, password)
 
     # Alternatively, you can also use your phone number to login
     """
@@ -32,9 +36,9 @@ if __name__ == "__main__":
     - phone_number is everything after the prefix (+32)
     NOTE: this is not my phone number :)
     """
-    country = "Belgium"
-    phone_number = "479011124"
-    session.login_using_sms(country, phone_number)
+    # country = "Belgium"
+    # phone_number = "479011124"
+    # session.login_using_sms(country, phone_number)
 
     # spam likes, dislikes and superlikes
     # to avoid being banned:
@@ -80,7 +84,7 @@ if __name__ == "__main__":
         name = match.get_name()
         id = match.get_chat_id()
 
-        print(name, id)
+        print(f"{name} {id}")
 
         # Format the match her/his name in your pickup line for a more personal approach.
         message = pickup_line.format(name)
@@ -108,3 +112,7 @@ if __name__ == "__main__":
         session.store_local(geomatch)
         # dislike the profile, so it will show us the next geomatch (since we got infinite amount of dislikes anyway)
         session.dislike()
+        time.sleep(1)
+
+if __name__ == "__main__":
+    main()
