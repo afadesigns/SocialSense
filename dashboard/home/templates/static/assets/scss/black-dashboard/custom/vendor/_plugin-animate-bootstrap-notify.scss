@@ -2,8 +2,14 @@
 
 @charset "UTF-8";
 
+:root {
+  --duration-base: 1s;
+  --duration-hinge: 2s;
+  --duration-bounce: .75s;
+}
+
 .animated {
-  animation-duration: 1s;
+  animation-duration: var(--duration-base);
   animation-fill-mode: both;
 }
 
@@ -12,26 +18,28 @@
 }
 
 .animated.hinge {
-  animation-duration: 2s;
+  animation-duration: var(--duration-hinge);
 }
 
 .animated.bounceIn,
 .animated.bounceOut {
-  animation-duration: .75s;
-}
-
-.animated.flipOutX,
-.animated.flipOutY {
-  animation-duration: .75s;
+  animation-duration: var(--duration-bounce);
 }
 
 @keyframes shake {
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     -webkit-transform: translate3d(-10px, 0, 0);
     transform: translate3d(-10px, 0, 0);
   }
 
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     -webkit-transform: translate3d(10px, 0, 0);
     transform: translate3d(10px, 0, 0);
   }
@@ -80,27 +88,4 @@
 
   to {
     opacity: 0;
-    -webkit-transform: translate3d(0, 100%, 0);
-    transform: translate3d(0, 100%, 0);
-  }
-}
-
-.fadeOutDown {
-  animation-name: fadeOutDown;
-}
-
-@keyframes fadeOutUp {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-}
-
-.fadeOutUp {
-  animation-name: fadeOutUp;
-}
+    -webkit-transform: translate3d(0, 100%,
