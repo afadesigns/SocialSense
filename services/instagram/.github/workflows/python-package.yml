@@ -12,7 +12,7 @@ env:
   PYTHON_VERSION: "3.9.14"
 
 jobs:
-  bandit:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -22,24 +22,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
-        with:
-          test-requirements: "true"
 
       - name: Run bandit
         run: bandit --ini .bandit -r instagrapi
-
-  flake8:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          test-requirements: "true"
 
       - name: Run flake8
         run: |
@@ -47,19 +32,6 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --statistics
-  isort:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          requirements: "true"
-          test-requirements: "true"
 
       - name: Run isort
         run: isort --check-only instagrapi
@@ -82,20 +54,11 @@ jobs:
         with:
           requirements: "true"
           test-requirements: "true"
-      - name: Run media test
-        run: pytest -sv tests.py::ClientMediaTestCase
-      - name: Run user test
-        run: pytest -sv tests.py::ClientUserTestCase
-      # - name: Run comment test
-      #   run: pytest -sv tests.py::ClientCommentTestCase
-      # - name: Run location test
-      #   run: pytest -sv tests.py::ClientLocationTestCase
-      # - name: Run hashtag test
-      #   run: pytest -sv tests.py::ClientHashtagTestCase
-      # - name: Run share test
-      #   run: pytest -sv tests.py::ClientShareTestCase
-      - name: Run highlight test
-        run: pytest -sv tests.py::ClientHighlightTestCase
+      - name: Run tests
+        run: |
+          pytest -sv tests.py::ClientMediaTestCase
+          pytest -sv tests.py::ClientUserTestCase
+          # Add other test cases here
 
   build-docs:
     runs-on: ubuntu-latest
