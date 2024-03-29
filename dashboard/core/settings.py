@@ -1,15 +1,18 @@
+<<<<<<< HEAD
 # Import necessary modules
+=======
+# C:\Users\Andreas\Projects\SocialSense\dashboard\core\settings.py
+
+>>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
 import os
 import random
 import string
 import sys  # Added for integrating Instagrapi
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -23,10 +26,12 @@ if not SECRET_KEY:
 # Render Deployment Code
 DEBUG = "RENDER" not in os.environ
 
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
 # HOSTs List
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-# Add here your deployment HOSTS
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://localhost:5085",
@@ -38,16 +43,25 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Add Instagram API domain to trusted hosts
 API_DOMAIN = "i.instagram.com"
 ALLOWED_HOSTS.append(API_DOMAIN)
 
+<<<<<<< HEAD
 # Add the path to the Instagrapi library to the PYTHONPATH
 INSTAGRAM_SERVICE_DIR = os.path.join(BASE_DIR, "services", "instagram")
 sys.path.append(INSTAGRAM_SERVICE_DIR)
 
 # Application definition
+=======
+INSTAGRAM_CLIENT_ID = os.environ.get("INSTAGRAM_CLIENT_ID")
+INSTAGRAM_CLIENT_SECRET = os.environ.get("INSTAGRAM_CLIENT_SECRET")
+>>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
 
+AUTHENTICATION_BACKENDS = [
+    # Add your custom authentication backend here if needed
+]
+
+# Application definition
 INSTALLED_APPS = [
     "admin_black_pro.apps.AdminBlackProConfig",
     "django.contrib.admin",
@@ -57,9 +71,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "home",  # This is correct if 'home' is your Django app
-    # Remove "InstagramClient" if it's not an actual app
+    "instagram_client",  # Add this line if 'instagram_client' is your app
 ]
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -138,32 +151,4 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-LOGIN_REDIRECT_URL = "/"
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# Configure Instagram API Client settings here
-INSTAGRAM_API_SETTINGS = {
-    "API_DOMAIN": API_DOMAIN,
-    "USER_AGENT_BASE": (
-        "Instagram {app_version} "
-        "Android ({android_version}/{android_release}; "
-        "{dpi}; {resolution}; {manufacturer}; "
-        "{model}; {device}; {cpu}; {locale}; {version_code})"
-    ),
-    "SOFTWARE": "{model}-user+{android_release}+OPR1.170623.032+V10.2.3.0.OAGMIXM+release-keys",
-    # Add other settings here as needed
-}
-
-# Import Instagram API Client
+# https

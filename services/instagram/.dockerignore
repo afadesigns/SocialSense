@@ -1,3 +1,46 @@
 .github/
-.git/
+|-- workflows/  (GitHub Actions workflows)
+.vscode/
+|-- settings.json  (Visual Studio Code settings)
+my_project/
+|-- src/
+|   |-- __init__.py
+|   |-- app.py
+|   |-- module1.py
+|   |-- module2.py
+|-- tests/
+|   |-- __init__.py
+|   |-- test_module1.py
+|   |-- test_module2.py
+|-- .env  (Environment variables)
+|-- .flake8
+|-- .gitignore
+|-- README.md
+|-- requirements.txt
+|-- pyproject.toml
 venv/
+|-- bin/
+|-- include/
+|-- lib/
+
+
+# Python
+*.pyc
+__pycache__/
+*.pyd
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Virtual Environment
+venv/
+
+# Logs and Databases
+*.log
+*.db
+*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db

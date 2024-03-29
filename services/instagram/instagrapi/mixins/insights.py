@@ -1,11 +1,17 @@
 import time
-from typing import Dict, List
+from typing import Dict, List, Literal, Optional
 
 from instagrapi.exceptions import ClientError, MediaError, UserError
 from instagrapi.utils import json_value
 
-POST_TYPES = ("ALL", "CAROUSEL_V2", "IMAGE", "SHOPPING", "VIDEO")
-TIME_FRAMES = (
+POST_TYPES: tuple[str, ...] = (
+    "ALL",
+    "CAROUSEL_V2",
+    "IMAGE",
+    "SHOPPING",
+    "VIDEO",
+)
+TIME_FRAMES: tuple[str, ...] = (
     "ONE_WEEK",
     "ONE_MONTH",
     "THREE_MONTHS",
@@ -13,7 +19,7 @@ TIME_FRAMES = (
     "ONE_YEAR",
     "TWO_YEARS",
 )
-DATA_ORDERS = (
+DATA_ORDERS: tuple[str, ...] = (
     "REACH_COUNT",
     "LIKE_COUNT",
     "FOLLOW",
@@ -29,48 +35,50 @@ DATA_ORDERS = (
 try:
     from typing import Literal
 
-    POST_TYPE = Literal[POST_TYPES]
-    TIME_FRAME = Literal[TIME_FRAMES]
-    DATA_ORDERING = Literal[DATA_ORDERS]
+    PostType = Literal[POST_TYPES]
+    TimeFrame = Literal[TIME_FRAMES]
+    DataOrdering = Literal[DATA_ORDERS]
 except ImportError:
     # python <= 3.8
-    POST_TYPE = TIME_FRAME = DATA_ORDERING = str
-
+    PostType = TimeFrame = DataOrdering = str
 
 class InsightsMixin:
     """
     Helper class to get insights
     """
 
+    def __init__(self):
+        self.last_json: Optional[Dict] = None
+
+    def _get_query_params(
+        self,
+        data: Dict,
+        query_params: Dict,
+        *,
+        count: int = 200,
+        cursor: Optional[str] = None,
+    ) -> Dict:
+        params = {**query_params, **{"count": count}}
+        if cursor:
+            params["cursor"] = cursor
+        return {**data, **params}
+
+    def _get_result(self, url: str, query_params: Dict) -> Dict:
+        self.last_json = self.private_request(url, query_params)
+        self.raise_for_status()
+        return self.last_json
+
+    def raise_for_status(self):
+        if self.last_json and self.last_json.get("status") != "ok":
+            raise UserError(self.last_json.get("message"))
+
     def insights_media_feed_all(
         self,
-        post_type: POST_TYPE = "ALL",
-        time_frame: TIME_FRAME = "TWO_YEARS",
-        data_ordering: DATA_ORDERING = "REACH_COUNT",
+        post_type: PostType = "ALL",
+        time_frame: TimeFrame = "TWO_YEARS",
+        data_ordering: DataOrdering = "REACH_COUNT",
         count: int = 0,
-        sleep: int = 2,
     ) -> List[Dict]:
-        """
-        Get insights for all medias from feed with page iteration with cursor and sleep timeout
-
-        Parameters
-        ----------
-        post_type: str, optional
-            Types of posts, default is "ALL"
-        time_frame: str, optional
-            Time frame to pull media insights, default is "TWO_YEARS"
-        data_ordering: str, optional
-            Ordering strategy for the data, default is "REACH_COUNT"
-        count: int, optional
-            Max media count for retrieving, default is 0
-        sleep: int, optional
-            Timeout between pages iterations, default is 2
-
-        Returns
-        -------
-        List[Dict]
-            List of dictionaries of response from the call
-        """
         assert (
             post_type in POST_TYPES
         ), f'Unsupported post_type="{post_type}" {POST_TYPES}'
@@ -94,7 +102,6 @@ class InsightsMixin:
         query_params = {
             "IgInsightsGridMediaImage_SIZE": 480,
             "count": 200,  # TODO Try to detect max allowed value
-            # "cursor": "0",
             "dataOrdering": data_ordering,
             "postType": post_type,
             "timeframe": time_frame,
@@ -103,12 +110,8 @@ class InsightsMixin:
             "queryParams": {"access_token": "", "id": self.user_id},
         }
         while True:
-            if cursor:
-                query_params["cursor"] = cursor
-            result = self.private_request(
-                "ads/graphql/",
-                self.with_query_params(data, query_params),
-            )
+            query_params = self._get_query_params(data, query_params, cursor=cursor)
+            result = self._get_result("ads/graphql/", query_params)
             if not json_value(
                 result,
                 "data",
@@ -116,7 +119,7 @@ class InsightsMixin:
                 "business_manager",
                 default=None,
             ):
-                raise UserError("Account is not business account", **self.last_json)
+                raise UserError("Account is not business account", **result)
             stats = json_value(
                 result,
                 "data",
@@ -131,82 +134,6 @@ class InsightsMixin:
                 break
             if count and len(medias) >= count:
                 break
-            time.sleep(sleep)
+            time.sleep(2)
         if count:
-            medias = medias[:count]
-        return medias
 
-    """
-    Helpers for getting insights for media
-    """
-
-    def insights_account(self) -> Dict:
-        """
-        Get insights for account
-
-        Returns
-        -------
-        Dict
-            A dictionary of response from the call
-        """
-        assert self.user_id, "Login required"
-        data = {
-            "surface": "account",
-            "doc_id": 2449243051851783,
-            "locale": "en_US",
-            "vc_policy": "insights_policy",
-            "strip_nulls": False,
-            "strip_defaults": False,
-        }
-        query_params = {
-            "IgInsightsGridMediaImage_SIZE": 360,
-            "activityTab": True,
-            "audienceTab": True,
-            "contentTab": True,
-            "query_params": {"access_token": "", "id": self.user_id},
-        }
-
-        result = self.private_request(
-            "ads/graphql/",
-            self.with_query_params(data, query_params),
-        )
-        res = json_value(result, "data", "shadow_instagram_user", "business_manager")
-        if not res:
-            raise UserError("Account is not business account", **self.last_json)
-        return res
-
-    def insights_media(self, media_pk: int) -> Dict:
-        """
-        Get insights data for media
-
-        Parameters
-        ----------
-        media_pk: int
-            PK for the album you want to download
-
-        Returns
-        -------
-        Dict
-            A dictionary with insights data
-        """
-        assert self.user_id, "Login required"
-        media_pk = self.media_pk(media_pk)
-        data = {
-            "surface": "post",
-            "doc_id": 3221905377882880,
-            "locale": "en_US",
-            "vc_policy": "insights_policy",
-            "strip_nulls": False,
-            "strip_defaults": False,
-        }
-        query_params = {
-            "query_params": {"access_token": "", "id": media_pk},
-        }
-        try:
-            result = self.private_request(
-                "ads/graphql/",
-                self.with_query_params(data, query_params),
-            )
-            return result["data"]["instagram_post_by_igid"]
-        except ClientError as e:
-            raise MediaError(e.message, media_pk=media_pk, **self.last_json)

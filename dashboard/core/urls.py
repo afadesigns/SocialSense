@@ -5,6 +5,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 Examples:
 Function views
     1. Add an import:  from my_app import views
+<<<<<<< HEAD
     2. Add a URL to urlpatterns:  path('', views.home, name='home')
 Class-based views
     1. Add an import:  from other_app.views import Home
@@ -22,3 +23,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("admin_black_pro.urls")),
 ]
+=======
+    
+>>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00

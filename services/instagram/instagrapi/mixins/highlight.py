@@ -2,7 +2,7 @@ import json
 import random
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Union
 from urllib.parse import urlparse
 
 from instagrapi import config
@@ -34,7 +34,7 @@ class HighlightMixin:
         assert "/highlights/" in url, 'URL must contain "/highlights/"'
         path = urlparse(url).path
         parts = [p for p in path.split("/") if p and p.isdigit()]
-        return str(parts[0])
+        return str(parts[-1]) if parts else ""
 
     def user_highlights_v1(self, user_id: str, amount: int = 0) -> List[Highlight]:
         """
@@ -97,6 +97,11 @@ class HighlightMixin:
         -------
         Highlight
             An object of Highlight type
+
+        Raises
+        ------
+        HighlightNotFound
+            If the highlight was not found
         """
         highlight_id = f"highlight:{highlight_pk}"
         data = {
@@ -113,7 +118,7 @@ class HighlightMixin:
             raise HighlightNotFound(highlight_pk=highlight_pk, **data)
         return extract_highlight_v1(data[highlight_id])
 
-    def highlight_info(self, highlight_pk: str) -> Highlight:
+    def highlight_info(self, highlight_pk: str) -> Union[Highlight, None]:
         """
         Get Highlight by pk or id
 
@@ -124,10 +129,13 @@ class HighlightMixin:
 
         Returns
         -------
-        Highlight
-            An object of Highlight type
+        Union[Highlight, None]
+            An object of Highlight type or None if the highlight was not found
         """
-        return self.highlight_info_v1(highlight_pk)
+        try:
+            return self.highlight_info_v1(highlight_pk)
+        except HighlightNotFound:
+            return None
 
     def highlight_create(
         self,
@@ -156,137 +164,4 @@ class HighlightMixin:
         if not cover_story_id:
             cover_story_id = story_ids[0]
         data = {
-            "supported_capabilities_new": json.dumps(config.SUPPORTED_CAPABILITIES),
-            "source": "self_profile",
-            "creation_id": str(int(time.time())),
-            "_uid": str(self.user_id),
-            "_uuid": self.uuid,
-            "cover": dumps(
-                {
-                    "media_id": self.media_id(cover_story_id),
-                    "crop_rect": dumps(crop_rect),
-                }
-            ),
-            "title": title,
-            "media_ids": dumps([self.media_id(sid) for sid in story_ids]),
-        }
-        result = self.private_request("highlights/create_reel/", data=data)
-        return extract_highlight_v1(result["reel"])
-
-    def highlight_edit(
-        self,
-        highlight_pk: str,
-        title: str = "",
-        cover: Dict = {},
-        added_media_ids: List[str] = [],
-        removed_media_ids: List[str] = [],
-    ):
-        data = {
-            "supported_capabilities_new": json.dumps(config.SUPPORTED_CAPABILITIES),
-            "source": "self_profile",
-            "_uid": str(self.user_id),
-            "_uuid": self.uuid,
-            "added_media_ids": dumps(added_media_ids),
-            "removed_media_ids": dumps(removed_media_ids),
-        }
-        if title:
-            data["title"] = title
-        if cover:
-            data["cover"] = dumps(cover)
-        result = self.private_request(
-            f"highlights/highlight:{highlight_pk}/edit_reel/", data=data
-        )
-        return extract_highlight_v1(result["reel"])
-
-    def highlight_change_title(self, highlight_pk: str, title: str) -> Highlight:
-        """
-        Change title for highlight
-
-        Parameters
-        ----------
-        highlight_pk: str
-            Unique identifier of Highlight
-        title: str
-            Title of Highlight
-
-        Returns
-        -------
-        Highlight
-        """
-        return self.highlight_edit(highlight_pk, title=title)
-
-    def highlight_change_cover(self, highlight_pk: str, cover_path: Path) -> Highlight:
-        """
-        Change cover for highlight
-
-        Parameters
-        ----------
-        highlight_pk: str
-            Unique identifier of Highlight
-        cover_path: Path
-            Path to photo
-
-        Returns
-        -------
-        Highlight
-        """
-        upload_id, width, height = self.photo_rupload(Path(cover_path))
-        cover = {"upload_id": str(upload_id), "crop_rect": "[0.0,0.0,1.0,1.0]"}
-        return self.highlight_edit(highlight_pk, cover=cover)
-
-    def highlight_add_stories(
-        self, highlight_pk: str, added_media_ids: List[str]
-    ) -> Highlight:
-        """
-        Add stories to highlight
-
-        Parameters
-        ----------
-        highlight_pk: str
-            Unique identifier of Highlight
-        removed_media_ids: List[str]
-            Remove stories from highlight
-
-        Returns
-        -------
-        Highlight
-        """
-        return self.highlight_edit(highlight_pk, added_media_ids=added_media_ids)
-
-    def highlight_remove_stories(
-        self, highlight_pk: str, removed_media_ids: List[str]
-    ) -> Highlight:
-        """
-        Remove stories from highlight
-
-        Parameters
-        ----------
-        highlight_pk: str
-            Unique identifier of Highlight
-        removed_media_ids: List[str]
-            Remove stories from highlight
-
-        Returns
-        -------
-        Highlight
-        """
-        return self.highlight_edit(highlight_pk, removed_media_ids=removed_media_ids)
-
-    def highlight_delete(self, highlight_pk: str) -> bool:
-        """
-        Delete highlight
-
-        Parameters
-        ----------
-        highlight_pk: str
-            Unique identifier of Highlight
-
-        Returns
-        -------
-        bool
-        """
-        data = {"_uid": str(self.user_id), "_uuid": self.uuid}
-        result = self.private_request(
-            f"highlights/highlight:{highlight_pk}/delete_reel/", data=data
-        )
-        return result.get("status") == "ok"
+            "supported_capabilities_new": json.dumps(config.SUPPORTED_CAPAB

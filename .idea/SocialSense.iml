@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
+<module type="PythonModule" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/services/instagram" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+
+      <!-- Exclude unnecessary directories -->
       <excludeFolder url="file://$MODULE_DIR$/.idea/copilot/chatSessions" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/services/instagram/instagrapi/bots/volvoownersclub/notebooks/.ipynb_checkpoints" />
@@ -12,15 +13,25 @@
       <excludeFolder url="file://$MODULE_DIR$/database/postgre" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
+
+    <!-- Add Python SDK -->
     <orderEntry type="jdk" jdkName="Python 3.9 (SocialSense)" jdkType="Python SDK" />
+
+    <!-- Add source folders -->
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+
+  <!-- Add documentation settings -->
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />
   </component>
+
+  <!-- Add SonarLint settings -->
   <component name="SonarLintModuleSettings">
     <option name="uniqueId" value="04608c96-ef6d-4c00-899d-a6e637a9a74d" />
   </component>
+
+  <!-- Add template folders -->
   <component name="TemplatesService">
     <option name="TEMPLATE_FOLDERS">
       <list>

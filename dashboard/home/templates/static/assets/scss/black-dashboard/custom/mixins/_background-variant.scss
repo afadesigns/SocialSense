@@ -1,18 +1,35 @@
 // Contextual backgrounds
+$hover-focus-duration: 0.3s;
+$darkening-amount: 10%;
+
 @mixin bg-variant($parent, $color) {
   #{$parent} {
     background-color: $color !important;
   }
   a#{$parent},
   button#{$parent} {
-    @include hover-focus {
-      background-color: darken($color, 10%) !important;
+    @include hover-focus(ease, $hover-focus-duration) {
+      $adjusted-color: if(darken($color, $darkening-amount) == $color, lighten($color, $darkening-amount), darken($color, $darkening-amount));
+      background-color: $adjusted-color !important;
     }
   }
 }
 
 @mixin bg-gradient-variant($parent, $color) {
-  #{$parent} {
-    background: linear-gradient(87deg, $color 0, adjust-hue($color, 25%) 100%) !important;
+  @if type-of($color) == color {
+    #{$parent} {
+      background-color: $color !important;
+    }
+  }
+  @else {
+    #{$parent} {
+      background: $color !important;
+    }
+    a#{$parent},
+    button#{$parent} {
+      @include hover-focus(ease, $hover-focus-duration) {
+        background: linear-gradient(87deg, $color 0, adjust-hue($color, 25%) 100%) !important;
+      }
+    }
   }
 }
