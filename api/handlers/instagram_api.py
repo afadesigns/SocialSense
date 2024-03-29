@@ -17,13 +17,14 @@ from instagrapi.exceptions import BadPassword, LoginRequired, TwoFactorRequired
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def login_instagram(username: str, password: str) -> Client:
+def login_instagram(username: str, password: str) -> Optional[Client]:
     """
     Log in to Instagram and return the client object.
     """
     client = Client()
     try:
         client.login(username, password)
+        logger.info({"message": "Login successful.", "username": username})
     except (BadPassword, LoginRequired) as ex:
         logger.error(
             {
@@ -162,13 +163,9 @@ def fetch_direct_messages(client: Client) -> Dict:
         A dictionary containing direct message conversations
     """
     try:
-        direct_messages = client.direct_spam_inbox()
+        direct_messages = client.direct_inbox()
         return direct_messages
     except Exception as e:
         logger.error(
             {
                 "error": "Failed to fetch direct messages.",
-                "exception": str(e),
-            }
-        )
-
