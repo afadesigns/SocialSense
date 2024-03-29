@@ -9,6 +9,9 @@ setup(
     author_email="frederik.mees@gmail.com",
     license="MIT",
     packages=["tinderbotz"],
+    package_data={
+        "tinderbotz": ["data/*.txt"],
+    },
     install_requires=["selenium", "webdriver-manager"],
     python_requires=">=3.6",
     classifiers=[
@@ -18,14 +21,4 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
     ],
-)
-
-
-setup(
-    # ...
-    packages=["tinderbotz"],
-    package_data={
-        "tinderbotz": ["data/*.txt"],
-    },
-    # ...
 )
