@@ -1,13 +1,9 @@
 import os
-import tempfile
-from pathlib import Path
-from typing import List, Union
-from urllib.parse import urlparse
+import pathlib
+from typing import Optional
 
 import moviepy.editor as mpy
 from PIL import Image
-
-from .types import StoryBuild, StoryMention, StorySticker
 
 class StoryBuilder:
     """
@@ -19,10 +15,10 @@ class StoryBuilder:
 
     def __init__(
         self,
-        path: Union[str, Path],
+        path: pathlib.Path,
         caption: str = "",
-        mentions: List[StoryMention] = [],
-        bgpath: Union[str, Path] = None,
+        mentions: list["StoryMention"] = [],
+        bgpath: Optional[pathlib.Path] = None,
         link: str = "",
         font: str = "Arial",
         fontsize: int = 100,
@@ -33,14 +29,14 @@ class StoryBuilder:
 
         Parameters
         ----------
-        path: Union[str, Path]
+        path: pathlib.Path
             Path for a file
         caption: str, optional
             Media caption, default value is ""
-        mentions: List[StoryMention], optional
+        mentions: list["StoryMention"], optional
             List of mentions to be tagged on this upload, default is empty list
-        bgpath: Union[str, Path], optional
-            Path for a background image, default value is ""
+        bgpath: Optional[pathlib.Path], optional
+            Path for a background image, default value is None
         link: str, optional
             Link to be added to the story, default value is ""
         font: str, optional
@@ -61,13 +57,13 @@ class StoryBuilder:
             If the `color` argument is not a valid color
             If the `link` argument is not a valid URL
         """
-        self.path = Path(path).resolve()
+        self.path = path.resolve()
         if not self.path.exists():
             raise FileNotFoundError(f"File not found: {self.path}")
 
         self.caption = caption
         self.mentions = mentions
-        self.bgpath = Path(bgpath).resolve() if bgpath else None
+        self.bgpath = bgpath.resolve() if bgpath else None
 
         if link:
             try:
@@ -89,7 +85,7 @@ class StoryBuilder:
         self,
         clip: Union[mpy.VideoFileClip, mpy.ImageClip],
         max_duration: int = 0,
-    ) -> StoryBuild:
+    ) -> "StoryBuild":
         """
         Build clip
 
@@ -104,6 +100,11 @@ class StoryBuilder:
         -------
         StoryBuild
             An object of StoryBuild
+
+        Raises
+        ------
+        ValueError
+            If the `max_duration` argument is less than 0
         """
         if max_duration < 0:
             raise ValueError(f"Invalid max_duration: {max_duration}")
@@ -115,8 +116,9 @@ class StoryBuilder:
             background = mpy.ImageClip(str(self.bgpath))
             clips.append(background)
 
-        clip_left = (self.width - clip.size[0]) / 2
-        clip_top = (self.height - clip.size[1]) / 2
+        clip_size = clip.size
+        clip_left = (self.width - clip_size[0]) // 2
+        clip_top = (self.height - clip_size[1]) // 2
         if clip_top > 90:
             clip_top -= 50
 
@@ -124,7 +126,8 @@ class StoryBuilder:
         clips.append(media_clip)
 
         mention = self.mentions[0] if self.mentions else None
+        if mention:
+            # Add error handling for invalid mention
+            pass
 
-        caption = self.caption
-        if self.mentions:
-            mention = self
+        return StoryBuild(clips, stickers)
