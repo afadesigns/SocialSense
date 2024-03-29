@@ -1,26 +1,28 @@
-# This file contains the latest versions of the required packages as of 2023-03-29
+#!/bin/bash
 
-requests
-PySocks
-pydantic
-moviepy
-pycryptodomex
-
-
+# List of packages to be included in the requirements file
+packages=("requests" "PySocks" "pydantic" "moviepy" "pycryptodomex")
 
 # Create a new file called `requirements.txt`
 touch requirements.txt
 
-# Add package names to the file
-echo -e "requests\nPySocks\npydantic\nmoviepy\npycryptodomex" >> requirements.txt
+# Add package names to the requirements file
+for package in "${packages[@]}"; do
+  echo "$package" >> requirements.txt
+done
 
-# Install the packages (to get their latest versions) and save the output to a variable
-LATEST_VERSIONS=$(pip freeze | grep -Ef <(grep -Ev '^\-e|^\w+' requirements.txt))
+# Install the packages and save the output to a variable
+mapfile -t latest_versions < <(grep -Rh "^" requirements.txt | xargs -L1 pip install --upgrade --no-deps | grep "Successfully installed")
 
-# Replace the package names in the `requirements.txt` file with their latest versions
-echo -e "$LATEST_VERSIONS" > requirements.txt
+# Replace the package names in the requirements file with their latest versions
+if [[ ${#latest_versions[@]} -gt 0 ]]; then
+  printf "\\n" > requirements.txt
+  for version in "${latest_versions[@]}"; do
+    package="$(echo "$version" | awk '{print $2}' | cut -d'=' -f1)"
+    version="$(echo "$version" | awk '{print $2}')"
+    echo "$package==$version" >> requirements.txt
+  done
+fi
 
-
-
+# Install the packages from the requirements file
 pip install -r requirements.txt
-
