@@ -7,3 +7,20 @@
 # Ignores macOS files
 .DS_Store
 
+# Ignores Python virtual environment files
+venv/
+
+# Ignores IDE-specific files and directories
+.vscode/
+.idea/
+
+# Ignores compiled Python packages
+/build/
+/dist/
+
+# Ignores any file or directory named "temp"
+temp
+
+# Ignores any file or directory named "backup"
+backup
+
