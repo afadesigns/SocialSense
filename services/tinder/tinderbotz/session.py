@@ -5,22 +5,13 @@ import os
 import random
 import time
 from pathlib import Path
-from typing import List, Union
+from typing import Dict, Union
 
-import undetected_chromedriver.v2 as uc
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    TimeoutException,
-    ElementNotVisibleException,
-)
+import selenium.common.exceptions as SeleniumExceptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-import undetected_chromedriver.v2 as uc  # type: ignore
-from tinderbotz.addproxy import get_proxy_extension  # type: ignore
-from tinderbotz.helpers.constants_helper import Printouts  # type: ignore
-from tinderbotz.helpers.email_helper import EmailHelper  # type: ignore
+from undetected_chromedriver.v2 import Chrome, ChromeOptions
 
 
 class TinderBot:
@@ -66,68 +57,15 @@ class TinderBot:
                     print("Ended session: {}".format(y))
 
                 # Close browser properly
-                self.browser.quit()
+                self.close_browser()
 
             # Go further with the initialisation
             # Setting some options of the browser here below
 
-            options = uc.ChromeOptions()
+            options = ChromeOptions()
 
             # Create empty profile to avoid annoying Mac Popup
             if store_session:
                 if not user_data:
                     user_data = f"{Path().absolute()}/chrome_profile/"
-                if not os.path.isdir(user_data):
-                    os.mkdir(user_data)
-
-                Path(f"{user_data}First Run").touch()
-                options.add_argument(f"--user-data-dir={user_data}")
-
-            options.add_argument("--no-first-run --no-service-autorun --password-store=basic")
-            options.add_argument("--lang=en-GB")
-
-            if headless:
-                options.headless = True
-
-            if proxy:
-                if "@" in proxy:
-                    parts = proxy.split("@")
-
-                    user = parts[0].split(":")[0]
-                    pwd = parts[0].split(":")[1]
-
-                    host = parts[1].split(":")[0]
-                    port = parts[1].split(":")[1]
-
-                    extension = get_proxy_extension(
-                        PROXY_HOST=host, PROXY_PORT=port, PROXY_USER=user, PROXY_PASS=pwd
-                    )
-                    options.add_extension(extension)
-                else:
-                    options.add_argument(f"--proxy-server=http://{proxy}")
-
-            # Getting the chromedriver from cache or download it from internet
-            print("Getting ChromeDriver ...")
-            self.browser = uc.Chrome(options=options)  # ChromeDriverManager().install(),
-            # self.browser = webdriver.Chrome(options=options)
-            # self.browser.set_window_size(1250, 750)
-
-            # clear the console based on the operating system you're using
-            # os.system('cls' if os.name == 'nt' else 'clear')
-
-            # Cool banner
-            print(Printouts.BANNER.value)
-            time.sleep(1)
-
-            self.started = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            print("Started session: {}\n\n".format(self.started))
-
-        def set_custom_location(self, latitude, longitude, accuracy: str = "100%"):
-            """Set custom location."""
-            params = {
-                "latitude": latitude,
-                "longitude": longitude,
-                "accuracy": int(accuracy.split("%")[0]),
-            }
-
-           
+              
