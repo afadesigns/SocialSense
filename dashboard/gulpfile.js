@@ -8,33 +8,44 @@ const sourcemaps = require('gulp-sourcemaps');
 
 // Define COMMON paths
 const paths = {
-    src: {
-        base: './static/assets',
-        css: './static/assets/css',
-        scss: './static/assets/scss',
-        node_modules: './node_modules/',
-        vendor: './vendor'
-    }
+  src: {
+    base: './static/assets',
+    css: './static/assets/css',
+    scss: './static/assets/scss',
+    node_modules: './node_modules/',
+    vendor: './vendor'
+  }
 };
 
 // Compile SCSS
 function scss() {
-    return gulp.src([paths.src.scss + '/black-dashboard.scss'])
-        .pipe(sourcemaps.init())
-        .pipe(sass().on('error', sass.logError))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(paths.src.css))
-        .pipe(browserSync.stream());
+  return gulp.src(paths.src.scss + '/black-dashboard.scss')
+    .pipe(sourcemaps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(paths.src.css))
+    .pipe(browserSync.stream());
 }
 
-// Build CSS
-function buildCss() {
-    return gulp.src(paths.src.css + '/black-dashboard.css')
-        .pipe(cleanCss())
-        .pipe(rename({ extname: '.min.css' }))
-        .pipe(autoprefixer({ overrideBrowserslist: ['> 1%'] }))
-        .pipe(gulp.dest(paths.src.css));
+// Minify CSS
+function minifyCss() {
+  return gulp.src(paths.src.css + '/black-dashboard.css')
+    .pipe(cleanCss())
+    .pipe(rename({ extname: '.min.css' }))
+    .pipe(autoprefixer({ overrideBrowserslist: ['last 2 versions'] }))
+    .pipe(gulp.dest(paths.src.css))
+    .pipe(browserSync.stream());
 }
 
 // Default Task: Compile SCSS and minify the result
-gulp.task('default', gulp.series(scss, buildCss));
+gulp.task('default', gulp.series(scss, minifyCss));
+
+// Watch Task: Watch for changes and run tasks
+gulp.task('watch', function() {
+  browserSync.init({
+    server: {
+      baseDir: paths.src.base
+    }
+  });
+
+  gulp.watch(paths.src.scss + '/**/*
