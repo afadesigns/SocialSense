@@ -1,33 +1,39 @@
+def add_numbers(a, b):
+  return a + b
 
-]
--.idea/sonarlint/securityhotspotstore/index.pb,8\8\88a9255124c95bdc913197c120a8d560edc59c8e
-S
-#.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
-J
-dashboard/core/settings.py,3\0\30343b6983deeddecafdc378cd65f35246235e78
-H
-dashboard/home/models.py,1\3\13b5259b5160206922d2ba721427b7560f5350f9
-G
-dashboard/home/admin.py,e\2\e22e25e78680677d29168cda9ee9afc39da12518
-F
-dashboard/home/urls.py,5\1\51d1bae6ab38d77cb7757d3cd8bcec750d8ba3a0
-J
-dashboard/home/services.py,b\7\b7573414af415b3b967c3e1efd366154ac37c23f
-F
-dashboard/core/urls.py,0\8\08e8df2f85719e39740422bca59e4fbf244e3775
-G
-dashboard/home/views.py,8\1\816323dcc8972568a32442fe691ba29667f8bb19
-F
-dashboard/home/apps.py,e\2\e2c232db3c910bcfbaae7389130213032c3a2680
-F
-dashboard/core/asgi.py,a\0\a0f4238cc758f5506218126e015ef0d63f59ec51
-F
-dashboard/core/wsgi.py,c\3\c3ffabca05cd82f21d1bbd29c42cc2381a22be4d
-J
-dashboard/core/__init__.py,0\d\0d7cf62aaef83e973870bfa1ef42a71ed5196d4f
-D
-dashboard/.gitignore,2\d\2d1fb2490e3656d2a495f4468cdb6578e5477693
->
-dashboard/.env,f\1\f16d9b682840ea31894b42032f73a417061c4155
-@
-requirements.txt,1\9\19359a61ae2446b51b549167b014da2fcf265768
+def subtract_numbers(a, b):
+  return a - b
+
+def multiply_numbers(a, b):
+  return a * b
+
+def divide_numbers(a, b):
+  return a / b
+
+result = add_numbers(5, 3)
+print(result)
+
+result = subtract_numbers(5, 3)
+print(result)
+
+result = multiply_numbers(5, 3)
+print(result)
+
+result = divide_numbers(5, 3)
+print(result)
+
+
+def perform_operation(a, b, operation):
+  if operation == 'add':
+    return a + b
+  elif operation == 'subtract':
+    return a - b
+  elif operation == 'multiply':
+    return a * b
+  elif operation == 'divide':
+    return a / b
+  else:
+    raise ValueError(f"Invalid operation: {operation}")
+
+operations = ['add', 'subtract', 'multiply', 'divide']
+numbers =
