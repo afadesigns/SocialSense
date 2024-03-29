@@ -1,1 +1,6 @@
+# _config.yml
+
+# Specify the theme for your Jekyll site
 theme: jekyll-theme-hacker
+
+# Other configuration options can go here
