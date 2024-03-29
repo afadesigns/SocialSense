@@ -3,7 +3,7 @@
 // Used only by Bootstrap to generate the correct number of grid classes given
 // any value of `$grid-columns`.
 
-@mixin make-grid-columns($columns: $grid-columns, $gutter: $grid-gutter-width, $breakpoints: $grid-breakpoints) {
+@mixin make-grid-columns($columns: 12, $gutter: $grid-gutter-width, $breakpoints: $grid-breakpoints) {
   // Common properties for all breakpoints
   %grid-column {
     position: relative;
@@ -21,52 +21,47 @@
         @extend %grid-column;
       }
     }
-    .col#{$infix},
-    .col#{$infix}-auto {
-      @extend %grid-column;
-    }
 
-    @include media-breakpoint-up($breakpoint, $breakpoints) {
-      // Provide basic `.col-{bp}` classes for equal-width flexbox columns
+    // Provide basic `.col-{bp}` classes for equal-width flexbox columns
+    @if $columns > 1 {
       .col#{$infix} {
         flex-basis: 0;
         flex-grow: 1;
         max-width: 100%;
       }
-      .col#{$infix}-auto {
-        flex: 0 0 auto;
-        width: auto;
-        max-width: 100%; // Reset earlier grid tiers
-      }
+    }
 
+    .col#{$infix}-auto {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%; // Reset earlier grid tiers
+    }
+
+    @include media-breakpoint-up($breakpoint, $breakpoints) {
       @for $i from 1 through $columns {
-        .col#{$infix}-#{$i} {
-          @include make-col($i, $columns);
+        // Only generate `.col-{bp}-1` if there are more than one column
+        @if $columns > 1 {
+          .col#{$infix}-#{$i} {
+            @include make-col($i, $columns);
+          }
         }
-      }
 
-      .order#{$infix}-first {
-        order: -1;
-      }
-
-      .order#{$infix}-last {
-        order: $columns + 1;
-      }
-
-      @for $i from 0 through $columns {
-        .order#{$infix}-#{$i} {
-          order: $i;
-        }
-      }
-
-      // `$columns - 1` because offsetting by the width of an entire row isn't possible
-      @for $i from 0 through ($columns - 1) {
-        @if not ($infix == "" and $i == 0) { // Avoid emitting useless .offset-0
+        // Don't generate `.offset-0` or `.order-0`
+        @if $i != 1 {
           .offset#{$infix}-#{$i} {
             @include make-col-offset($i, $columns);
           }
+
+          .order#{$infix}-#{$i} {
+            order: $i;
+          }
         }
       }
-    }
-  }
-}
+
+      // Don't generate `.col-{bp}-1` or `.order-{bp}-1`
+      @if $columns > 1 {
+        .col#{$infix}-1 {
+          @include make-col(1, $columns);
+        }
+
+
