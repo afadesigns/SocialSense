@@ -1,4 +1,5 @@
 import base64
+import re
 from urllib.parse import urlparse
 from typing import Optional, Union
 
@@ -56,6 +57,13 @@ class ShareMixin:
             Share object or None if the URL is not a valid share URL
         """
         try:
+            if not url.lower().startswith("http"):
+                raise ValueError("Invalid URL")
+
+            parsed_url = urlparse(url)
+            if parsed_url.scheme != "http" and parsed_url.scheme != "https":
+                raise ValueError("Invalid URL")
+
             code = self.share_code_from_url(url)
             return self.share_info(code)
         except (ValueError, IndexError):
@@ -78,4 +86,10 @@ class ShareMixin:
         Raises
         ------
         ValueError
-            If the `url
+            If the `url` parameter is not a valid share URL
+        """
+        match = re.search(r"/p/(\w+)/", url)
+        if not match:
+            raise ValueError("Invalid URL")
+
+        return match.group(1)
