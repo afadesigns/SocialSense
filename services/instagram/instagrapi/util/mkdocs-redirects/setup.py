@@ -4,13 +4,16 @@ from setuptools import find_packages, setup
 
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    with open(os.path.join(os.path.dirname(__file__), fname), 'r') as file:
+        return file.read()
 
 
 setup(
-    name="mkdocs-redirects_relative_redirects",
-    version="1.0.1.b1",
+    name="mkdocs-relative-redirects",
+    version="1.0.1b1",
     description="A MkDocs plugin for dynamic page redirects to prevent broken links.",
+    long_description=read('README.md'),
+    long_description_content_type='text/markdown',
     python_requires=">=2.7",
     install_requires=[
         "mkdocs>=1.0.4",
@@ -36,6 +39,6 @@ setup(
     ],
     packages=find_packages(),
     entry_points={
-        "mkdocs.plugins": ["redirects = mkdocs_redirects.plugin:RedirectPlugin"]
+        "mkdocs.plugins": ["redirects = mkdocs_relative_redirects.plugin:RedirectPlugin"]
     },
 )
