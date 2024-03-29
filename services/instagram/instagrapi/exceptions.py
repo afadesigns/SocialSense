@@ -1,97 +1,81 @@
-class ClientError(Exception):
-    response = None
-    code = None
-    message = ""
-
+class InstagramError(ClientError):
     def __init__(self, *args, **kwargs):
-        args = list(args)
-        if len(args) > 0:
-            self.message = str(args.pop(0))
-        for key in list(kwargs.keys()):
-            setattr(self, key, kwargs.pop(key))
-        if not self.message:
-            self.message = "{title} ({body})".format(
-                title=getattr(self, "reason", "Unknown"),
-                body=getattr(self, "error_type", vars(self)),
-            )
-        super().__init__(self.message, *args, **kwargs)
-        if self.response:
-            self.code = self.response.status_code
+        self.status_code = None
+        super().__init__(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.error_title}: {self.message}"
 
 
-class ClientUnknownError(ClientError):
+class ClientUnknownError(InstagramError):
     pass
 
 
-class WrongCursorError(ClientError):
+class WrongCursorError(InstagramError):
     message = "You specified a non-existent cursor"
 
 
-class ClientStatusFail(ClientError):
+class ClientStatusFail(InstagramError):
     pass
 
 
-class ClientErrorWithTitle(ClientError):
+class ResetPasswordError(InstagramError):
     pass
 
 
-class ResetPasswordError(ClientError):
-    pass
-
-
-class GenericRequestError(ClientError):
+class GenericRequestError(InstagramError):
     """Sorry, there was a problem with your request"""
 
 
-class ClientGraphqlError(ClientError):
+class ClientGraphqlError(InstagramError):
     """Raised due to graphql issues"""
 
 
-class ClientJSONDecodeError(ClientError):
+class ClientJSONDecodeError(InstagramError):
     """Raised due to json decoding issues"""
 
 
-class ClientConnectionError(ClientError):
+class ClientConnectionError(InstagramError):
     """Raised due to network connectivity-related issues"""
 
 
-class ClientBadRequestError(ClientError):
+class ClientBadRequestError(InstagramError):
     """Raised due to a HTTP 400 response"""
 
 
-class ClientUnauthorizedError(ClientError):
+class ClientUnauthorizedError(InstagramError):
     """Raised due to a HTTP 401 response"""
 
 
-class ClientForbiddenError(ClientError):
+class ClientForbiddenError(InstagramError):
     """Raised due to a HTTP 403 response"""
 
 
-class ClientNotFoundError(ClientError):
+class ClientNotFoundError(InstagramError):
     """Raised due to a HTTP 404 response"""
 
 
-class ClientThrottledError(ClientError):
+class ClientThrottledError(InstagramError):
     """Raised due to a HTTP 429 response"""
 
 
-class ClientRequestTimeout(ClientError):
+class ClientRequestTimeout(InstagramError):
     """Raised due to a HTTP 408 response"""
 
 
-class ClientIncompleteReadError(ClientError):
+class ClientIncompleteReadError(InstagramError):
     """Raised due to incomplete read HTTP response"""
 
 
-class ClientLoginRequired(ClientError):
+class ClientLoginRequired(InstagramError):
     """Instagram redirect to https://www.instagram.com/accounts/login/"""
 
 
-class ReloginAttemptExceeded(ClientError):
+class ReloginAttemptExceeded(InstagramError):
     pass
 
 
-class PrivateError(ClientError):
+class PrivateError(InstagramError):
     """For Private API and last_json logic"""
 
 
@@ -104,224 +88,25 @@ class FeedbackRequired(PrivateError):
 
 
 class ChallengeError(PrivateError):
-    pass
-
-
-class ChallengeRedirection(ChallengeError):
-    pass
-
-
-class ChallengeRequired(ChallengeError):
-    pass
-
-
-class ChallengeSelfieCaptcha(ChallengeError):
-    pass
-
-
-class ChallengeUnknownStep(ChallengeError):
-    pass
-
-
-class SelectContactPointRecoveryForm(ChallengeError):
-    pass
-
-
-class RecaptchaChallengeForm(ChallengeError):
-    pass
-
-
-class SubmitPhoneNumberForm(ChallengeError):
-    pass
-
-
-class LegacyForceSetNewPasswordForm(ChallengeError):
-    pass
-
-
-class LoginRequired(PrivateError):
-    """Instagram request relogin
-    Example:
-    {'message': 'login_required',
-    'response': <Response [403]>,
-    'error_title': "You've Been Logged Out",
-    'error_body': 'Please log back in.',
-    'logout_reason': 8,
-    'status': 'fail'}
-    """
-
-
-class SentryBlock(PrivateError):
-    pass
-
-
-class RateLimitError(PrivateError):
-    pass
-
-
-class ProxyAddressIsBlocked(PrivateError):
-    """Instagram has blocked your IP address, use a quality proxy provider (not free, not shared)"""
-
-
-class BadPassword(PrivateError):
-    pass
-
-
-class BadCredentials(PrivateError):
-    pass
-
-
-class PleaseWaitFewMinutes(PrivateError):
-    pass
-
-
-class UnknownError(PrivateError):
-    pass
-
-
-class TrackNotFound(NotFoundError):
-    pass
-
-
-class MediaError(PrivateError):
-    pass
-
-
-class MediaNotFound(NotFoundError, MediaError):
-    pass
-
-
-class StoryNotFound(NotFoundError, MediaError):
-    pass
-
-
-class UserError(PrivateError):
-    pass
-
-
-class UserNotFound(NotFoundError, UserError):
-    pass
-
-
-class CollectionError(PrivateError):
-    pass
-
-
-class CollectionNotFound(NotFoundError, CollectionError):
-    pass
-
-
-class DirectError(PrivateError):
-    pass
-
-
-class DirectThreadNotFound(NotFoundError, DirectError):
-    pass
-
-
-class DirectMessageNotFound(NotFoundError, DirectError):
-    pass
-
-
-class VideoTooLongException(PrivateError):
-    pass
-
-
-class VideoNotDownload(PrivateError):
-    pass
-
-
-class VideoNotUpload(PrivateError):
-    pass
-
-
-class VideoConfigureError(VideoNotUpload):
-    pass
-
-
-class VideoConfigureStoryError(VideoConfigureError):
-    pass
-
-
-class PhotoNotUpload(PrivateError):
-    pass
-
-
-class PhotoConfigureError(PhotoNotUpload):
-    pass
-
-
-class PhotoConfigureStoryError(PhotoConfigureError):
-    pass
-
-
-class IGTVNotUpload(PrivateError):
-    pass
-
-
-class IGTVConfigureError(IGTVNotUpload):
-    pass
-
-
-class ClipNotUpload(PrivateError):
-    pass
-
-
-class ClipConfigureError(ClipNotUpload):
-    pass
-
-
-class AlbumNotDownload(PrivateError):
-    pass
-
-
-class AlbumUnknownFormat(PrivateError):
-    pass
-
-
-class AlbumConfigureError(PrivateError):
-    pass
-
-
-class HashtagError(PrivateError):
-    pass
-
-
-class HashtagNotFound(NotFoundError, HashtagError):
-    pass
-
-
-class LocationError(PrivateError):
-    pass
-
-
-class LocationNotFound(NotFoundError, LocationError):
-    pass
-
-
-class TwoFactorRequired(PrivateError):
-    pass
-
-
-class HighlightNotFound(NotFoundError, PrivateError):
-    pass
-
-
-class NoteNotFound(NotFoundError):
-    reason = "Not found"
-
-
-class PrivateAccount(PrivateError):
-    """This Account is Private"""
-
-
-class InvalidTargetUser(PrivateError):
-    """Invalid target user"""
-
-
-class InvalidMediaId(PrivateError):
-    """Invalid media_id"""
-
-
-class MediaUnavailable(PrivateError):
-    """Media is unavailable"""
+    challenge_type = None
+    step = None
+    form_name = None
+    message_template = None
+    message_params = None
+    form_data = None
+    form_response = None
+    form_status_code = None
+    form_message = None
+    form_error_title = None
+    form_error_body = None
+    form_error_reason = None
+    form_error_logout_reason = None
+
+    def __init__(self, *args, **kwargs):
+        self.form_response = None
+        self.form_status_code = None
+        self.form_message = None
+        self.form_error_title = None
+        self.form_error_body = None
+        self.form_error_reason = None
+        self.form_error_log
