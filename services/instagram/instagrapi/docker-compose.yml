@@ -2,14 +2,15 @@ version: "3.8"
 
 x-mount-app-and-user-git-config: &app-config
   volumes:
-    - ./:/app
+    - .:/app
     - ~/.gitconfig:/home/instagrapi/.gitconfig:ro
 
 x-devbox-base: &devbox-base
   build:
+    context: .
     dockerfile: "./docker/devbox.dockerfile"
-    context: "."
-  tty: true
+    # Use buildx for multi-platform builds
+    <<: *buildx-config
   networks:
     - app-network
   volumes: *app-config
@@ -28,18 +29,18 @@ services:
 
   lock-requirements:
     <<: *devbox-base
-    entrypoint: "/bin/bash"
-    command: "docker/lock_requirements.sh"
+    entrypoint: "bash"
+    command: "./docker/lock_requirements.sh"
 
   mkdocs:
     <<: *devbox-base
-    image: "lscr.io/linuxserver/mkdocs:latest"
+    image: "linuxserver/mkdocs:latest"
     ports:
       - "8000:8000"
     command: [ "serve", "--dev-addr=0.0.0.0:8000" ]
 
   mike:
-    image: "lscr.io/linuxserver/mike:latest"
+    image: "linuxserver/mike:latest"
     entrypoint: "mike"
 
 networks:
@@ -50,4 +51,5 @@ x-docker-buildx: &buildx-config
   builder:
     name: my-builder
     platforms:
-      - linux
+      - linux/amd64
+      - linux/arm64
