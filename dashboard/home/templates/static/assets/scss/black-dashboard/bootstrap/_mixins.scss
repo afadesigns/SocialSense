@@ -4,30 +4,21 @@
 // Deprecate
 @import (reference) "mixins/deprecate";
 
-// Utilities
-@import (reference) "mixins/breakpoints";
-@import (reference) "mixins/hover";
-@import (reference) "mixins/image";
-@import (reference) "mixins/badge";
-@import (reference) "mixins/resize";
-@import (reference) "mixins/screen-reader";
-@import (reference) "mixins/size";
-@import (reference) "mixins/reset-text";
-@import (reference) "mixins/text-emphasis";
-@import (reference) "mixins/text-hide";
-@import (reference) "mixins/text-truncate";
-@import (reference) "mixins/visibility";
-
 // Components
 @import (reference) "mixins/alert";
 @import (reference) "mixins/buttons";
 @import (reference) "mixins/caret";
-@import (reference) "mixins/pagination";
-@import (reference) "mixins/lists";
+@import (reference) "mixins/forms";
 @import (reference) "mixins/list-group";
 @import (reference) "mixins/nav-divider";
-@import (reference) "mixins/forms";
+@import (reference) "mixins/pagination";
 @import (reference) "mixins/table-row";
+
+// Layout
+@import (reference) "mixins/clearfix";
+@import (reference) "mixins/float";
+@import (reference) "mixins/grid";
+@import (reference) "mixins/grid-framework";
 
 // Skins
 @import (reference) "mixins/background-variant";
@@ -36,8 +27,20 @@
 @import (reference) "mixins/gradients";
 @import (reference) "mixins/transition";
 
-// Layout
-@import (reference) "mixins/clearfix";
-@import (reference) "mixins/grid-framework";
-@import (reference) "mixins/grid";
-@import (reference) "mixins/float";
+// Utilities
+@import (reference) "mixins/badge";
+@import (reference) "mixins/breakpoints";
+@import (reference) "mixins/deprecate";
+@import (reference) "mixins/extend";
+@import (reference) "mixins/hover";
+@import (reference) "mixins/image";
+@import (reference) "mixins/link";
+@import (reference) "mixins/list";
+@import (reference) "mixins/reset-text";
+@import (reference) "mixins/resize";
+@import (reference) "mixins/screen-reader";
+@import (reference) "mixins/size";
+@import (reference) "mixins/text-emphasis";
+@import (reference) "mixins/text-hide";
+@import (reference) "mixins/text-truncate";
+@import (reference) "mixins/visibility";
