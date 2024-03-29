@@ -1,10 +1,7 @@
 from setuptools import find_packages, setup
 
-requirements = []
-# requirements = [
-#     line.strip()
-#     for line in open('requirements.txt').readlines()
-# ]
+with open('requirements.txt') as f:
+    requirements = [line.strip() for line in f.readlines()]
 
 setup(
     name="instagrapi",
@@ -59,9 +56,14 @@ setup(
     ],
 )
 
-
-
-requests<3.0,>=2.25.1
-PySocks==1.7.1
-pydantic==2.5.3
-pycryptodomex==3.20.0
+# The following lines were originally outside of the setup function,
+# but they should be included in the package distribution.
+requires = [
+    'requests<3.0,>=2.25.1',
+    'PySocks==1.7.1',
+    'pydantic==2.5.3',
+    'pycryptodomex==3.20.0'
+]
+with open('instagrapi/requirements.txt', 'w') as f:
+    for r in requires:
+        f.write(f'{r}\n')
