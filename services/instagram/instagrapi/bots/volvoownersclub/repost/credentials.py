@@ -16,4 +16,14 @@ class SecretsManager:
         - secret: The secret value, or None if the key is not found.
         """
         # Retrieve secret from environment variables
-        return os.getenv(key)
+        secret = os.getenv(key)
+
+        # Check if the secret is set
+        if secret is None:
+            print(f"Error: Secret key '{key}' not found in environment variables.")
+
+        return secret
+
+# Example usage
+username = SecretsManager.get_secret("INSTAGRAPI_USERNAME")
+password = SecretsManager.get_secret("INSTAGRAPI_PASSWORD")
