@@ -1,15 +1,9 @@
 # This file is a requirements.txt file for managing Python packages
 # It is recommended to use this file with 'pip install -r requirements.txt'
 
-requests
-PySocks
-pydantic
-moviepy
-pycryptodomex
+# Upgrade pip and any outdated packages
+pip install --upgrade pip
+pip install --upgrade --out-date-last-sat-month '*'
 
-
-
-pip install --upgrade packages
-
-
-pip install --upgrade requests PySocks pydantic moviepy pycryptodomex
+# Install required packages
+pip install requests PySocks pydantic moviepy pycryptodomex
