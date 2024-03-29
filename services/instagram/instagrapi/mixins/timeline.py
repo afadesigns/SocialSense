@@ -2,12 +2,16 @@ from typing import List
 
 from instagrapi.extractors import extract_media_v1
 from instagrapi.types import Media
-
+from instagrapi.client import Client as InstaClient
 
 class ReelsMixin:
     """
     Helpers for Reels
     """
+
+    def __init__(self, client: InstaClient):
+        self.client = client
+        self.logger = client.logger
 
     def reels(self, amount: int = 10, last_media_pk: int = 0) -> List[Media]:
         """
@@ -19,6 +23,7 @@ class ReelsMixin:
             Maximum number of media to return, default is 10
         last_media_pk: int, optional
             Last PK user has seen, function will return medias after this pk. Default is 0
+
         Returns
         -------
         List[Media]
@@ -36,6 +41,7 @@ class ReelsMixin:
             Maximum number of media to return, default is 10
         last_media_pk: int, optional
             Last PK user has seen, function will return medias after this pk. Default is 0
+
         Returns
         -------
         List[Media]
@@ -63,20 +69,20 @@ class ReelsMixin:
         List[Media]
             A list of objects of Media
         """
+        private_request_endpoint = {
+            "reels": "clips/connected/",
+            "explore_reels": "clips/discover/",
+        }.get(collection_pk)
 
-        if collection_pk == "reels":
-            private_request_endpoint = "clips/connected/"
-        elif collection_pk == "explore_reels":
-            private_request_endpoint = "clips/discover/"
+        if not private_request_endpoint:
+            raise ValueError(f"Invalid collection_pk value: {collection_pk}")
 
-        last_media_pk = last_media_pk and int(last_media_pk)
         total_items = []
         next_max_id = ""
-        while True:
-            if len(total_items) >= float(amount):
-                return total_items[:amount]
+
+        while len(total_items) < amount:
             try:
-                result = self.private_request(
+                result = self.client.private_request(
                     private_request_endpoint,
                     data=" ",
                     params={"max_id": next_max_id},
@@ -85,12 +91,21 @@ class ReelsMixin:
                 self.logger.exception(e)
                 return total_items
 
+            if not result.get("items"):
+                break
+
             for item in result["items"]:
                 if last_media_pk and last_media_pk == item["media"]["pk"]:
                     return total_items
                 total_items.append(extract_media_v1(item.get("media")))
 
+                # Break the loop if the requested amount is reached
+                if len(total_items) >= amount:
+                    break
+
             if not result.get("paging_info", {}).get("more_available"):
-                return total_items
+                break
 
             next_max_id = result.get("paging_info", {}).get("more_available")
+
+        return total_items
