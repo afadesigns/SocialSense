@@ -1,9 +1,37 @@
-venv
-.idea
-constants.py
-data/
-tinderbotz.egg-info
-dist
-build
+$ mkdir tinderbotz
+$ cd tinderbotz
+
+
+$ python3 -m venv venv
+$ source venv/bin/activate (On Windows, use `venv\Scripts\activate`)
+
+
+(venv) $ pip install selenium
+
+
+(venv) $ pip freeze > requirements.txt
+
+
+$ touch tinderbotz/__init__.py
+
+
+venv/
 __pycache__/
+build/
+dist/
+tinderbotz.egg-info/
 chrome_profile/
+
+
+import os
+import constants
+
+def main():
+    # Your main application logic goes here.
+    print(f"Running the TinderBotz with Chrome profile path: {constants.CHROME_PROFILE_PATH}")
+
+if __name__ == "__main__":
+    main()
+
+
+#
