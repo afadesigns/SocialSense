@@ -1,11 +1,6 @@
 # This is a .gitignore file for Python projects
 # It includes common files and directories that should be ignored by version control
 
-# Ignores .mp4, .jpg, and .m4a files, which are media files
-*.mp4
-*.jpg
-*.m4a
-
 # Emacs temporary files
 *~
 
@@ -105,42 +100,4 @@ __pypackages__/
 # Celery files
 celerybeat-schedule
 celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# PyCharm
-.idea
-*.iml
-
-# VSCode
-.vscode
-ig_settings.json
 
