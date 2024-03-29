@@ -1,58 +1,24 @@
-.icon {
-  width: $icon-size;
-  height: $icon-size;
+$sizes: (
+  xl: ($icon-size-xl, $icon-size-xl - .75),
+  lg: ($icon-size-lg, $icon-size-lg - .75),
+  sm: ($icon-size-sm, $icon-size-sm - .75)
+);
 
-  i, svg {
-    font-size: $icon-size - .75;
+@each $size-name, $( $width, $font-size ) in $sizes {
+  .icon-#{$size-name} {
+    width: $width;
+    height: $width;
+
+    i, svg {
+      font-size: $font-size;
+    }
+  }
+
+  .icon-#{$size-name} + .icon-text {
+    width: calc(100% - #{$width} - 1);
   }
 }
 
-.icon + .icon-text {
-  padding-left: 1rem;
-  width: calc(100% - #{$icon-size} - 1);
-}
-
-.icon-xl {
-  width: $icon-size-xl;
-  height: $icon-size-xl;
-
-  i, svg {
-    font-size: $icon-size-xl - .75;
-  }
-}
-
-.icon-xl + .icon-text {
-  width: calc(100% - $icon-size-xl - 1);
-}
-
-.icon-lg {
-  width: $icon-size-lg;
-  height: $icon-size-lg;
-
-  i, svg {
-    font-size: $icon-size-lg - .75;
-  }
-}
-
-.icon-lg + .icon-text {
-  width: calc(100% - $icon-size-lg - 1);
-}
-
-.icon-sm {
-  width: $icon-size-sm;
-  height: $icon-size-sm;
-
-  i, svg {
-    font-size: $icon-size-sm - .75;
-  }
-}
-
-.icon-sm + .icon-text {
-  width: calc(100% - $icon-size-sm - 1);
-}
-
-
-// Icons included in shapes
 .icon-shape {
   padding: 12px;
   text-align: center;
@@ -61,9 +27,13 @@
   justify-content: center;
   border-radius: 50%;
 
-
   i, svg {
     font-size: 1.25rem;
+  }
+
+  svg {
+    width: 30px;
+    height: 30px;
   }
 
   &.icon-lg {
@@ -77,12 +47,6 @@
       font-size: .875rem;
     }
   }
-
-  svg {
-    width: 30px;
-    height: 30px;
-  }
-
 }
 
 @each $color, $value in $theme-colors {
