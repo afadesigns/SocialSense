@@ -4,7 +4,7 @@ import json
 import random
 import string
 import time
-import urllib
+import urllib.parse
 from typing import Any, Dict, List, Optional, Union
 
 
@@ -16,7 +16,7 @@ class InstagramIdCodec:
         """Convert a numeric value to a shortcode."""
         if num == 0:
             return alphabet[0]
-        arr: List[str] = []
+        arr: list = []
         base: int = len(alphabet)
         while num:
             rem: int = num % base
@@ -62,10 +62,20 @@ def generate_signature(data: str) -> str:
     str
         e.g. "signed_body=SIGNATURE.test"
     """
-    return "signed_body=SIGNATURE.{}".format(urllib.parse.quote_plus(data))
+    return f"signed_body=SIGNATURE.{urllib.parse.quote_plus(data)}"
 
 
 def json_value(data: Dict[str, Any], *args: str, default: Optional[Any] = None) -> Any:
+    """Retrieve a value from a JSON object by nested keys/indices.
+
+    Args:
+        data (Dict[str, Any]): JSON object
+        *args (str): Keys or indices to access the value
+        default (Optional[Any]): Default value to return if the value is not found
+
+    Returns:
+        Any: The value if found, otherwise default
+    """
     cur: Any = data
     for a in args:
         try:
@@ -76,4 +86,3 @@ def json_value(data: Dict[str, Any], *args: str, default: Optional[Any] = None) 
         except (IndexError, KeyError, TypeError, AttributeError):
             return default
     return cur
-
