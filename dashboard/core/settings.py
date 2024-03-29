@@ -1,9 +1,8 @@
-# C:\Users\Andreas\Projects\SocialSense\dashboard\core\settings.py
-
 # Import necessary modules
 import os
 import random
 import string
+import sys  # Added for integrating Instagrapi
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -42,6 +41,10 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Add Instagram API domain to trusted hosts
 API_DOMAIN = "i.instagram.com"
 ALLOWED_HOSTS.append(API_DOMAIN)
+
+# Add the path to the Instagrapi library to the PYTHONPATH
+INSTAGRAM_SERVICE_DIR = os.path.join(BASE_DIR, "services", "instagram")
+sys.path.append(INSTAGRAM_SERVICE_DIR)
 
 # Application definition
 
