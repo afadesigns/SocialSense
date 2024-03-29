@@ -1,11 +1,12 @@
 // stylelint-disable property-blacklist
-@mixin transition($transition...) {
+
+@mixin transition($transition: $transition-base, $enable-transitions: true, $enable-prefers-reduced-motion-media-query: true) {
   @if $enable-transitions {
-    @if length($transition) == 0 {
-      transition: $transition-base;
-    } @else {
-      transition: $transition;
-    }
+    transition: $transition;
+  }
+
+  @if length($transition) == 0 and $enable-transitions {
+    transition: $transition-base;
   }
 
   @if $enable-prefers-reduced-motion-media-query {
