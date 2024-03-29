@@ -1,18 +1,52 @@
-from typing import List
+import os
+import sys
+import time
+import random
+import itertools
+import pathlib
+import argparse
+import logging.config
+from collections import deque
+from contextlib import ExitStack
+from typing import Final, List, Optional
 
-from instagrapi import Client
+import instagrapi
 from instagrapi.types import Media
 
-HASHTAGS = ["instacool"]
-IG_USERNAME = ""
-IG_PASSWORD = ""
-IG_CREDENTIAL_PATH = "credential.json"
+HASHTAGS: Final = ["instacool"]
+HT_TYPE: Final = "top"
+AMOUNT: Final = 27
+LIKE_COUNT_MIN: Final = 1
+DAYS_AGO_MAX: Final = 365
+CREDENTIAL_PATH: Final = pathlib.Path("credential.json")
+
+LOGGING_CONFIG: Final = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s %(levelname)s %(name)s: %(message)s",
+        },
+    },
+    "handlers": {
+        "default": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+            "level": "DEBUG",
+        },
+    },
+    "loggers": {
+        "example_media": {
+            "handlers": ["default"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
 
 
-def get_logger(name, **kwargs):
-    import logging
-
-    logging.basicConfig(**kwargs)
+def get_logger(name: str) -> logging.Logger:
+    logging.config.dictConfig(LOGGING_CONFIG)
     logger = logging.getLogger(name)
     logger.debug(f"start logging '{name}'")
     return logger
@@ -20,98 +54,49 @@ def get_logger(name, **kwargs):
 
 def filter_medias(
     medias: List[Media],
-    like_count_min=None,
-    like_count_max=None,
-    comment_count_min=None,
-    comment_count_max=None,
-    days_ago_max=None,
-):
-    from datetime import datetime, timedelta
+    like_count_min: Optional[int] = None,
+    like_count_max: Optional[int] = None,
+    comment_count_min: Optional[int] = None,
+    comment_count_max: Optional[int] = None,
+    days_ago_max: Optional[int] = None,
+) -> List[Media]:
+    now = time.monotonic()
+    queue: deque = deque(maxlen=len(medias))
 
-    medias = list(
-        filter(
-            lambda x: (
-                True if like_count_min is None else x.like_count >= like_count_min
-            ),
-            medias,
-        )
-    )
-    medias = list(
-        filter(
-            lambda x: (
-                True if like_count_max is None else x.like_count <= like_count_max
-            ),
-            medias,
-        )
-    )
-    medias = list(
-        filter(
-            lambda x: (
-                True
-                if comment_count_min is None
-                else x.comment_count >= comment_count_min
-            ),
-            medias,
-        )
-    )
-    medias = list(
-        filter(
-            lambda x: (
-                True
-                if comment_count_max is None
-                else x.comment_count <= comment_count_max
-            ),
-            medias,
-        )
-    )
-    if days_ago_max is not None:
-        days_back = datetime.now() - timedelta(days=days_ago_max)
-        medias = list(
-            filter(
-                lambda x: days_ago_max is None
-                or x.taken_at is None
-                or x.taken_at > days_back.astimezone(x.taken_at.tzinfo),
-                medias,
-            )
-        )
-
-    return list(medias)
+    for media in medias:
+        if like_count_min is not None and media.like_count < like_count_min:
+            continue
+        if like_count_max is not None and media.like_count > like_count_max:
+            continue
+        if comment_count_min is not None and media.comment_count < comment_count_min:
+            continue
+        if comment_count_max is not None and media.comment_count > comment_count_max:
+            continue
+        if days_ago_max is not None:
+            queue.append((media, now - media.taken_at))
+            if queue[-1][1] > timedelta(days=days_ago_max).total_seconds():
+                continue
+        yield media
 
 
 def get_medias(
-    hashtags,
-    ht_type="top",
-    amount=27,
-):
-    ht_medias = []
-    for hashtag in hashtags:
-        if ht_type == "top":
-            ht_medias.extend(
-                cl.hashtag_medias_top(name=hashtag, amount=amount if amount <= 9 else 9)
-            )
-        elif ht_type == "recent":
-            ht_medias.extend(cl.hashtag_medias_recent(name=hashtag, amount=amount))
-    return list(dict([(media.pk, media) for media in ht_medias]).values())
+    hashtags: List[str],
+    ht_type: str = HT_TYPE,
+    amount: int = AMOUNT,
+) -> List[Media]:
+    medias: List[Media] = []
+    with ExitStack() as stack:
+        cl = stack.enter_context(instagrapi.Client())
+        if stack.callback(cl.load_settings, CREDENTIAL_PATH):
+            stack.enter_context(cl.login(IG_USERNAME, IG_PASSWORD))
+        else:
+            stack.enter_context(cl.login(IG_USERNAME, IG_PASSWORD))
+            stack.enter_context(cl.dump_settings, CREDENTIAL_PATH)
 
-
-if __name__ == "__main__":
-    import os
-
-    log = get_logger(
-        "example_media",
-        **{
-            "level": "DEBUG",
-            "format": "%(asctime)s %(levelname)s %(name)s: %(message)s",
-        },
-    )
-    cl = Client()
-    if os.path.exists(IG_CREDENTIAL_PATH):
-        cl.load_settings(IG_CREDENTIAL_PATH)
-        cl.login(IG_USERNAME, IG_PASSWORD)
-    else:
-        cl.login(IG_USERNAME, IG_PASSWORD)
-        cl.dump_settings(IG_CREDENTIAL_PATH)
-
-    m = get_medias(HASHTAGS, amount=4)
-    m = filter_medias(m, like_count_min=1, days_ago_max=365)
-    log.info(len(m))
+        for hashtag in hashtags:
+            if ht_type == "top":
+                medias.extend(
+                    cl.hashtag_medias_top(name=hashtag, amount=min(amount, 9))
+                )
+            elif ht_type == "recent":
+                medias.extend(cl.hashtag_medias_recent
