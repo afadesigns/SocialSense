@@ -1,9 +1,15 @@
 dashboard/
 ├── core/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   └── wsgi.py
+│   ├── settings/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── development.py
+│   │   └── production.py
+│   ├── urls/
+│   │   ├── __init__.py
+│   │   └── include.py
+│   ├── wsgi.py
+│   └── asgi.py
 │   └── __init__.py
 ├── home/
 │   ├── models.py
@@ -16,11 +22,12 @@ dashboard/
 ├── .env
 ├── .gitignore
 ├── requirements.txt
+├── docker-compose.yml
+├── Dockerfile
 └── manage.py
 
 
-django-admin startproject dashboard
-
+# dashboard/core/settings/base.py
 
 import os
 
@@ -31,10 +38,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your-secret-key'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -42,4 +49,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django
