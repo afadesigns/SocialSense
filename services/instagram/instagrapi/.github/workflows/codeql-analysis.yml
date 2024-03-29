@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'python' ]
+        language: [ 'python', 'javascript', 'java' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
         # Learn more:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
@@ -40,6 +40,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # fetch the entire repository history
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -69,3 +71,18 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+
+      - name: Upload CodeQL Analysis Results
+        uses: github/codeql-action/upload-analysis-results@v3
+        with:
+          codeql-analysis-type: 'pull_request'
+          codeql-repo-token: ${{ secrets.GITHUB_TOKEN }}
+          codeql-analysis-label: codeql-analysis
+
+      - name: Comment PR with Analysis Status
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const octokit = new Octokit({ auth: `${process.env.GITHUB_TOKEN}` })
+            const {
