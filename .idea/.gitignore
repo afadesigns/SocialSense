@@ -1,9 +1,7 @@
-# .gitignore file
+# This file specifies intentionally untracked files and directories that Git
+# should ignore when checking for changes in the project.
 # 
-# This file specifies intentionally untracked files that Git should ignore
-# when checking for changes in the project.
-# 
-# Default ignored files
+# Default ignored files and directories
 /shelf/
 /workspace.xml
 # Editor-based HTTP Client requests
@@ -13,3 +11,24 @@
 /dataSources.local.xml
 # GitHub Copilot persisted chat sessions
 /copilot/chatSessions
+
+# IDE-specific files and directories
+### Java-based IDEs (IntelliJ IDEA, Eclipse)
+.idea/
+.classpath
+.project
+
+### .NET-based IDEs (Visual Studio)
+*.suo
+*.user
+
+### Python-based IDEs (PyCharm)
+*.pyc
+
+### Node.js-based IDEs (WebStorm, Visual Studio Code)
+*.vscode/
+node_modules/
+
+# Operating system files and directories
+.DS_Store
+Thumbs.db
