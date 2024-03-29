@@ -7,7 +7,7 @@ from typing import Any
 import backoff
 from django.conf import settings
 
-from instagrapi import Client
+import instagrapi
 from instagrapi.exceptions import (
     ChallengeRequired,
     ClientConnectionError,
@@ -23,13 +23,13 @@ BAD_PASSWORD_MESSAGE = "Bad Password"
 logger = logging.getLogger(__name__)
 
 
-def save_session_to_file(client):
+def save_session_to_file(client: instagrapi.Client) -> None:
     with open(SESSION_FILE_PATH, "w") as file:
         json.dump(client.settings, file)
 
 
-def load_session_from_file() -> Client:
-    client = Client()
+def load_session_from_file() -> instagrapi.Client:
+    client = instagrapi.Client()
     try:
         with open(SESSION_FILE_PATH, "r") as file:
             session_settings = json.load(file)
@@ -39,7 +39,7 @@ def load_session_from_file() -> Client:
     return client
 
 
-def manage_proxy(client):
+def manage_proxy(client: instagrapi.Client) -> instagrapi.Client:
     """
     Centralized proxy management.
     """
@@ -48,66 +48,49 @@ def manage_proxy(client):
     return client.update_client_settings(client.get_settings())
 
 
-<<<<<<< HEAD
-def handle_exception(exception):
+def handle_exception(client: instagrapi.Client, e: Exception) -> bool:
     """
     Handle various exceptions during Instagram API operations.
     """
-    if isinstance(exception, ChallengeRequired):
+    if isinstance(e, ChallengeRequired):
         # Handle challenge required
-        api_path = exception.api_path
+        api_path = e.api_path
         if api_path == "/challenge/":
-            return manage_proxy(exception.client)
+            return manage_proxy(client)
         else:
             try:
-                exception.client.challenge_resolve(exception.last_json)
+                client.challenge_resolve(e.last_json)
             except ChallengeRequired:
-                exception.client.freeze("Manual Challenge Required", days=2)
+                client.freeze("Manual Challenge Required", days=2)
                 raise
             except (
                 SelectContactPointRecoveryForm,
                 RecaptchaChallengeForm,
             ) as e:
-                exception.client.freeze(str(e), days=4)
+                client.freeze(str(e), days=4)
                 raise
-            exception.client.update_client_settings(exception.client.get_settings())
+            client.update_client_settings(client.get_settings())
         return True
-    elif isinstance(exception, ReloginAttemptExceeded):
+    elif isinstance(e, ReloginAttemptExceeded):
         # Handle relogin attempt exceeded
-        exception.client.freeze(BAD_PASSWORD_MESSAGE, days=7)
-        raise exception
-    elif isinstance(exception, TwoFactorRequired):
-        # Handle two-factor authentication required
-        try:
-            handle_two_factor_authentication(exception)
-        except Exception as e:
-            logger.error(f"Failed to log in with 2FA: {e}")
-            return None
-    elif isinstance(exception, Client.ClientConnectionError):
-        # Handle client connection error
-        raise exception
-    elif isinstance(exception, Client.Throttled):
-        # Handle throttled
-        raise exception
-    else:
-        logger.error(f"An unexpected error occurred: {exception}")
-        return None
-=======
-def handle_exception(client, e: Exception):
-    if isinstance(e, ReloginAttemptExceeded):
         client.freeze(BAD_PASSWORD_MESSAGE, days=7)
         raise e
     elif isinstance(e, TwoFactorRequired):
-        handle_two_factor_required(client, e)
-    elif isinstance(e, ChallengeRequired):
-        handle_challenge_required(client)
-    elif isinstance(e, ClientConnectionError) or isinstance(e, TemporaryBan):
+        # Handle two-factor authentication required
+        handle_two_factor_authentication(client, e)
+    elif isinstance(e, ClientConnectionError):
+        # Handle client connection error
+        client.freeze("Client Connection Error", hours=1)
+    elif isinstance(e, TemporaryBan):
+        # Handle temporary ban
         client.freeze("Temporary Ban", hours=1)
     else:
-        logger.exception(e)
+        logger.error(f"An unexpected error occurred: {e}")
+        return None
+    return False
 
 
-def handle_two_factor_required(client, e: TwoFactorRequired):
+def handle_two_factor_authentication(client: instagrapi.Client, e: TwoFactorRequired) -> None:
     verification_code = input("Enter the 2FA verification code: ")
     two_factor_identifier = e.args[0].get("two_factor_identifier")
     try:
@@ -118,44 +101,24 @@ def handle_two_factor_required(client, e: TwoFactorRequired):
             password=settings.INSTAGRAM_PASSWORD,
         )
         save_session_to_file(client)
+        logger.info("Instagrapi client logged in successfully with 2FA.")
     except Exception as e:
         logger.error(f"Failed to log in with 2FA: {e}")
         client.freeze("2FA Login Failed", hours=1)
 
 
-def handle_challenge_required(client):
-    api_path = client.last_json.get("challenge", {}).get("api_path")
-    if api_path == "/challenge/":
-        return manage_proxy(client)
-    else:
-        try:
-            client.challenge_resolve(client.last_json)
-        except ChallengeRequired:
-            client.freeze("Manual Challenge Required", days=2)
-            raise
-        except (SelectContactPointRecoveryForm, RecaptchaChallengeForm) as e:
-            client.freeze(str(e), days=4)
-            raise
-        client.update_client_settings(client.get_settings())
-
-
-def is_session_expired(client) -> bool:
+def is_session_expired() -> bool:
     return time.time() - os.path.getmtime(SESSION_FILE_PATH) > 3600
->>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
 
 
 @backoff.on_exception(
     backoff.expo, (ClientConnectionError, TemporaryBan), max_time=60
 )
-<<<<<<< HEAD
-def get_instagrapi_client():
+def get_instagrapi_client() -> instagrapi.Client:
     """
     Get an instance of Instagrapi client.
     """
-=======
-def get_instagrapi_client() -> Client:
->>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
-    cl = Client()
+    cl = instagrapi.Client()
     try:
         cl.login(
             username=settings.INSTAGRAM_USERNAME,
@@ -163,69 +126,18 @@ def get_instagrapi_client() -> Client:
         )
         save_session_to_file(cl)
     except TwoFactorRequired as e:
-<<<<<<< HEAD
-        # Handle two-factor authentication required
-        handle_two_factor_authentication(e)
-    except Exception as e:
-        handle_exception(e)
-    return cl
-=======
-        handle_two_factor_required(cl, e)
+        handle_two_factor_authentication(cl, e)
     except Exception as e:
         handle_exception(cl, e)
-    return cl if not is_session_expired(cl) else load_session_from_file()
->>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
+    return cl if not is_session_expired() else load_session_from_file()
 
 
-def handle_two_factor_authentication(exception):
-    """
-    Handle two-factor authentication required.
-    """
-    verification_code = input("Enter the 2FA verification code sent to your device: ")
-    # Extract two_factor_identifier from the exception details
-    two_factor_info = exception.args[
-        0
-    ]  # Assuming the first arg contains the needed info
-    two_factor_identifier = two_factor_info.get("two_factor_identifier")
-    # Complete 2FA login
-    exception.client.two_factor_login(
-        verification_code=verification_code,
-        two_factor_identifier=two_factor_identifier,
-        username=settings.INSTAGRAM_USERNAME,
-        password=settings.INSTAGRAM_PASSWORD,
-    )
-    logger.info("Instagrapi client logged in successfully with 2FA.")
-    save_session_to_file(exception.client)  # Save the session after successful login
-
-
-@backoff.on_exception(
-    backoff.expo, (ClientConnectionError, TemporaryBan), max_time=60
-)
-<<<<<<< HEAD
-def use_instagrapi_client():
-    """
-    Use Instagrapi client for Instagram API operations.
-    """
-    instagrapi_client = get_instagrapi_client()
-    if instagrapi_client:
-        try:
-            user_info = instagrapi_client.user_info_by_username(
-                username="example_username"
-            )
-            return user_info
-        except (Client.BadRequest, Client.Forbidden, Client.TemporaryBan) as e:
-            logger.error(f"Instagram API error: {e}")
-        except Client.Error as e:
-            logger.error(f"Instagram client error: {e}")
-        return None
-=======
-def use_instagrapi_client(client: Client) -> Any:
+def use_instagrapi_client(client: instagrapi.Client) -> Any:
     try:
         user_info = client.user_info_by_username(username="example_username")
         return user_info
-    except (Client.BadRequest, Client.Forbidden, Client.TemporaryBan) as e:
+    except (instagrapi.Client.BadRequest, instagrapi.Client.Forbidden, instagrapi.Client.TemporaryBan) as e:
         handle_exception(client, e)
-    except Client.Error as e:
+    except instagrapi.Client.Error as e:
         logger.error(f"Instagram client error: {e}")
     return None
->>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
