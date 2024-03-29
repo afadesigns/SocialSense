@@ -1,19 +1,35 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
+# Dependabot configuration for automatic dependency updates
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Update Python packages with pip
+  - package-ecosystem: "pip"
+    directory: "/"
     schedule:
       interval: "daily"
+    versioning-strategy: "auto"
+    commit-message: "chore: Update ${package} to ${version}"
+    update-schedule:
+      day-of-month: "1-31"
+      time: "03:00"
+
+  # Update Docker images
   - package-ecosystem: "docker"
     directory: "/docker"
     schedule:
       interval: "daily"
+    versioning-strategy: "auto"
+    commit-message: "chore: Update Docker image ${image}:${tag} to ${new_tag}"
+    update-schedule:
+      day-of-month: "1-31"
+      time: "04:00"
+
+  # Update GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+    versioning-strategy: "auto"
+    commit-message: "chore: Update GitHub Action ${action} to ${version}"
+    update-schedule:
+      day-of-month: "1-31"
+      time: "05:00"
