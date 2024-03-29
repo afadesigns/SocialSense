@@ -1,43 +1,39 @@
-%card-stats {
-  hr {
-    margin: 5px 15px;
-  }
+$colors: (
+  danger: ($danger, $danger-states),
+  warning: ($warning, $warning-states),
+  success: ($success, $success-states),
+  info: ($info, $info-states),
+  primary: ($primary, $primary-states)
+);
+
+@function diagonal-gradient($color-scheme) {
+  $primary: map-get($color-scheme, 1);
+  $secondary: map-get($color-scheme, 2);
+  
+  @return linear-gradient(
+    135deg,
+    lighten($primary, 5%) 0%,
+    $primary 50%,
+    darken($primary, 5%) 51%,
+    darken($secondary, 10%) 100%
+  );
 }
 
 .card-stats {
-  @extend %card-stats;
+  hr {
+    margin: 5px 15px;
+  }
 
   .info-icon {
     height: 50px;
     width: 50px;
     border-radius: 50%;
-    @include diagonal-gradient($primary, $primary-states);
+    background: diagonal-gradient(nth($colors, $icon-type));
 
     i {
-      color: $white;
+      color: white;
       font-size: 1.7em;
       padding: 14px 13px;
-
-    }
-
-    &.icon-danger {
-      @include diagonal-gradient($danger, $danger-states);
-    }
-
-    &.icon-warning {
-      @include diagonal-gradient($warning, $warning-states);
-    }
-
-    &.icon-success {
-      @include diagonal-gradient($success, $success-states);
-    }
-
-    &.icon-info {
-      @include diagonal-gradient($info, $info-states);
-    }
-
-    &.icon-primary {
-      @include diagonal-gradient($primary, $primary-states);
     }
   }
 
@@ -67,16 +63,3 @@
     margin: 10px 15px;
     font-size: 0.9em;
   }
-
-  &.card-white {
-    hr {
-      border-color: rgba(43, 53, 83, 0.2)
-    }
-  }
-}
-
-@include media-breakpoint-down(sm) {
-  .card-stats [class*="col-"] .statistics::after {
-    display: none;
-  }
-}
