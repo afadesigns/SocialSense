@@ -1,14 +1,11 @@
-<<<<<<< HEAD
-# Import necessary modules
-=======
 # C:\Users\Andreas\Projects\SocialSense\dashboard\core\settings.py
 
->>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
 import os
 import random
 import string
 import sys  # Added for integrating Instagrapi
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
@@ -46,16 +43,12 @@ if RENDER_EXTERNAL_HOSTNAME:
 API_DOMAIN = "i.instagram.com"
 ALLOWED_HOSTS.append(API_DOMAIN)
 
-<<<<<<< HEAD
 # Add the path to the Instagrapi library to the PYTHONPATH
 INSTAGRAM_SERVICE_DIR = os.path.join(BASE_DIR, "services", "instagram")
 sys.path.append(INSTAGRAM_SERVICE_DIR)
 
 # Application definition
-=======
 INSTAGRAM_CLIENT_ID = os.environ.get("INSTAGRAM_CLIENT_ID")
-INSTAGRAM_CLIENT_SECRET = os.environ.get("INSTAGRAM_CLIENT_SECRET")
->>>>>>> e477bb9df54388f162e97c21f2b1734b4978ad00
 
 AUTHENTICATION_BACKENDS = [
     # Add your custom authentication backend here if needed
