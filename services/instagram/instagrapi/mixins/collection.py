@@ -1,9 +1,8 @@
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from instagrapi.exceptions import CollectionNotFound
 from instagrapi.extractors import extract_collection, extract_media_v1
 from instagrapi.types import Collection, Media
-
 
 class CollectionMixin:
     """
@@ -51,8 +50,13 @@ class CollectionMixin:
 
         Returns
         -------
-        List[Collection]
-            A list of objects of Collection
+        int
+            The unique identifier of the collection
+
+        Raises
+        ------
+        CollectionNotFound
+            If the collection is not found
         """
         for item in self.collections():
             if item.name == name:
@@ -72,9 +76,17 @@ class CollectionMixin:
         -------
         List[Collection]
             A list of collections
-        """
 
-        return self.collection_medias(self.collection_pk_by_name(name))
+        Raises
+        ------
+        CollectionNotFound
+            If the collection is not found
+        """
+        collection_pk = self.collection_pk_by_name(name)
+        try:
+            return self.collection_medias(collection_pk)
+        except CollectionNotFound:
+            return []
 
     def liked_medias(self, amount: int = 21, last_media_pk: int = 0) -> List[Media]:
         """
@@ -86,6 +98,7 @@ class CollectionMixin:
             Maximum number of media to return, default is 21
         last_media_pk: int, optional
             Last PK user has seen, function will return medias after this pk. Default is 0
+
         Returns
         -------
         List[Media]
@@ -110,13 +123,18 @@ class CollectionMixin:
         -------
         Tuple[List[Media], str]
             A list of objects of Media and cursor
+
+        Raises
+        ------
+        ValueError
+            If the collection_pk is not a valid collection_pk
         """
         if isinstance(collection_pk, int) or collection_pk.isdigit():
             private_request_endpoint = f"feed/collection/{collection_pk}/"
         elif collection_pk.lower() == "liked":
             private_request_endpoint = "feed/liked/"
         else:
-            private_request_endpoint = "feed/saved/posts/"
+            raise ValueError("Invalid collection_pk")
 
         params = {"include_igtv_preview": "false"}
         if max_id:
@@ -126,14 +144,14 @@ class CollectionMixin:
         return items, result.get("next_max_id", "")
 
     def collection_medias_v1(
-        self, collection_pk: str, amount: int = 21, last_media_pk: int = 0
+        self, collection_pk: Union[str, int], amount: int = 21, last_media_pk: int = 0
     ) -> List[Media]:
         """
         Get media in a collection by collection_pk
 
         Parameters
         ----------
-        collection_pk: str
+        collection_pk: Union[str, int]
             Unique identifier of a Collection
         amount: int, optional
             Maximum number of media to return, default is 21
@@ -144,99 +162,15 @@ class CollectionMixin:
         -------
         List[Media]
             A list of objects of Media
+
+        Raises
+        ------
+        ValueError
+            If the collection_pk is not a valid collection_pk
         """
+        if not isinstance(collection_pk, (str, int)):
+            raise ValueError("Invalid collection_pk")
+
         last_media_pk = last_media_pk and int(last_media_pk)
         total_items = []
-        next_max_id = ""
-        amount = int(amount)
-        found_last_media_pk = False
-        while True:
-            items, next_max_id = self.collection_medias_v1_chunk(
-                collection_pk, max_id=next_max_id
-            )
-            for item in items:
-                if last_media_pk and last_media_pk == item.pk:
-                    found_last_media_pk = True
-                    break
-                total_items.append(item)
-            if (amount and len(total_items) >= amount) or found_last_media_pk:
-                break
-            if not items or not next_max_id:
-                break
-        return total_items[:amount] if amount else total_items
 
-    def collection_medias(
-        self, collection_pk: str, amount: int = 21, last_media_pk: int = 0
-    ) -> List[Media]:
-        """
-        Get media in a collection by collection_pk
-
-        Parameters
-        ----------
-        collection_pk: str
-            Unique identifier of a Collection
-        amount: int, optional
-            Maximum number of media to return, default is 21
-        last_media_pk: int, optional
-            Last PK user has seen, function will return medias after this pk. Default is 0
-
-        Returns
-        -------
-        List[Media]
-            A list of objects of Media
-        """
-        return self.collection_medias_v1(
-            collection_pk, amount=amount, last_media_pk=last_media_pk
-        )
-
-    def media_save(
-        self, media_id: str, collection_pk: int = None, revert: bool = False
-    ) -> bool:
-        """
-        Save a media to collection
-
-        Parameters
-        ----------
-        media_id: str
-            Unique identifier of a Media
-        collection_pk: int
-            Unique identifier of a Collection
-        revert: bool, optional
-            If True then save to collection, otherwise unsave
-
-        Returns
-        -------
-        bool
-            A boolean value
-        """
-        assert self.user_id, "Login required"
-        media_id = self.media_pk(media_id)
-        data = {
-            "module_name": "feed_timeline",
-            "radio_type": "wifi-none",
-        }
-        if collection_pk:
-            data["added_collection_ids"] = f"[{int(collection_pk)}]"
-        name = "unsave" if revert else "save"
-        result = self.private_request(
-            f"media/{media_id}/{name}/", self.with_action_data(data)
-        )
-        return result["status"] == "ok"
-
-    def media_unsave(self, media_id: str, collection_pk: int = None) -> bool:
-        """
-        Unsave a media
-
-        Parameters
-        ----------
-        media_id: str
-            Unique identifier of a Media
-        collection_pk: int
-            Unique identifier of a Collection
-
-        Returns
-        -------
-        bool
-            A boolean value
-        """
-        return self.media_save(media_id, collection_pk, revert=True)

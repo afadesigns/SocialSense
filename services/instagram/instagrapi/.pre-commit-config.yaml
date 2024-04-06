@@ -1,15 +1,20 @@
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
       - id: check-yaml
+        args: ["--pygments"]
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/psf/black
+        args: ["--width=80"]
+  - repo: python/black
     rev: 22.8.0
     hooks:
       - id: black
-  - repo: https://github.com/pycqa/flake8
+        args: ["--line-length=80"]
+  - repo: pycqa/flake8
     rev: 5.0.4
     hooks:
       - id: flake8
+        args: ["--count", "--select=E9,F63,F7,F82", "--show-source", "--statistics"]
+        exclude: ["setup.py"]

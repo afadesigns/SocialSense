@@ -1,6 +1,5 @@
-// List Groups
-
-@mixin list-group-item-variant($state, $background, $color) {
+// List group item variant
+@mixin list-group-item-variant($state, $background, $color, $hover-background: null) {
   .list-group-item-#{$state} {
     color: $color;
     background-color: $background;
@@ -8,7 +7,7 @@
     &.list-group-item-action {
       @include hover-focus {
         color: $color;
-        background-color: darken($background, 5%);
+        background-color: if($hover-background, $hover-background, darken($background, 5%));
       }
 
       &.active {
@@ -19,3 +18,9 @@
     }
   }
 }
+
+// Example usage
+@include list-group-item-variant(danger, #f2dede, #a94442);
+@include list-group-item-variant(warning, #fcf8e3, #8a6d3b, #faf2cc);
+@include list-group-item-variant(success, #dff0d8, #3c763d);
+@include list-group-item-variant(info, #d9edf7, #23527c);

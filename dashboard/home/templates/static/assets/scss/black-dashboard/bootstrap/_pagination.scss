@@ -1,19 +1,37 @@
-.pagination {
-  display: flex;
-  @include list-unstyled();
-  @include border-radius();
+// Define a Sass map for the pagination styles
+$pagination-styles: (
+  padding-y: ($pagination-padding-y, $pagination-padding-y-lg, $pagination-padding-y-sm),
+  padding-x: ($pagination-padding-x, $pagination-padding-x-lg, $pagination-padding-x-sm),
+  font-size: ($font-size, $font-size-lg, $font-size-sm),
+  line-height: ($pagination-line-height, $line-height-lg, $line-height-sm),
+  border-radius: ($border-radius, $border-radius-lg, $border-radius-sm)
+);
+
+// Define a mixin to apply the pagination styles
+@mixin pagination-size($map) {
+  $padding-y: map-get($map, padding-y);
+  $padding-x: map-get($map, padding-x);
+  $font-size: map-get($map, font-size);
+  $line-height: map-get($map, line-height);
+  $border-radius: map-get($map, border-radius);
+
+  padding: $padding-y $padding-x;
+  font-size: $font-size;
+  line-height: $line-height;
+  border-radius: $border-radius;
 }
 
-.page-link {
-  position: relative;
-  display: block;
-  padding: $pagination-padding-y $pagination-padding-x;
-  margin-left: -$pagination-border-width;
-  line-height: $pagination-line-height;
-  color: $pagination-color;
-  background-color: $pagination-bg;
-  border: $pagination-border-width solid $pagination-border-color;
+// Define a mixin to apply the border radius to all sides of an element
+@mixin border-radius-all($radius) {
+  border-radius: $radius;
+  @include border-top-radius($radius);
+  @include border-bottom-radius($radius);
+  @include border-left-radius($radius);
+  @include border-right-radius($radius);
+}
 
+// Define a mixin to apply the hover styles to all pagination links
+@mixin pagination-link-hover {
   &:hover {
     z-index: 2;
     color: $pagination-hover-color;
@@ -21,54 +39,10 @@
     background-color: $pagination-hover-bg;
     border-color: $pagination-hover-border-color;
   }
-
-  &:focus {
-    z-index: 2;
-    outline: $pagination-focus-outline;
-    box-shadow: $pagination-focus-box-shadow;
-  }
 }
 
-.page-item {
-  &:first-child {
-    .page-link {
-      margin-left: 0;
-      @include border-left-radius($border-radius);
-    }
-  }
-
-  &:last-child {
-    .page-link {
-      @include border-right-radius($border-radius);
-    }
-  }
-
-  &.active .page-link {
+// Define a mixin to apply the active styles to all pagination links
+@mixin pagination-link-active {
+  &.active {
     z-index: 1;
-    color: $pagination-active-color;
-    background-color: $pagination-active-bg;
-    border-color: $pagination-active-border-color;
-  }
 
-  &.disabled .page-link {
-    color: $pagination-disabled-color;
-    pointer-events: none;
-    // Opinionated: remove the "hand" cursor set previously for .page-link
-    cursor: auto;
-    background-color: $pagination-disabled-bg;
-    border-color: $pagination-disabled-border-color;
-  }
-}
-
-
-//
-// Sizing
-//
-
-.pagination-lg {
-  @include pagination-size($pagination-padding-y-lg, $pagination-padding-x-lg, $font-size-lg, $line-height-lg, $border-radius-lg);
-}
-
-.pagination-sm {
-  @include pagination-size($pagination-padding-y-sm, $pagination-padding-x-sm, $font-size-sm, $line-height-sm, $border-radius-sm);
-}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChatHistory">
+    <chats>
+      <list>
+        <chat>
+          <internalId value="88215e5c-3956-449d-ae90-fb560ffa6307" />
+        </chat>
+        <chat>
+          <accountId value="VXNlcjozNjQyOTk=" />
+          <internalId value="dff13f80-04f1-4fb3-90c2-3f8c4cf6c456" />
+          <llm>
+            <llm>
+              <model value="anthropic/claude-2.0" />
+              <provider value="Anthropic" />
+              <title value="Claude 2.0" />
+            </llm>
+          </llm>
+        </chat>
+      </list>
+    </chats>
+  </component>
+</project>

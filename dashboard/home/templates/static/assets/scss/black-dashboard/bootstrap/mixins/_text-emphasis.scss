@@ -1,16 +1,24 @@
-// stylelint-disable declaration-no-important
+// Stylelint: disable declaration-no-important
 
 // Typography
 
-@mixin text-emphasis-variant($parent, $color) {
+@mixin text-emphasis-variant($parent, $color, $darken-percentage: 0) {
   #{$parent} {
     color: $color !important;
   }
-  @if $emphasized-link-hover-darken-percentage != 0 {
-    a#{$parent} {
-      @include hover-focus {
-        color: darken($color, $emphasized-link-hover-darken-percentage) !important;
-      }
+
+  a& {
+    @include hover-focus {
+      color: darken($color, $darken-percentage) !important;
     }
   }
+}
+
+// Usage
+.title {
+  @include text-emphasis-variant(.title, $primary-color, 10%);
+}
+
+.subtitle {
+  @include text-emphasis-variant(.subtitle, $secondary-color);
 }

@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
     dependencies = []
 
     operations = [
+        # Model for storing analytics data
         migrations.CreateModel(
             name="AnalyticsData",
             fields=[
@@ -21,8 +22,10 @@ class Migration(migrations.Migration):
                 "db_table": "analytics_data",
             },
         ),
+
+        # Model for storing log entries
         migrations.CreateModel(
-            name="LogEntries",
+            name="LogEntry",
             fields=[
                 ("id", models.AutoField(primary_key=True, serialize=False)),
                 ("timestamp", models.DateTimeField(auto_now_add=True)),
@@ -34,6 +37,8 @@ class Migration(migrations.Migration):
                 "db_table": "log_entries",
             },
         ),
+
+        # Model for storing public reporting data
         migrations.CreateModel(
             name="PublicReportingData",
             fields=[
@@ -45,8 +50,10 @@ class Migration(migrations.Migration):
                 "db_table": "public_reporting_data",
             },
         ),
+
+        # Model for storing internal reporting data
         migrations.CreateModel(
-            name="ReportingData",
+            name="InternalReportingData",
             fields=[
                 ("report_id", models.AutoField(primary_key=True, serialize=False)),
                 ("data", models.JSONField()),

@@ -7,6 +7,8 @@
 # C:/Users/Andreas/Projects/SocialSense/dashboard/home/instagram_utils.py
 
 import logging
+import sys
+from typing import Dict, List, Optional
 
 from instagrapi import Client
 from instagrapi.exceptions import BadPassword, LoginRequired, TwoFactorRequired
@@ -15,25 +17,23 @@ from instagrapi.exceptions import BadPassword, LoginRequired, TwoFactorRequired
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-def login_instagram(username, password):
+def login_instagram(username: str, password: str) -> Optional[Client]:
     """
     Log in to Instagram and return the client object.
     """
     client = Client()
-    client.login(username, password)
-    return client
-
-
-def login_user(username, password):
-    """
-    Log in the user using the provided credentials.
-    """
-    api_client = Client()
     try:
-        api_client.login(username, password)
+        client.login(username, password)
         logger.info({"message": "Login successful.", "username": username})
-        return api_client
+    except (BadPassword, LoginRequired) as ex:
+        logger.error(
+            {
+                "error": "Bad password or login required.",
+                "exception": str(ex),
+                "username": username,
+            }
+        )
+        sys.exit(1)
     except TwoFactorRequired as ex:
         logger.info(
             {"message": "Two-factor authentication required.", "username": username}
@@ -42,11 +42,10 @@ def login_user(username, password):
         verification_code = input("Enter your 2FA code: ")
         # Retry login with 2FA code
         try:
-            api_client.login(username, password, verification_code=verification_code)
+            client.login(username, password, verification_code=verification_code)
             logger.info(
                 {"message": "Login successful after 2FA.", "username": username}
             )
-            return api_client
         except Exception as e:
             logger.error(
                 {
@@ -55,8 +54,29 @@ def login_user(username, password):
                     "username": username,
                 }
             )
-            return None
-    except (BadPassword, LoginRequired) as ex:
+            sys.exit(1)
+    except Exception as e:
+        logger.error(
+            {
+                "error": "Unexpected error during login.",
+                "exception": str(e),
+                "username": username,
+            }
+        )
+        sys.exit(1)
+
+    return client
+
+def login_user(username: str, password: str) -> Optional[Client]:
+    """
+    Log in the user using the provided credentials.
+    """
+    api_client = Client()
+    try:
+        api_client.login(username, password)
+        logger.info({"message": "Login successful.", "username": username})
+        return api_client
+    except (TwoFactorRequired, BadPassword, LoginRequired) as ex:
         logger.error(
             {
                 "error": "Bad password or login required.",
@@ -75,14 +95,12 @@ def login_user(username, password):
         )
         return None
 
-
-def fetch_profile_data(client):
+def fetch_profile_data(client: Client) -> Dict:
     # Fetch Instagram user profile data
     profile_data = client.account_info()
     return profile_data
 
-
-def fetch_recent_media(client):
+def fetch_recent_media(client: Client) -> List[Dict]:
     """
     Fetch recent media for the authenticated user.
     """
@@ -98,7 +116,7 @@ def fetch_recent_media(client):
             # Determine media URL based on media type
             if media_details.media_type == 1:  # Photo
                 url = media_details.thumbnail_url
-            elif media_details.media_type == 2:  # Video or IGTV or Reel
+            elif media_details.media_type in [2, 3, 5]:  # Video, IGTV, Reel
                 url = media_details.video_url
             elif media_details.media_type == 8:  # Album
                 if media_details.resources:
@@ -130,8 +148,7 @@ def fetch_recent_media(client):
         )
         return []
 
-
-def fetch_direct_messages(client):
+def fetch_direct_messages(client: Client) -> Dict:
     """
     Fetch direct message conversations
 
@@ -146,44 +163,9 @@ def fetch_direct_messages(client):
         A dictionary containing direct message conversations
     """
     try:
-        direct_messages = client.direct_spam_inbox()
+        direct_messages = client.direct_inbox()
         return direct_messages
     except Exception as e:
         logger.error(
             {
                 "error": "Failed to fetch direct messages.",
-                "exception": str(e),
-            }
-        )
-        return {}
-
-
-def user_unblock(client, user_id: str, surface: str = "profile") -> bool:
-    """
-    Unlock a User
-
-    Parameters
-    ----------
-    user_id: str
-        User ID of an Instagram account
-    surface: str, (optional)
-        Surface of block (default "profile", also can be "direct_thread_info")
-
-    Returns
-    -------
-    bool
-        A boolean value
-    """
-    data = {
-        "container_module": surface,
-        "user_id": user_id,
-        "_uid": client.user_id,
-        "_uuid": client.uuid,
-    }
-    if surface == "direct_thread_info":
-        data["client_request_id"] = client.request_id
-
-    result = client.private_request(f"friendships/unblock/{user_id}/", data)
-    assert result.get("status", "") == "ok"
-
-    return result.get("friendship_status", {}).get("blocking") is False

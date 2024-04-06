@@ -1,5 +1,18 @@
-.nav-pills {
+$pill-colors: (
+  neutral: ($opacity-2, $white, $primary),
+  primary: ($primary, $primary-states),
+  info: ($info, $info-states),
+  success: ($success, $success-states),
+  warning: ($warning, $warning-states),
+  danger: ($danger, $danger-states)
+);
 
+@function pill-gradient($color-name) {
+  $color-values: map-get($pill-colors, $color-name);
+  @include diagonal-gradient(nth($color-values, 1), nth($color-values, 2));
+}
+
+.nav-pills {
   &.flex-column li > a {
     margin-bottom: 15px;
   }
@@ -37,19 +50,16 @@
       color: rgba($white, 0.5);
       background-color: darken($black, 5%);
 
-
       &:hover {
         background-color: darken($black, 10%);
       }
 
-      &.active {
-        &,
-        &:focus,
-        &:hover {
-          background-color: $dark-gray;
-          color: $white;
-          box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-        }
+      &.active,
+      &:focus,
+      &:hover {
+        background-color: map-get(map-get($pill-colors, $color-name), 1);
+        color: $white;
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
       }
 
       &.disabled,
@@ -69,76 +79,26 @@
   &.nav-pills-neutral {
     .nav-item {
       .nav-link {
-        background-color: $opacity-2;
+        background-color: map-get(map-get($pill-colors, neutral), 1);
         color: $white;
 
-        &.active {
-          &,
-          &:focus,
-          &:hover {
-            background-color: $white;
-            color: $primary;
-          }
+        &.active,
+        &:focus,
+        &:hover {
+          background-color: map-get(map-get($pill-colors, neutral), 2);
+          color: $primary;
         }
       }
     }
   }
 
-  &.nav-pills-primary {
-    .nav-item {
-      .nav-link.active {
-        &,
-        &:focus,
-        &:hover {
-          @include diagonal-gradient($primary, $primary-states);
-        }
-      }
-    }
-  }
-
-  &.nav-pills-info {
-    .nav-item {
-      .nav-link.active {
-        &,
-        &:focus,
-        &:hover {
-          @include diagonal-gradient($info, $info-states);
-        }
-      }
-    }
-  }
-
-  &.nav-pills-success {
-    .nav-item {
-      .nav-link.active {
-        &,
-        &:focus,
-        &:hover {
-          @include diagonal-gradient($success, $success-states);
-        }
-      }
-    }
-  }
-
-  &.nav-pills-warning {
-    .nav-item {
-      .nav-link.active {
-        &,
-        &:focus,
-        &:hover {
-          @include diagonal-gradient($warning, $warning-states);
-        }
-      }
-    }
-  }
-
-  &.nav-pills-danger {
-    .nav-item {
-      .nav-link.active {
-        &,
-        &:focus,
-        &:hover {
-          @include diagonal-gradient($danger, $danger-states);
+  @each $color-name, $color-values in $pill-colors {
+    &.nav-pills-#{$color-name} {
+      .nav-item {
+        .nav-link.active,
+        .nav-link:focus,
+        .nav-link:hover {
+          background: pill-gradient($color-name);
         }
       }
     }

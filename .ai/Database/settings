@@ -1,0 +1,25 @@
+package main
+
+import (
+	"fmt"
+)
+
+type GlobalScanSettingsEntity struct {
+	Name string
+	Value string
+}
+
+func main() {
+	// Initialize GlobalScanSettingsEntity array
+	globalScanSettingsEntities := make([]GlobalScanSettingsEntity, 0)
+
+	// Add sample data to GlobalScanSettingsEntity array
+	globalScanSettingsEntities = append(globalScanSettingsEntities, GlobalScanSettingsEntity{Name: "Setting1", Value: "Value1"})
+	globalScanSettingsEntities = append(globalScanSettingsEntities, GlobalScanSettingsEntity{Name: "Setting2", Value: "Value2"})
+	globalScanSettingsEntities = append(globalScanSettingsEntities, GlobalScanSettingsEntity{Name: "Setting3", Value: "Value3"})
+
+	// Print GlobalScanSettingsEntity array
+	for i, setting := range globalScanSettingsEntities {
+		fmt.Printf("Setting %d: %s = %s\n", i+1, setting.Name, setting.Value)
+	}
+}

@@ -1,25 +1,27 @@
+import os
+import cv2
+import numpy as np
+import requests
+from deepface import DeepFace
+from typing import List, Dict, Any
 from tinderbotz.helpers.storage_helper import StorageHelper
 
-
 class Geomatch:
-
     def __init__(
         self,
-        name,
-        age,
-        work,
-        study,
-        home,
-        gender,
-        bio,
-        lifestyle,
-        basics,
-        anthem,
-        looking_for=None,
-        distance=None,
-        passions=None,
-        image_urls=None,
-        instagram=None,
+        name: str,
+        age: int,
+        work: str,
+        study: str,
+        home: str,
+        gender: str,
+        bio: str,
+        lifestyle: str,
+        basics: str,
+        anthem: str,
+        passions: List[str] = None,
+        image_urls: List[str] = None,
+        instagram: str = None,
     ):
         self.name = name
         self.age = age
@@ -27,103 +29,67 @@ class Geomatch:
         self.study = study
         self.home = home
         self.gender = gender
-        self.passions = passions
+        self.passions = passions or []
         self.bio = bio
         self.lifestyle = lifestyle
         self.basics = basics
         self.anthem = anthem
-        self.looking_for = looking_for
-        self.distance = distance
-        self.image_urls = image_urls
+        self.image_urls = image_urls or []
         self.instagram = instagram
 
         # create a unique id for this person
-        self.id = "{}{}_{}".format(name, age, StorageHelper.id_generator(size=4))
+        self.id = f"{name}{age}{StorageHelper.id_generator(size=4)}"
         self.images_by_hashes = []
 
-    def get_images_ai_data(self):
-        images_ai_data = []
-        for image in self.image_urls:
-            for image_ai_data in self._get_image_ai_data(image):
-                images_ai_data.append(image_ai_data)
-        return images_ai_data
-
-    def _get_image_ai_data(self, image_url):
-        from deepface import DeepFace
-        import requests
-        import cv2
-        import numpy as np
-
-        resp = requests.get(image_url, stream=True).raw
-        image = np.asarray(bytearray(resp.read()), dtype="uint8")
-        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-        return DeepFace.analyze(image, enforce_detection=False)
-
-    def get_name(self):
-        return self.name
-
-    def get_age(self):
-        return self.age
-
-    def get_work(self):
-        return self.work
-
-    def get_study(self):
-        return self.study
-
-    def get_home(self):
-        return self.home
-
-    def get_gender(self):
-        return self.gender
-
-    def get_passions(self):
-        return self.passions
-
-    def get_bio(self):
-        return self.bio
-
-    def get_lifestyle(self):
-        return self.lifestyle
-
-    def get_basics(self):
-        return self.basics
-
-    def get_anthem(self):
-        return self.anthem
-
-    def get_looking_for(self):
-        return self.looking_for
-
-    def get_distance(self):
-        return self.distance
-
-    def get_image_urls(self):
-        return self.image_urls
-
-    def get_instagram(self):
-        return self.instagram
-
-    def get_id(self):
-        return self.id
-
-    def get_dictionary(self):
-        data = {
-            "name": self.get_name(),
-            "age": self.get_age(),
-            "work": self.get_work(),
-            "study": self.get_study(),
-            "home": self.get_home(),
+        # Initialize dictionary with instance attributes
+        self.data: Dict[str, Any] = {
+            "name": self.name,
+            "age": self.age,
+            "work": self.work,
+            "study": self.study,
+            "home": self.home,
             "gender": self.gender,
-            "bio": self.get_bio(),
-            "distance": self.get_distance(),
-            "basics": self.get_basics(),
-            "lifestyle": self.get_lifestyle(),
-            "passions": self.get_passions(),
-            "anthem": self.get_anthem(),
-            "looking_for": self.get_looking_for(),
+            "passions": self.passions,
+            "bio": self.bio,
+            "lifestyle": self.lifestyle,
+            "basics": self.basics,
+            "anthem": self.anthem,
             "image_urls": self.image_urls,
             "images_by_hashes": self.images_by_hashes,
-            "instagram": self.get_instagram(),
+            "instagram": self.instagram,
         }
-        return data
+
+    def get_images_ai_data(self) -> List[Dict[str, Any]]:
+        images_ai_data = []
+        for image_url in self.image_urls:
+            try:
+                resp = requests.get(image_url, stream=True).raw
+                image = np.asarray(bytearray(resp.read()), dtype="uint8")
+                image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+                if image is not None:
+                    ai_data = DeepFace.analyze(image, enforce_detection=False)
+                    images_ai_data.append(ai_data)
+            except Exception as e:
+                print(f"Error processing image {image_url}: {e}")
+        return images_ai_data
+
+if __name__ == "__main__":
+    # Example usage
+    geomatch = Geomatch(
+        name="John Doe",
+        age=30,
+        work="Software Engineer",
+        study="Computer Science",
+        home="New York",
+        gender="Male",
+        bio="I'm a friendly and outgoing person.",
+        lifestyle="Active and adventurous.",
+        basics="I love traveling and trying new foods.",
+        anthem="We Will Rock You",
+        passions=["music", "movies", "technology"],
+        image_urls=["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+        instagram="johndoe",
+    )
+
+    print(geomatch.data)
+    print(geomatch.get_images_ai_data())

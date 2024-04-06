@@ -1,41 +1,56 @@
+// Base styles for the close icon
 .close {
+  // Positioning
   float: right;
+  display: inline-block;
+
+  // Typography
   @include font-size($close-font-size);
   font-weight: $close-font-weight;
   line-height: 1;
-  color: $close-color;
+  text-align: center;
+  text-decoration: none;
   text-shadow: $close-text-shadow;
+
+  // Colors
+  color: $close-color;
   opacity: .5;
 
-  // Override <a>'s hover style
+  // Hover styles
   @include hover {
     color: $close-color;
     text-decoration: none;
+    opacity: .75;
   }
 
-  &:not(:disabled):not(.disabled) {
-    @include hover-focus {
-      opacity: .75;
-    }
+  // Focus styles
+  &:focus {
+    box-shadow: 0 0 0 2px $close-focus-color;
+    outline: none;
+  }
+
+  // Active styles
+  &:active {
+    opacity: .9;
+  }
+
+  // Disabled styles
+  &.disabled,
+  &:disabled {
+    opacity: .25;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }
 
-// Additional properties for button version
-// iOS requires the button element instead of an anchor tag.
-// If you want the anchor version, it requires `href="#"`.
-// See https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
-
-// stylelint-disable-next-line selector-no-qualifying-type
-button.close {
+// Additional styles for the button version
+.button-close {
   padding: 0;
   background-color: transparent;
   border: 0;
   appearance: none;
 }
 
-// Future-proof disabling of clicks on `<a>` elements
+// Additional styles for the link version
+.link-close {
 
-// stylelint-disable-next-line selector-no-qualifying-type
-a.close.disabled {
-  pointer-events: none;
-}

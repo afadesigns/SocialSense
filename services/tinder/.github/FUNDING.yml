@@ -1,12 +1,13 @@
 # These are supported funding model platforms
 
-github: [ ]
-patreon: frederikme
-open_collective: # Replace with a single Open Collective username
-ko_fi: # Replace with a single Ko-fi username
-tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
-community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
-liberapay: # Replace with a single Liberapay username
-issuehunt: # Replace with a single IssueHunt username
-otechie: # Replace with a single Otechie username
-custom: [ "https://paypal.me/frederikmees", "https://www.buymeacoffee.com/frederikme" ]
+github: [<github_username>]
+patreon: <patreon_username>
+open_collective: <open_collective_username>
+ko_fi: <ko_fi_username>
+tidelift: <tidelift_platform_name>/<tidelift_package_name>
+community_bridge: <community_bridge_project_name>
+liberapay: <liberapay_username>
+issuehunt: <issuehunt_username>
+otechie: <otechie_username>
+custom: [ "<paypal_me_link>", "<buymeacoffee_link>" ]
+

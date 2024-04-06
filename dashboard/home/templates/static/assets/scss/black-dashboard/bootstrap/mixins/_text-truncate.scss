@@ -1,7 +1,15 @@
 // Text truncate
-// Requires inline-block or block for proper styling
+// Adds ellipsis to text if it overflows its container
 
-@mixin text-truncate() {
+@mixin text-truncate($container: auto) {
+  // If a container is provided, use it for the display property
+  @if $container != auto {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  // Default styles for truncating text
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

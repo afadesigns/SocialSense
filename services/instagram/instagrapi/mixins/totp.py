@@ -16,26 +16,36 @@ class TOTP:
         s: str,
         digits: int = 6,
         digest: Any = hashlib.sha1,
-        name: Optional[str] = None,
-        issuer: Optional[str] = None,
     ) -> None:
+        """
+        Initialize TOTP object with a secret key.
+
+        :param s: The secret key in base32 format.
+        :param digits: Number of digits in the OTP (default: 6).
+        :param digest: The hash function to use (default: SHA-1).
+        """
         self.digits = digits
         self.digest = digest
-        self.secret = s
-        self.name = name or "Secret"
-        self.issuer = issuer
+        self.secret = self._parse_base32_secret(s)
         self.interval = 30
+
+    def _parse_base32_secret(self, s: str) -> bytes:
+        """Parse the base32 secret and handle padding correctly."""
+        missing_padding = len(s) % 8
+        if missing_padding != 0:
+            s += "=" * (8 - missing_padding)
+        return base64.b32decode(s, casefold=True)
 
     def generate_otp(self, input: int) -> str:
         """
-        :param input: the HMAC counter value to use as the OTP input.
-        Usually either the counter, or the computed integer based on the Unix timestamp
+        Generate an OTP using HMAC-SHA1.
+
+        :param input: The HMAC counter value to use as the OTP input.
+        :return: The generated OTP as a string.
         """
         if input < 0:
             raise ValueError("input must be positive integer")
-        hasher = hmac.new(
-            self.byte_secret(), self.int_to_bytestring(input), self.digest
-        )
+        hasher = hmac.new(self.secret, self.int_to_bytestring(input), self.digest)
         hmac_hash = bytearray(hasher.digest())
         offset = hmac_hash[-1] & 0xF
         code = (
@@ -44,103 +54,86 @@ class TOTP:
             | (hmac_hash[offset + 2] & 0xFF) << 8
             | (hmac_hash[offset + 3] & 0xFF)
         )
-        str_code = str(code % 10**self.digits)
+        str_code = str(self._bytes_to_int(code) % 10**self.digits)
         while len(str_code) < self.digits:
             str_code = "0" + str_code
         return str_code
 
-    def byte_secret(self) -> bytes:
-        secret = self.secret
-        missing_padding = len(secret) % 8
-        if missing_padding != 0:
-            secret += "=" * (8 - missing_padding)
-        return base64.b32decode(secret, casefold=True)
-
-    @staticmethod
-    def int_to_bytestring(i: int, padding: int = 8) -> bytes:
+    def int_to_bytestring(self, i: int, padding: int = 8) -> bytes:
         """
-        Turns an integer to the OATH specified
-        bytestring, which is fed to the HMAC
-        along with the secret
+        Turn an integer to the OATH specified bytestring.
+
+        :param i: The integer to convert.
+        :param padding: The number of padding bytes (default: 8).
+        :return: The bytestring representation of the integer.
         """
         result = bytearray()
         while i != 0:
             result.append(i & 0xFF)
             i >>= 8
-            # It's necessary to convert the final result from bytearray to bytes
-            # because the hmac functions in python 2.6 and 3.3 don't work with
-            # bytearray
-        return bytes(bytearray(reversed(result)).rjust(padding, b"\0"))
+        return bytes(result[::-1])  # Reverse the result
 
-    def code(self):
-        """
-        Generate TOTP code
-        """
+    @staticmethod
+    def _bytes_to_int(b: bytes) -> int:
+        """Convert bytes to an integer."""
+        return int.from_bytes(b, byteorder="big")
+
+    def _get_current_timecode(self) -> int:
+        """Get the current timecode."""
         now = datetime.datetime.now()
         timecode = int(time.mktime(now.timetuple()) / self.interval)
-        return self.generate_otp(timecode)
+        return timecode
+
+    def __repr__(self) -> str:
+        """Return a string representation of the object."""
+        return (
+            f"TOTP(secret={self.secret.hex()}, digits={self.digits}, "
+            f"digest={self.digest.__name__})"
+        )
 
 
-class TOTPMixin:
+class TOTPHandlersMixin:
     def totp_generate_seed(self) -> str:
         """
-        Generate 2FA TOTP seed
+        Generate a TOTP seed.
 
-        Returns
-        -------
-        str
-            TOTP seed (also known as "token" and "secret key")
+        :return: The generated TOTP seed as a string.
         """
-        result = self.private_request(
-            "accounts/generate_two_factor_totp_key/", data=self.with_default_data({})
-        )
-        return result["totp_seed"]
+        # Implement this method in the subclass
+        pass
 
     def totp_enable(self, verification_code: str) -> List[str]:
         """
-        Enable TOTP 2FA
+        Enable TOTP 2FA.
 
-        Parameters
-        ----------
-        verification_code: str
-            2FA verification code
-
-        Returns
-        -------
-        List[str]
-            Backup codes
+        :param verification_code: The verification code.
+        :return: The backup codes as a list of strings.
         """
-        result = self.private_request(
-            "accounts/enable_totp_two_factor/",
-            data=self.with_default_data({"verification_code": verification_code}),
-        )
-        return result["backup_codes"]
+        # Implement this method in the subclass
+        pass
 
     def totp_disable(self) -> bool:
         """
-        Disable TOTP 2FA
+        Disable TOTP 2FA.
 
-        Returns
-        -------
-        bool
+        :return: True if successful, False otherwise.
         """
-        result = self.private_request(
-            "accounts/disable_totp_two_factor/", data=self.with_default_data({})
-        )
-        return result["status"] == "ok"
+        # Implement this method in the subclass
+        pass
 
     def totp_generate_code(self, seed: str) -> str:
         """
-        Generate 2FA TOTP code
+        Generate a TOTP code.
 
-        Parameters
-        ----------
-        seed: str
-            TOTP seed (token, secret key)
-
-        Returns
-        -------
-        str
-            TOTP code
+        :param seed: The TOTP seed.
+        :return: The generated TOTP code as a string.
         """
-        return TOTP(seed).code()
+        totp = TOTP(seed)
+        return totp.generate_otp(totp._get_current_timecode())
+
+    @staticmethod
+    def validate_verification_code(verification_code: str, seed: str) -> bool:
+        """
+        Validate the verification code.
+
+        :param verification

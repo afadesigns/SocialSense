@@ -1,30 +1,49 @@
 .close {
+  // Base styles for the close button
+  $close-base-styles: (
+    background-color: $close-bg,
+    color: $close-color,
+    line-height: 17px,
+    height: 1.25rem,
+    width: 1.25rem,
+    border-radius: 50%,
+    font-size: 1.25rem,
+    display: block,
+    box-sizing: border-box,
+    user-select: none,
+  );
+
+  @each $property, $value in $close-base-styles {
+    #{$property}: $value;
+  }
+
+  // Transition styles for the close button
   @if $enable-transitions {
     transition: $transition-base;
   }
 
+  // Styles for the close button's span element
   & > span:not(.sr-only) {
-    background-color: $close-bg;
-    color: $close-color;
-    line-height: 17px;
-    height: 1.25rem;
-    width: 1.25rem;
-    border-radius: 50%;
-    font-size: 1.25rem;
-    display: block;
+    @each $property, $value in $close-base-styles {
+      #{$property}: $value;
+    }
+
     @if $enable-transitions {
       transition: $transition-base;
     }
   }
 
+  // Hover and focus styles for the close button
   &:hover,
   &:focus {
-    background-color: $close-hover-bg;
-    color: $close-hover-color;
-    outline: none;
+    $close-hover-styles: (
+      background-color: $close-hover-bg,
+      color: $close-hover-color,
+      outline: none,
+    );
 
-    span:not(.sr-only) {
-      background-color: $close-hover-bg;
+    @each $property, $value in $close-hover-styles {
+      #{$property}: $value;
     }
-  }
-}
+
+    & > span:not(.sr-only)

@@ -1,85 +1,45 @@
+// Default nav link styles
 .nav-link {
-  color: $nav-link-color;
+  color: $nav-link-color !default;
 
   &:hover {
-    color: theme-color("primary");
+    color: theme-color("primary") !important;
   }
 }
 
-// Pills
+// Nav pills styles
+$nav-pills-properties: (
+  padding-y: 0.2rem,
+  padding-x: 0.5rem,
+  link-color: $nav-pills-link-color,
+  link-hover-color: $nav-pills-link-hover-color,
+  link-active-color: $nav-pills-link-active-color,
+  link-active-bg: $nav-pills-link-active-bg,
+  bg: $nav-pills-bg
+);
 
 .nav-pills {
 
   .nav-link {
-    padding: $nav-pills-padding-y $nav-pills-padding-x;
-    color: $nav-pills-link-color;
-    font-weight: 500;
-    background-color: $nav-pills-bg;
+    @each $property, $value in $nav-pills-properties {
+      #{$property}: $value;
+    }
     transition: $transition-base;
 
     &:hover {
-      color: $nav-pills-link-hover-color;
+      color: map-get($nav-pills-properties, link-hover-color) !important;
     }
   }
 
   .nav-link.active,
   .show > .nav-link {
-    color: $nav-pills-link-active-color;
-    background-color: $nav-pills-link-active-bg;
+    color: map-get($nav-pills-properties, link-active-color) !important;
+    background-color: map-get($nav-pills-properties, link-active-bg) !important;
   }
-
 
 }
 
 @include media-breakpoint-down(sm) {
   .nav-pills:not(.nav-pills-circle) {
     .nav-item {
-      padding-right: 0;
-    }
-  }
-}
-
-// Nav pills circle
-
-.nav-pills-circle {
-  .nav-link {
-    text-align: center;
-    height: 60px;
-    width: 60px;
-    padding: 0;
-    line-height: 60px;
-    border-radius: 50%;
-  }
-
-  .nav-link-icon {
-    i, svg {
-      font-size: 1rem;
-    }
-  }
-}
-
-// Nav wrapper
-.nav-wrapper {
-  padding: 1rem 0;
-  @include border-top-radius($card-border-radius);
-
-  + .card {
-    @include border-top-radius(0);
-    @include border-bottom-radius($card-border-radius);
-  }
-}
-
-
-@include media-breakpoint-down(sm) {
-  .nav-tabs {
-    display: inline-block;
-    width: 100%;
-    padding-left: 100px;
-    padding-right: 100px;
-    text-align: center;
-
-    .nav-item > .nav-link {
-      margin-bottom: 5px;
-    }
-  }
-}
+      padding-right: 0 !important

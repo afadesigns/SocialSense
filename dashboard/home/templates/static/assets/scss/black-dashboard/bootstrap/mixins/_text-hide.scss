@@ -1,11 +1,20 @@
 // CSS image replacement
 @mixin text-hide($ignore-warning: false) {
-  // stylelint-disable-next-line font-family-no-missing-generic-family-keyword
-  font: 0/0 a;
-  color: transparent;
-  text-shadow: none;
-  background-color: transparent;
+  // Use a more specific and semantic approach to hide text
+  // by positioning it off-screen instead of manipulating the font
+  position: absolute;
+  clip: rect(0 0 0 0);
+  clip-path: inset(100%);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
   border: 0;
 
-  @include deprecate("`text-hide()`", "v4.1.0", "v5", $ignore-warning);
+  // Deprecation warning
+  @if $ignore-warning == false {
+    @warn "`text-hide()` is deprecated as of v4.1.0 and will be removed in v5. Consider using a more semantic approach to hide text.";
+  }
 }

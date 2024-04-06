@@ -1,20 +1,15 @@
-@mixin box-shadow($shadow...) {
-  @if $enable-shadows {
-    $result: ();
-
-    @if (length($shadow) == 1) {
-      // We can pass `@include box-shadow(none);`
-      $result: $shadow;
-    } @else {
-      // Filter to avoid invalid properties for example `box-shadow: none, 1px 1px black;`
-      @for $i from 1 through length($shadow) {
-        @if nth($shadow, $i) != "none" {
-          $result: append($result, nth($shadow, $i), "comma");
-        }
+@mixin box-shadow($shadows...){
+  $valid_shadows: ();
+  
+  @if $enable-shadows and length($shadows) > 0 {
+    @each $shadow in $shadows {
+      @if $shadow != "none" {
+        $valid_shadows: append($valid_shadows, $shadow, comma);
       }
     }
-    @if (length($result) > 0) {
-      box-shadow: $result;
+    
+    @if length($valid_shadows) > 0 {
+      box-shadow: $valid_shadows;
     }
   }
 }

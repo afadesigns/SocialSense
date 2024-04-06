@@ -1,4 +1,5 @@
 .footer {
+  box-sizing: border-box;
   padding: 24px 30px;
 
   [class*="container-"] {
@@ -15,9 +16,8 @@
 
   .nav-item {
     display: inline-block;
-
-    &:first-child a {
-      padding-left: 0;
+    + .nav-item {
+      padding-left: 1rem; // use rem for font-size related values
     }
   }
 
@@ -33,7 +33,6 @@
     }
   }
 
-
   .copyright {
     font-size: $font-size-sm;
     line-height: 1.8;
@@ -48,7 +47,6 @@
 }
 
 @include media-breakpoint-down(md) {
-
   .footer {
     padding-left: 30px;
     text-align: center;
@@ -56,8 +54,13 @@
     .copyright {
       text-align: right;
     }
-  }
 
+    .nav-item {
+      + .nav-item {
+        padding-left: 1rem;
+      }
+    }
+  }
 }
 
 @include media-breakpoint-up(xl) {
@@ -71,40 +74,4 @@
 
 @include media-breakpoint-down(sm) {
   .footer {
-    text-align: center;
-
-    nav {
-      display: block;
-      margin-bottom: 5px;
-      float: none;
-    }
-
-    .copyright {
-      text-align: center;
-    }
-  }
-}
-
-@include media-breakpoint-down(sm) {
-  .footer {
-    .copyright {
-      text-align: center;
-    }
-
-    .nav {
-      float: none;
-    }
-  }
-}
-
-@include media-breakpoint-between(md, lg) {
-  .footer {
-    padding-left: 30px !important;
-    text-align: center;
-
-    .copyright {
-      float: right;
-      margin-top: 5px;
-    }
-  }
-}
+    text-

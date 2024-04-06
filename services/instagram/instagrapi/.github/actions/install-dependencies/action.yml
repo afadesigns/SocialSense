@@ -1,20 +1,37 @@
-name: "Install Dependencies"
-description: "Install Python dependencies"
+name: 'Install Dependencies'
+description: 'Install Python dependencies'
 inputs:
   requirements:
-    description: "Should requirements.txt be installed"
-    default: "false"
-    required: false
-  test-requirements:
-    description: "Should requirements-test.txt be installed"
-    default: "false"
-    required: false
+    description: 'Install production requirements'
+    type: boolean
+    default: false
+  test_requirements:
+    description: 'Install testing requirements'
+    type: boolean
+    default: false
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: "Install Python dependencies"
-      run: "$GITHUB_ACTION_PATH/action.sh"
-      shell: "bash"
+    - name: 'Check if requirements exist'
+      id: check_requirements
+      run: |
+        if [[ ! -f "requirements.txt" && ${{ inputs.requirements }} == 'true' ]]; then
+          echo "Error: requirements.txt not found."
+          exit 1
+        fi
+        
+        if [[ ! -f "requirements-test.txt" && ${{ inputs.test_requirements }} == 'true' ]]; then
+          echo "Error: requirements-test.txt not found."
+          exit 1
+        fi
+    - name: 'Install Python dependencies'
+      run: |
+        if [[ ${{ inputs.requirements }} == 'true' ]]; then
+          pip install -r requirements.txt
+        fi
+        
+        if [[ ${{ inputs.test_requirements }} == 'true' ]]; then
+          pip install -r requirements-test.txt
+        fi
       env:
-        INSTALL_REQUIREMENTS: ${{ inputs.requirements }}
-        INSTALL_TEST_REQUIREMENTS: ${{ inputs.test-requirements }}
+        PIP_USER: false # Avoid installing in user directory

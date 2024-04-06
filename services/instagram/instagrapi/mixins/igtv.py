@@ -3,19 +3,15 @@ import json
 import random
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional, Union
 from uuid import uuid4
 
-from instagrapi import config
-from instagrapi.exceptions import ClientError, IGTVConfigureError, IGTVNotUpload
+import moviepy.editor as mp
+from PIL import Image
+from instagrapi import config, ClientError, IGTVConfigureError, IGTVNotUpload
 from instagrapi.extractors import extract_media_v1
 from instagrapi.types import Location, Media, Usertag
 from instagrapi.utils import date_time_original
-
-try:
-    from PIL import Image
-except ImportError:
-    raise Exception("You don't have PIL installed. Please install PIL or Pillow>=8.1.1")
 
 
 class DownloadIGTVMixin:
@@ -23,7 +19,7 @@ class DownloadIGTVMixin:
     Helpers to download IGTV videos
     """
 
-    def igtv_download(self, media_pk: int, folder: Path = "") -> str:
+    def igtv_download(self, media_pk: int, folder: Path = Path("")) -> str:
         """
         Download IGTV video
 
@@ -42,7 +38,7 @@ class DownloadIGTVMixin:
         return self.video_download(media_pk, folder)
 
     def igtv_download_by_url(
-        self, url: str, filename: str = "", folder: Path = ""
+        self, url: str, filename: str = "", folder: Path = Path("")
     ) -> str:
         """
         Download IGTV video using URL
@@ -72,11 +68,13 @@ class UploadIGTVMixin:
         path: Path,
         title: str,
         caption: str,
-        thumbnail: Path = None,
+        thumbnail: Optional[Path] = None,
         usertags: List[Usertag] = [],
         location: Location = None,
         configure_timeout: int = 10,
         extra_data: Dict[str, str] = {},
+        mute: bool = False,
+        poster_frame_index: int = 70,
     ) -> Media:
         """
         Upload IGTV to Instagram
@@ -89,7 +87,7 @@ class UploadIGTVMixin:
             Title of the video
         caption: str
             Media caption
-        thumbnail: Path, optional
+        thumbnail: Optional[Path], optional
             Path to thumbnail for IGTV. Default value is None, and it generates a thumbnail
         usertags: List[Usertag], optional
             List of users to be tagged on this upload, default is empty list.
@@ -99,6 +97,10 @@ class UploadIGTVMixin:
             Timeout between attempt to configure media (set caption, etc), default is 10
         extra_data: Dict[str, str], optional
             Dict of extra data, if you need to add your params, like {"share_to_facebook": 1}.
+        mute: bool
+            Whether to upload the video as muted or not
+        poster_frame_index: int
+            Index of the poster frame for the video
 
         Returns
         -------
@@ -131,206 +133,4 @@ class UploadIGTVMixin:
         }
         headers = {
             "Accept-Encoding": "gzip",
-            "X-Instagram-Rupload-Params": json.dumps(rupload_params),
-            "X_FB_VIDEO_WATERFALL_ID": waterfall_id,
-            "X-Entity-Type": "video/mp4",
-        }
-        response = self.private.get(
-            "https://{domain}/rupload_igvideo/{name}".format(
-                domain=config.API_DOMAIN, name=upload_name
-            ),
-            headers=headers,
-        )
-        self.request_log(response)
-        if response.status_code != 200:
-            raise IGTVNotUpload(response=self.last_response, **self.last_json)
-        with open(path, "rb") as fp:
-            igtv_data = fp.read()
-            igtv_len = str(len(igtv_data))
-        headers = {
-            "Offset": "0",
-            "X-Entity-Name": upload_name,
-            "X-Entity-Length": igtv_len,
-            "Content-Type": "application/octet-stream",
-            "Content-Length": igtv_len,
-            **headers,
-        }
-        response = self.private.post(
-            "https://{domain}/rupload_igvideo/{name}".format(
-                domain=config.API_DOMAIN, name=upload_name
-            ),
-            data=igtv_data,
-            headers=headers,
-        )
-        self.request_log(response)
-        if response.status_code != 200:
-            raise IGTVNotUpload(response=self.last_response, **self.last_json)
-        # CONFIGURE
-        self.igtv_composer_session_id = self.generate_uuid()
-        for attempt in range(50):
-            self.logger.debug(f"Attempt #{attempt} to configure IGTV: {path}")
-            time.sleep(configure_timeout)
-            try:
-                configured = self.igtv_configure(
-                    upload_id,
-                    thumbnail,
-                    width,
-                    height,
-                    duration,
-                    title,
-                    caption,
-                    usertags,
-                    location,
-                    extra_data=extra_data,
-                )
-            except ClientError as e:
-                if "Transcode not finished yet" in str(e):
-                    """
-                    Response 202 status:
-                    {"message": "Transcode not finished yet.", "status": "fail"}
-                    """
-                    time.sleep(configure_timeout)
-                    continue
-                raise e
-            else:
-                if configured:
-                    media = self.last_json.get("media")
-                    self.expose()
-                    return extract_media_v1(media)
-        raise IGTVConfigureError(response=self.last_response, **self.last_json)
-
-    def igtv_configure(
-        self,
-        upload_id: str,
-        thumbnail: Path,
-        width: int,
-        height: int,
-        duration: int,
-        title: str,
-        caption: str,
-        usertags: List[Usertag] = [],
-        location: Location = None,
-        extra_data: Dict[str, str] = {},
-    ) -> Dict:
-        """
-        Post Configure IGTV (send caption, thumbnail and more to Instagram)
-
-        Parameters
-        ----------
-        upload_id: str
-            Unique identifier for a IGTV video
-        thumbnail: Path
-            Path to thumbnail for IGTV
-        width: int
-            Width of the video in pixels
-        height: int
-            Height of the video in pixels
-        duration: int
-            Duration of the video in seconds
-        title: str
-            Title of the video
-        caption: str
-            Media caption
-        usertags: List[Usertag], optional
-            List of users to be tagged on this upload, default is empty list.
-        location: Location, optional
-            Location tag for this upload, default is None
-        extra_data: Dict[str, str], optional
-            Dict of extra data, if you need to add your params, like {"share_to_facebook": 1}.
-
-        Returns
-        -------
-        Dict
-            A dictionary of response from the call
-        """
-        self.photo_rupload(Path(thumbnail), upload_id)
-        usertags = [
-            {"user_id": tag.user.pk, "position": [tag.x, tag.y]} for tag in usertags
-        ]
-        data = {
-            "igtv_ads_toggled_on": "0",
-            "filter_type": "0",
-            "timezone_offset": str(self.timezone_offset),
-            "media_folder": "ScreenRecorder",
-            "location": self.location_build(location),
-            "source_type": "4",
-            "title": title,
-            "caption": caption,
-            "usertags": json.dumps({"in": usertags}),
-            "date_time_original": date_time_original(time.localtime()),
-            "igtv_share_preview_to_feed": "1",
-            "upload_id": upload_id,
-            "igtv_composer_session_id": self.igtv_composer_session_id,
-            "device": self.device,
-            "length": duration,
-            "clips": [{"length": duration, "source_type": "4"}],
-            "extra": {"source_width": width, "source_height": height},
-            "audio_muted": False,
-            "poster_frame_index": 70,
-            **extra_data,
-        }
-        return self.private_request(
-            "media/configure_to_igtv/?video=1",
-            self.with_default_data(data),
-            with_signature=True,
-        )
-
-
-def analyze_video(path: Path, thumbnail: Path = None) -> tuple:
-    """
-    Analyze and crop thumbnail if need
-
-    Parameters
-    ----------
-    path: Path
-        Path to the video
-    thumbnail: Path
-        Path to thumbnail for IGTV
-
-    Returns
-    -------
-    Tuple
-        A tuple with (thumbail path, width, height, duration)
-    """
-    try:
-        import moviepy.editor as mp
-    except ImportError:
-        raise Exception("Please install moviepy>=1.0.3 and retry")
-
-    print(f'Analyzing IGTV file "{path}"')
-    with contextlib.ExitStack() as stack:
-        video = mp.VideoFileClip(str(path))
-        width, height = video.size
-        if not thumbnail:
-            thumbnail = f"{path}.jpg"
-            print(f'Generating thumbnail "{thumbnail}"...')
-            video.save_frame(thumbnail, t=(video.duration / 2))
-            crop_thumbnail(thumbnail)
-        stack.enter_context(contextlib.closing(video))
-    return thumbnail, width, height, video.duration
-
-
-def crop_thumbnail(path: Path) -> bool:
-    """
-    Analyze and crop thumbnail if need
-
-    Parameters
-    ----------
-    path: Path
-        Path to the video
-
-    Returns
-    -------
-    bool
-        A boolean value
-    """
-    im = Image.open(str(path))
-    width, height = im.size
-    offset = (height / 1.78) / 2
-    center = width / 2
-    # Crop the center of the image
-    im = im.crop((center - offset, 0, center + offset, height))
-    with open(path, "w") as fp:
-        im.save(fp)
-        im.close()
-    return True
+            "X-Instagram

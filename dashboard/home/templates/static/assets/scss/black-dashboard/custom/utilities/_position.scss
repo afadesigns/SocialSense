@@ -1,19 +1,22 @@
+$spacers: (
+  sm: 8px,
+  md: 16px,
+  lg: 24px,
+  xl: 32px
+);
+
 @each $size, $value in $spacers {
-  .top-#{$size} {
-    top: $value;
-  }
-  .right-#{$size} {
-    right: $value;
-  }
-  .bottom-#{$size} {
-    bottom: $value;
-  }
+  .top-#{$size},
+  .right-#{$size},
+  .bottom-#{$size},
   .left-#{$size} {
-    left: $value;
+    & {
+      #{'top', 'right', 'bottom', 'left'}[$size] : $value;
+    }
   }
 }
 
 .center {
   left: 50%;
-  transform: translateX(-50%);
+  transform: calc(translateX(-50%));
 }

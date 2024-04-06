@@ -1,62 +1,27 @@
 // stylelint-disable property-blacklist
-// Single side border-radius
 
-@mixin border-radius($radius: $border-radius, $fallback-border-radius: false) {
+$enable-rounded: true;
+
+@mixin border-radius($direction, $radius: $border-radius, $fallback-border-radius: false) {
   @if $enable-rounded {
-    border-radius: $radius;
+    @each $side in $direction {
+      border-#{$side}-radius: $radius;
+    }
   } @else if $fallback-border-radius != false {
     border-radius: $fallback-border-radius;
   }
 }
 
-@mixin border-top-radius($radius) {
+$rounded-directions: top left top right bottom right bottom left;
+
+@mixin single-side-border-radius($side, $radius) {
   @if $enable-rounded {
-    border-top-left-radius: $radius;
-    border-top-right-radius: $radius;
+    border-#{$side}-radius: $radius;
   }
 }
 
-@mixin border-right-radius($radius) {
-  @if $enable-rounded {
-    border-top-right-radius: $radius;
-    border-bottom-right-radius: $radius;
-  }
-}
-
-@mixin border-bottom-radius($radius) {
-  @if $enable-rounded {
-    border-bottom-right-radius: $radius;
-    border-bottom-left-radius: $radius;
-  }
-}
-
-@mixin border-left-radius($radius) {
-  @if $enable-rounded {
-    border-top-left-radius: $radius;
-    border-bottom-left-radius: $radius;
-  }
-}
-
-@mixin border-top-left-radius($radius) {
-  @if $enable-rounded {
-    border-top-left-radius: $radius;
-  }
-}
-
-@mixin border-top-right-radius($radius) {
-  @if $enable-rounded {
-    border-top-right-radius: $radius;
-  }
-}
-
-@mixin border-bottom-right-radius($radius) {
-  @if $enable-rounded {
-    border-bottom-right-radius: $radius;
-  }
-}
-
-@mixin border-bottom-left-radius($radius) {
-  @if $enable-rounded {
-    border-bottom-left-radius: $radius;
-  }
-}
+@include border-radius($rounded-directions, $border-radius);
+@include single-side-border-radius(top, $border-radius);
+@include single-side-border-radius(right, $border-radius);
+@include single-side-border-radius(bottom, $border-radius);
+@include single-side-border-radius(left, $border-radius);

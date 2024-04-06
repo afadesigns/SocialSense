@@ -1,17 +1,54 @@
-@mixin badge-variant($bg) {
-  color: color-yiq($bg);
-  background-color: $bg;
+@use "sass:color" with (
+  $function-suffix: yiq,
+  $color-adjustment: adjust-hue
+);
 
-  @at-root a#{&} {
-    @include hover-focus {
-      color: color-yiq($bg);
-      background-color: darken($bg, 10%);
-    }
+@use "sass:map";
+@use "sass:math";
 
-    &:focus,
-    &.focus {
-      outline: 0;
-      box-shadow: 0 0 0 $badge-focus-width rgba($bg, .5);
-    }
+// Define a map of variant names and background colors
+$badge-variants: (
+  primary: #0070f3,
+  secondary: #6c757d,
+  success: #28a745,
+  danger: #dc3545,
+  warning: #ffc107,
+  info: #17a2b8
+);
+
+// Create a function to generate the badge styles for a given variant
+@function generate-badge-styles($variant) {
+  // Get the background color from the map
+  $bg: map-get($badge-variants, $variant);
+
+  // Calculate the hover and focus colors using the color functions
+  $hover-bg: darken($bg, 10%);
+  $focus-bg: rgba($bg, 0.5);
+
+  // Generate the base styles for the badge
+  @return (
+    color: color($bg),
+    background-color: $bg,
+
+    // Generate the hover and focus styles for the link
+    "a&": (
+      @include hover-focus {
+        color: color($bg);
+        background-color: $hover-bg;
+      }
+
+      &:focus,
+      &.focus {
+        outline: 0;
+        box-shadow: 0 0 0 math.div($badge-focus-width, 2) $focus-bg;
+      }
+    )
+  );
+}
+
+// Generate the styles for each badge variant
+@each $variant, $bg in $badge-variants {
+  .badge-#{$variant} {
+    @include generate-badge-styles($variant);
   }
 }

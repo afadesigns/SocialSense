@@ -8,16 +8,31 @@ from instagrapi.exceptions import (
     RecaptchaChallengeForm,
     ReloginAttemptExceeded,
     SelectContactPointRecoveryForm,
+    AccountTemporarilyBlocked,
+    ActionBlocked,
+    TemporarilyBlocked,
 )
 
-
 class Account:
-    username = ""
-    password = ""
+    """
+    A class representing an Instagram account.
+    """
 
-    def get_client(self):
-        """We return the client class, in which we automatically handle exceptions
-        You can move the "handle_exception" above or into an external module
+    def __init__(self, username: str, password: str):
+        """
+        Initialize the Account object with a username and password.
+
+        :param username: The Instagram username.
+        :param password: The Instagram password.
+        """
+        self.username = username
+        self.password = password
+
+    def get_client(self) -> Client:
+        """
+        Get an authenticated Client object for the account.
+
+        :return: An authenticated Client object.
         """
 
         def handle_exception(client, e):
@@ -46,31 +61,34 @@ class Account:
                         raise e
                     except (
                         ChallengeRequired,
-                        SelectCinstagrapi.exceptions.ChallengeRequiredontactPointRecoveryForm,
+                        SelectContactPointRecoveryForm,
                         RecaptchaChallengeForm,
                     ) as e:
                         self.freeze(str(e), days=4)
                         raise e
-                    self.update_client_settings(client.get_settings())
                 return True
             elif isinstance(e, FeedbackRequired):
                 message = client.last_json["feedback_message"]
                 if "This action was blocked. Please try again later" in message:
                     self.freeze(message, hours=12)
-                    # client.settings = self.rebuild_client_settings()
-                    # return self.update_client_settings(client.get_settings())
                 elif "We restrict certain activity to protect our community" in message:
-                    # 6 hours is not enough
                     self.freeze(message, hours=12)
                 elif "Your account has been temporarily blocked" in message:
-                    """
-                    Based on previous use of this feature, your account has been temporarily
-                    blocked from taking this action.
-                    This block will expire on 2020-03-27.
-                    """
                     self.freeze(message)
             elif isinstance(e, PleaseWaitFewMinutes):
                 self.freeze(str(e), hours=1)
+            elif isinstance(e, ReloginAttemptExceeded):
+                self.freeze(str(e), days=7)
+            elif isinstance(e, RecaptchaChallengeForm):
+                self.freeze("Recaptcha Challenge Required", days=4)
+            elif isinstance(e, SelectContactPointRecoveryForm):
+                self.freeze("Contact Point Recovery Required", days=4)
+            elif isinstance(e, AccountTemporarilyBlocked):
+                self.freeze(str(e), hours=12)
+            elif isinstance(e, ActionBlocked):
+                self.freeze(str(e), hours=12)
+            elif isinstance(e, TemporarilyBlocked):
+                self.freeze(str(e), hours=12)
             raise e
 
         cl = Client()

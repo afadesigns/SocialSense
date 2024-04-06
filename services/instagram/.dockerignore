@@ -1,3 +1,5 @@
+# Root directory
 .github/
-.git/
-venv/
+|-- workflows/  (GitHub Actions workflows)
+|-- .vscode/
+|   |-- settings.json 

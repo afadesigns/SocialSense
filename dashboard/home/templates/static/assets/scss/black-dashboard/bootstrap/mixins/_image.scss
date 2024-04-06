@@ -1,7 +1,7 @@
 // Image Mixins
 // - Responsive image
 // - Retina image
-
+// - Centered image
 
 // Responsive image
 //
@@ -13,8 +13,19 @@
   // Part 2: Override the height to auto, otherwise images will be stretched
   // when setting a width and height attribute on the img element.
   height: auto;
+  // Part 3: Vertically align the image
+  display: block;
+  margin: 0 auto;
 }
 
+// Centered image
+//
+// Center an image within its container
+
+@mixin img-center {
+  display: block;
+  margin: 0 auto;
+}
 
 // Retina image
 //
@@ -34,3 +45,7 @@
   }
   @include deprecate("`img-retina()`", "v4.3.0", "v5");
 }
+
+// Usage example
+.example {
+  @include

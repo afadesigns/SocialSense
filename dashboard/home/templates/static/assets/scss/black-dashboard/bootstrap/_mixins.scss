@@ -1,47 +1,46 @@
-// Toggles
-//
-// Used in conjunction with global variables to enable certain theme features.
-
 // Vendor
-@import "vendor/rfs";
+@import (reference) "vendor/rfs";
 
 // Deprecate
-@import "mixins/deprecate";
+@import (reference) "mixins/deprecate";
+
+// Components
+@import (reference) "mixins/alert";
+@import (reference) "mixins/buttons";
+@import (reference) "mixins/caret";
+@import (reference) "mixins/forms";
+@import (reference) "mixins/list-group";
+@import (reference) "mixins/nav-divider";
+@import (reference) "mixins/pagination";
+@import (reference) "mixins/table-row";
+
+// Layout
+@import (reference) "mixins/clearfix";
+@import (reference) "mixins/float";
+@import (reference) "mixins/grid";
+@import (reference) "mixins/grid-framework";
+
+// Skins
+@import (reference) "mixins/background-variant";
+@import (reference) "mixins/border-radius";
+@import (reference) "mixins/box-shadow";
+@import (reference) "mixins/gradients";
+@import (reference) "mixins/transition";
 
 // Utilities
-@import "mixins/breakpoints";
-@import "mixins/hover";
-@import "mixins/image";
-@import "mixins/badge";
-@import "mixins/resize";
-@import "mixins/screen-reader";
-@import "mixins/size";
-@import "mixins/reset-text";
-@import "mixins/text-emphasis";
-@import "mixins/text-hide";
-@import "mixins/text-truncate";
-@import "mixins/visibility";
-
-// // Components
-@import "mixins/alert";
-@import "mixins/buttons";
-@import "mixins/caret";
-@import "mixins/pagination";
-@import "mixins/lists";
-@import "mixins/list-group";
-@import "mixins/nav-divider";
-@import "mixins/forms";
-@import "mixins/table-row";
-
-// // Skins
-@import "mixins/background-variant";
-@import "mixins/border-radius";
-@import "mixins/box-shadow";
-@import "mixins/gradients";
-@import "mixins/transition";
-
-// // Layout
-@import "mixins/clearfix";
-@import "mixins/grid-framework";
-@import "mixins/grid";
-@import "mixins/float";
+@import (reference) "mixins/badge";
+@import (reference) "mixins/breakpoints";
+@import (reference) "mixins/deprecate";
+@import (reference) "mixins/extend";
+@import (reference) "mixins/hover";
+@import (reference) "mixins/image";
+@import (reference) "mixins/link";
+@import (reference) "mixins/list";
+@import (reference) "mixins/reset-text";
+@import (reference) "mixins/resize";
+@import (reference) "mixins/screen-reader";
+@import (reference) "mixins/size";
+@import (reference) "mixins/text-emphasis";
+@import (reference) "mixins/text-hide";
+@import (reference) "mixins/text-truncate";
+@import (reference) "mixins/visibility";

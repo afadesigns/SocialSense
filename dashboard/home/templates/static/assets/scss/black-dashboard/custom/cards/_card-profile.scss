@@ -1,21 +1,11 @@
-%card-profile {
+.card-profile {
   margin-top: 30px;
   text-align: center;
 
-  .card-body .card-title {
-    margin-top: 0;
-  }
-
-  [class*=col-] {
-    .card-description {
-      margin-bottom: 0;
-
-      & + .card-footer {
-        margin-top: 8px;
-      }
+  &.plain {
+    .card-header-avatar {
+      margin-top: 0;
     }
-
-
   }
 
   .card-header-avatar {
@@ -32,19 +22,37 @@
     }
   }
 
-  &.card-plain {
-    .card-header-avatar {
-      margin-top: 0;
-    }
-  }
-
   .card-body {
     .card-avatar {
       margin: 0 auto 30px;
+    }
+
+    .card-title {
+      margin-top: 0;
+    }
+
+    &-description {
+      margin-bottom: 0;
+
+      & + .card-footer {
+        margin-top: 8px;
+      }
+    }
+  }
+
+  [class*='col-'] {
+    .card-description {
+      margin-bottom: 0;
+
+      & + .card-footer {
+        margin-top: 8px;
+      }
     }
   }
 }
 
 .card-profile {
-  @extend %card-profile;
+  @extend .card-profile;
 }
+
+</style>

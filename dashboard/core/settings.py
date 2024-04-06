@@ -1,39 +1,68 @@
 # C:\Users\Andreas\Projects\SocialSense\dashboard\core\settings.py
 
 import os
-import random
-import string
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+<<<<<<< HEAD
 # Generate a random SECRET_KEY if not provided in environment
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for _ in range(32))
+=======
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get("SECRET_KEY") or "".join(
+    random.choice(string.ascii_lowercase) for _ in range(32)
+)
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1
 
 # Set DEBUG based on environment
 DEBUG = "RENDER" not in os.environ
 
+<<<<<<< HEAD
 # Define ALLOWED_HOSTS
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 # Add RENDER_EXTERNAL_HOSTNAME if provided
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+=======
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+# HOSTs List
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://localhost:5085",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:5085",
+]
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Add Instagram API domain to trusted hosts
 API_DOMAIN = "i.instagram.com"
 ALLOWED_HOSTS.append(API_DOMAIN)
 
+<<<<<<< HEAD
 # Application definition
+=======
+AUTHENTICATION_BACKENDS = []
+
+INSTAGRAM_CLIENT_ID = os.environ.get("INSTAGRAM_CLIENT_ID")
+
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1
 INSTALLED_APPS = [
     "admin_black_pro.apps.AdminBlackProConfig",
     "django.contrib.admin",
@@ -42,8 +71,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+<<<<<<< HEAD
     "home",  # Assuming 'home' is a Django app
     # Remove "InstagramClient" if it's not an actual app
+=======
+    # This is correct if 'home' is your Django app
+    "home",
+    # Add this line if 'instagram_client' is your app
+    "instagram_client",
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1
 ]
 
 MIDDLEWARE = [
@@ -80,19 +116,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
+<<<<<<< HEAD
 # Database settings
+=======
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "Sierra16",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME", "postgres"),
+        "USER": os.environ.get("DB_USER", "postgres"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "Sierra16"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
+<<<<<<< HEAD
 # Password validation settings
+=======
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -100,12 +142,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+<<<<<<< HEAD
 # Internationalization settings
+=======
+# Internationalization
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+<<<<<<< HEAD
 # Static files settings
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
@@ -136,3 +183,9 @@ INSTAGRAM_API_SETTINGS = {
 # Instagram credentials
 INSTAGRAM_USERNAME = os.getenv("INSTAGRAM_USERNAME")
 INSTAGRAM_PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
+=======
+# Static files (CSS, JavaScript, Images)
+# https
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+>>>>>>> 253105264d5cd49cfadfc83b0a7ab8b7f4f637c1

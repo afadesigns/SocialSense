@@ -1,10 +1,27 @@
 import os
+import sys
 
 from instagrapi import Client
 
-ACCOUNT_USERNAME = os.environ.get("IG_USERNAME")
-ACCOUNT_PASSWORD = os.environ.get("IG_PASSWORD")
+def get_env_var(var_name):
+    var_value = os.getenv(var_name)
+    if var_value is None:
+        raise Exception(f'Environment variable {var_name} is not set.')
+    return var_value
 
+def download_media(cl, media):
+    paths = []
+    if media.media_type == 1:
+        # Photo
+        paths.append(cl.photo_download(media.pk))
+    elif media.media_type in (2, 5):
+        # Video or Carousel Video
+        paths.append(cl.video_download(media.pk))
+    elif media.media_type == 8:
+        # Album
+        for path in cl.album_download(media.pk):
+            paths.append(path)
+    return paths
 
 def main(username: str, amount: int = 5) -> dict:
     """
@@ -12,36 +29,23 @@ def main(username: str, amount: int = 5) -> dict:
     """
     amount = int(amount)
     cl = Client()
-    cl.login(ACCOUNT_USERNAME, ACCOUNT_PASSWORD)
+    try:
+        cl.login(get_env_var('IG_USERNAME'), get_env_var('IG_PASSWORD'))
+    except Exception as e:
+        print(f'Error logging in: {e}')
+        sys.exit(1)
     user_id = cl.user_id_from_username(username)
     medias = cl.user_medias(user_id)
     result = {}
     i = 0
-    for m in medias:
+    for media in medias:
         if i >= amount:
             break
-        paths = []
-        if m.media_type == 1:
-            # Photo
-            paths.append(cl.photo_download(m.pk))
-        elif m.media_type == 2 and m.product_type == "feed":
-            # Video
-            paths.append(cl.video_download(m.pk))
-        elif m.media_type == 2 and m.product_type == "igtv":
-            # IGTV
-            paths.append(cl.video_download(m.pk))
-        elif m.media_type == 2 and m.product_type == "clips":
-            # Reels
-            paths.append(cl.video_download(m.pk))
-        elif m.media_type == 8:
-            # Album
-            for path in cl.album_download(m.pk):
-                paths.append(path)
-        result[m.pk] = paths
-        print(f"http://instagram.com/p/{m.code}/", paths)
+        paths = download_media(cl, media)
+        result[media.pk] = paths
+        print(f"http://instagram.com/p/{media.code}/", paths)
         i += 1
     return result
-
 
 if __name__ == "__main__":
     username = input("Enter username: ")
